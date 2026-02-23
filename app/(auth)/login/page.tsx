@@ -3,15 +3,16 @@ import LoginClient from "./LoginClient";
 
 export const dynamic = "force-dynamic";
 
-export default function LoginPage({
+type SearchParams = { [key: string]: string | string[] | undefined };
+
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<SearchParams>;
 }) {
-  const nextRaw =
-    typeof searchParams?.next === "string" ? searchParams.next : "/boot";
+  const sp = (await searchParams) ?? {};
 
-  // Prevent redirect loops by never allowing next=/login (or empty)
+  const nextRaw = typeof sp.next === "string" ? sp.next : "/boot";
   const next = nextRaw.startsWith("/login") ? "/boot" : nextRaw;
 
   return <LoginClient next={next} />;
