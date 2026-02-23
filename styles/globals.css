@@ -22,6 +22,90 @@ body{
   color: rgba(255,255,255,.92);
 }
 
+/* ---------- Modal / Tooltip / Onboarding ---------- */
+.kx-modal-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  z-index: 50;
+}
+
+.kx-modal{
+  width: min(920px, 100%);
+  max-height: min(86vh, 820px);
+  overflow: auto;
+  border-radius: 22px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 30px 90px rgba(0,0,0,.45);
+  backdrop-filter: blur(18px);
+}
+
+.kx-modal-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+
+.kx-modal-title{ font-weight: 700; letter-spacing: -0.01em; }
+.kx-modal-body{ padding: 16px 18px; }
+
+.kx-icon-btn{
+  height: 36px;
+  width: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.92);
+}
+.kx-icon-btn:hover{ background: rgba(255,255,255,.10); }
+
+.kx-tooltip-wrap{ position: relative; display: inline-flex; align-items: center; }
+.kx-tooltip{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 10px);
+  width: max-content;
+  max-width: 280px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(7,10,18,.92);
+  color: rgba(255,255,255,.92);
+  font-size: 12px;
+  line-height: 1.35;
+  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease, transform .12s ease;
+}
+.kx-tooltip-wrap:hover .kx-tooltip,
+.kx-tooltip-wrap:focus-within .kx-tooltip{
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.kx-kbd{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-bottom-color: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.06);
+  padding: 2px 6px;
+  border-radius: 8px;
+  color: rgba(255,255,255,.92);
+}
+
 /* ---------- Utilities used across the app ---------- */
 .kx-hairline{ border-color: rgba(255,255,255,.10); }
 .kx-surface{

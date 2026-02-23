@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import HelpCenterButton from "@/components/help/HelpCenterButton";
+import Onboarding from "@/components/onboarding/Onboarding";
+import MobileNav from "@/components/nav/MobileNav";
 
 export default function Shell({
   children,
@@ -15,7 +18,7 @@ export default function Shell({
   }
 
   return (
-    <div className="min-h-screen bg-[#070A12] text-white">
+    <div className="min-h-screen text-white">
       <div className="flex min-h-screen">
         {/* Sidebar */}
         <aside className="hidden md:flex w-64 shrink-0 border-r border-white/10 bg-white/5">
@@ -46,13 +49,21 @@ export default function Shell({
           {/* Top bar */}
           <header className="sticky top-0 z-10 border-b border-white/10 bg-[#070A12]/70 backdrop-blur">
             <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
-              <div className="text-sm text-white/80">Kryvexis OS</div>
+              <div className="flex items-center gap-2">
+                <MobileNav />
+                <div className="text-sm text-white/80">Kryvexis OS</div>
+              </div>
 
-              <form action={signOut}>
-                <button className="kx-button" type="submit">
-                  Sign out
-                </button>
-              </form>
+              <div className="flex items-center gap-2">
+                <Onboarding />
+                <HelpCenterButton />
+
+                <form action={signOut}>
+                  <button className="kx-button" type="submit">
+                    Sign out
+                  </button>
+                </form>
+              </div>
             </div>
           </header>
 
