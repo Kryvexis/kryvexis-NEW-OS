@@ -1,8 +1,9 @@
-import Link from "next/link";
+import Image from 'next/image'
 import { createClient } from "@/lib/supabase/server";
 import HelpCenterButton from "@/components/help/HelpCenterButton";
 import Onboarding from "@/components/onboarding/Onboarding";
 import MobileNav from "@/components/nav/MobileNav";
+import { Sidebar } from '@/components/nav'
 
 export default function Shell({
   children,
@@ -20,38 +21,22 @@ export default function Shell({
   return (
     <div className="min-h-screen text-white">
       <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <aside className="hidden md:flex w-64 shrink-0 border-r border-white/10 bg-white/5">
-          <div className="w-full p-4 space-y-4">
-            <div className="text-sm font-semibold text-white/90">Kryvexis OS</div>
-
-            <nav className="space-y-1 text-sm">
-              <NavLink href="/dashboard">Dashboard</NavLink>
-              <NavLink href="/clients">Clients</NavLink>
-              <NavLink href="/products">Products</NavLink>
-              <NavLink href="/quotes">Quotes</NavLink>
-              <NavLink href="/invoices">Invoices</NavLink>
-              <NavLink href="/payments">Payments</NavLink>
-              <NavLink href="/reports">Reports</NavLink>
-              <NavLink href="/settings">Settings</NavLink>
-              <NavLink href="/help">Help</NavLink>
-            </nav>
-
-            <div className="pt-4 border-t border-white/10 text-xs text-white/60">
-              Signed in as
-              <div className="text-white/85 break-all">{userEmail}</div>
-            </div>
-          </div>
-        </aside>
+        {/* Sidebar (desktop) */}
+        <Sidebar userEmail={userEmail} />
 
         {/* Main */}
         <div className="flex-1 min-w-0">
           {/* Top bar */}
           <header className="sticky top-0 z-10 border-b border-white/10 bg-[#070A12]/70 backdrop-blur">
-            <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+            <div className="mx-auto max-w-7xl px-4 md:px-6 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <MobileNav />
-                <div className="text-sm text-white/80">Kryvexis OS</div>
+                <div className="flex items-center gap-2">
+                  <div className="md:hidden h-8 w-8 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,.10)', background: 'rgba(255,255,255,.06)' }}>
+                    <Image src="/kryvexis-logo.png" alt="Kryvexis" width={64} height={64} className="h-8 w-8 object-contain" priority />
+                  </div>
+                  <div className="text-sm font-semibold tracking-tight text-white/85">Kryvexis OS</div>
+                </div>
               </div>
 
               <div className="flex items-center gap-2">
@@ -67,22 +52,11 @@ export default function Shell({
             </div>
           </header>
 
-          <main className="mx-auto max-w-6xl px-4 py-6">
+          <main className="mx-auto max-w-7xl px-4 md:px-6 py-6">
             {children}
           </main>
         </div>
       </div>
     </div>
-  );
-}
-
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="block rounded-xl border border-transparent px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white transition"
-    >
-      {children}
-    </Link>
   );
 }

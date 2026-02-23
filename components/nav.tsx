@@ -103,14 +103,14 @@ export const navItems = [
   { href: '/help', label: 'Help', icon: 'help' as const },
 ]
 
-export function Sidebar() {
+export function Sidebar({ userEmail }: { userEmail?: string }) {
   const pathname = usePathname() || ''
   return (
-    <aside className="hidden md:flex md:w-[292px] md:flex-col kx-surface border-r kx-hairline">
+    <aside className="hidden md:flex md:w-[280px] md:flex-col border-r kx-hairline" style={{ background: 'rgba(8,11,20,.70)' }}>
       <div className="px-5 pt-5 pb-4">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-2xl kx-surface flex items-center justify-center overflow-hidden">
-            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={56} height={56} className="h-10 w-10 object-contain" priority />
+          <div className="h-11 w-11 rounded-2xl flex items-center justify-center overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,.10)', background: 'rgba(255,255,255,.06)', boxShadow: '0 0 0 1px rgba(34,211,238,.10), 0 14px 40px rgba(0,0,0,.35)' }}>
+            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={64} height={64} className="h-10 w-10 object-contain" priority />
           </div>
           <div>
             <div className="text-[15px] font-semibold tracking-tight">Kryvexis OS</div>
@@ -129,7 +129,7 @@ export function Sidebar() {
               className={
                 'group flex items-center gap-2 rounded-xl px-3 py-2 text-sm border transition ' +
                 (on
-                  ? 'border-white/15 bg-white/8 text-white'
+                  ? 'border-white/14 bg-white/8 text-white'
                   : 'border-transparent hover:border-white/10 hover:bg-white/5 text-white/70')
               }
             >
@@ -142,6 +142,13 @@ export function Sidebar() {
           )
         })}
       </nav>
+
+      {userEmail && (
+        <div className="mt-auto px-5 py-4 border-t" style={{ borderColor: 'rgba(255,255,255,.08)' }}>
+          <div className="text-[11px] uppercase tracking-wider text-white/45">Signed in as</div>
+          <div className="mt-1 text-xs text-white/80 break-all">{userEmail}</div>
+        </div>
+      )}
     </aside>
   )
 }

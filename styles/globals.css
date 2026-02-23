@@ -26,8 +26,8 @@ body{
 .kx-modal-backdrop{
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,.52);
+  backdrop-filter: blur(3px);
   display: grid;
   place-items: center;
   padding: 18px;
@@ -35,14 +35,14 @@ body{
 }
 
 .kx-modal{
-  width: min(920px, 100%);
+  width: min(560px, 100%);
   max-height: min(86vh, 820px);
   overflow: auto;
   border-radius: 22px;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(11,15,26,.92);
+  border: 1px solid rgba(255,255,255,.10);
   box-shadow: 0 30px 90px rgba(0,0,0,.45);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(10px);
 }
 
 .kx-modal-header{
@@ -109,16 +109,16 @@ body{
 /* ---------- Utilities used across the app ---------- */
 .kx-hairline{ border-color: rgba(255,255,255,.10); }
 .kx-surface{
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
-  backdrop-filter: blur(18px);
+  background: rgba(18,22,36,.62);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(10px);
 }
 .kx-card{
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(18,22,36,.70);
+  border: 1px solid rgba(255,255,255,.08);
   border-radius: 18px;
   padding: 14px;
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(10px);
 }
 
 .kx-button{
