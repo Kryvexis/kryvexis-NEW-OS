@@ -5,3 +5,165 @@
 .kx-input{ @apply rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/10; }
 .kx-btn{ @apply rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90 hover:bg-white/10 transition; }
 .kx-btn-primary{ @apply rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/15 transition; }
+
+/* --- Kryvexis Auth Layout --- */
+.kx-auth{
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: rgba(255,255,255,0.92);
+  background: radial-gradient(900px 700px at 20% 0%, rgba(34,211,238,.12), transparent 60%),
+              radial-gradient(800px 650px at 95% 10%, rgba(255,255,255,.05), transparent 62%),
+              #070A12;
+}
+
+.kx-auth-shell{
+  width: min(1040px, 100%);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+@media (max-width: 900px){
+  .kx-auth-shell{ grid-template-columns: 1fr; }
+}
+
+.kx-auth-brandCard,
+.kx-auth-card{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 18px;
+  padding: 18px;
+  backdrop-filter: blur(18px);
+}
+
+.kx-auth-logoRow{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.kx-auth-brandName{
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.kx-auth-tag{
+  font-size: 13px;
+  color: rgba(255,255,255,0.68);
+}
+
+.kx-auth-bullets{
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.kx-auth-contact{
+  margin-top: 16px;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.kx-auth-link{
+  color: rgba(34,211,238,0.95);
+  text-decoration: none;
+}
+.kx-auth-link:hover{ text-decoration: underline; }
+
+.kx-auth-formWrap{
+  display: grid;
+  gap: 10px;
+}
+
+.kx-auth-title{
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.kx-auth-subtitle{
+  margin-top: 4px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.68);
+}
+
+.kx-auth-error{
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.25);
+  color: rgba(255,255,255,0.92);
+  font-size: 13px;
+}
+
+.kx-auth-form{
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.kx-auth-label{
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.78);
+}
+
+.kx-auth-input{
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  padding: 10px 12px;
+  color: rgba(255,255,255,0.92);
+  outline: none;
+}
+.kx-auth-input::placeholder{ color: rgba(255,255,255,0.40); }
+
+.kx-auth-pwRow{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.kx-auth-pwBtn{
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.85);
+}
+.kx-auth-pwBtn:hover{ background: rgba(255,255,255,0.10); }
+
+.kx-auth-primary{
+  height: 42px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.95);
+  font-weight: 600;
+}
+.kx-auth-primary:hover{ background: rgba(255,255,255,0.16); }
+.kx-auth-primary:disabled{ opacity: .65; cursor: not-allowed; }
+
+.kx-auth-row{
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.kx-auth-muted{ color: rgba(255,255,255,0.68); }
+
+.kx-auth-foot{
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  text-align: center;
+}
