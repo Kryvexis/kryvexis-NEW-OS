@@ -1,0 +1,28 @@
+:root{ --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
+.kx-app{ padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+input, select, textarea { font-size: 16px; }
+.kx-shell{ display:flex; min-height:100vh; }
+.kx-sidebar{ width: 280px; flex:0 0 auto; border-right: 1px solid rgba(255,255,255,0.08); }
+.kx-main{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; }
+.kx-topbar{ position: sticky; top: 0; z-index: 5; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.08); }
+.kx-content{ flex: 1 1 auto; min-width:0; padding: 16px; }
+.kx-hamburger{ position: fixed; top: calc(10px + var(--safe-top)); left: 10px; z-index: 30; height: 44px; width: 44px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.55); color: white; }
+.kx-drawer{ position: fixed; inset: 0; z-index: 40; pointer-events:none; opacity:0; transition: opacity 160ms ease; }
+.kx-drawer.is-open{ pointer-events:auto; opacity:1; }
+.kx-drawer-panel{ position:absolute; top:0; left:0; height:100%; width: min(86vw, 360px); background: rgba(10,10,10,0.92); border-right: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transform: translateX(-8px); transition: transform 200ms ease; padding: calc(12px + var(--safe-top)) 12px 12px 12px; }
+.kx-drawer.is-open .kx-drawer-panel{ transform: translateX(0); }
+.kx-drawer-backdrop{ position:absolute; inset:0; background: rgba(0,0,0,0.42); border: none; }
+.kx-drawer-top{ display:flex; align-items:center; justify-content:space-between; padding: 6px 6px 10px; }
+.kx-drawer-title{ font-weight: 600; opacity:0.9; }
+.kx-icon-btn{ height: 36px; width: 36px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: white; }
+.kx-cards{ display:flex; flex-direction:column; gap: 10px; }
+.kx-card-item{ border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.04); border-radius: 16px; padding: 14px; }
+.kx-card-row{ display:flex; justify-content:space-between; gap: 10px; }
+.kx-card-title{ font-weight: 650; letter-spacing: -0.01em; }
+.kx-card-meta{ opacity: 0.72; font-size: 13px; margin-top: 2px; }
+.kx-chip{ font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); }
+.kx-empty{ opacity: 0.7; padding: 16px; border: 1px dashed rgba(255,255,255,0.18); border-radius: 14px; }
+.kx-toggle{ display:inline-flex; gap:6px; padding: 6px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.04); }
+.kx-toggle-btn{ height: 34px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: rgba(255,255,255,0.78); }
+.kx-toggle-btn.is-active{ background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.12); color: white; }
+@media (max-width: 860px){ .kx-content{ padding: 14px; padding-top: 62px; } }
