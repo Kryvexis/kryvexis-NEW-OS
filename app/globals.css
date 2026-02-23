@@ -1,13 +1,8 @@
+@import '../styles/globals.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-html, body { height: 100%; }
-
-body{
-  background: #070A12;
-  color: rgba(255,255,255,0.92);
-}
 
 /* ✅ Alias so pages using kx-button are styled */
 .kx-button{ @apply rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/15 transition; }

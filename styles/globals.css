@@ -2,112 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-  Apple-like visual language:
-  - system font stack
-  - soft translucency (materials)
-  - subtle borders + shadows
-  - high legibility
-*/
-
-:root {
-  color-scheme: dark;
-  --kx-bg: 7 10 18;          /* #070A12 */
-  --kx-panel: 17 19 28;      /* deep panel */
-  --kx-border: 255 255 255;
-  --kx-text: 255 255 255;
-  --kx-muted: 200 203 214;
-  --kx-accent: 99 102 241;   /* indigo (minimal luxury accent) */
+/* ---------- Kryvexis Design Tokens ---------- */
+:root{
+  --kx-bg: 7 10 18;
+  --kx-panel: 255 255 255;
+  --kx-accent: 34 211 238;
 }
 
-html, body { height: 100%; }
+/* ---------- Base ---------- */
+html, body{
+  height: 100%;
+}
 
-body {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+body{
   background:
-    radial-gradient(900px 700px at 20% 0%, rgba(99,102,241,0.12), transparent 60%),
-    radial-gradient(800px 650px at 95% 10%, rgba(255,255,255,0.05), transparent 62%),
+    radial-gradient(900px 700px at 20% 0%, rgba(34,211,238,.12), transparent 60%),
+    radial-gradient(800px 650px at 95% 10%, rgba(255,255,255,.05), transparent 62%),
     rgb(var(--kx-bg));
-  color: rgba(var(--kx-text), 0.92);
+  color: rgba(255,255,255,.92);
 }
 
-/* nicer scrollbars */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.22) transparent;
+/* ---------- Utilities used across the app ---------- */
+.kx-hairline{ border-color: rgba(255,255,255,.10); }
+.kx-surface{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  backdrop-filter: blur(18px);
+}
+.kx-card{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  padding: 14px;
+  backdrop-filter: blur(18px);
 }
 
-@layer components {
-  .kx-surface {
-    background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.035));
-    border: 1px solid rgba(var(--kx-border), 0.10);
-    box-shadow:
-      0 10px 30px rgba(0,0,0,0.28),
-      inset 0 1px 0 rgba(255,255,255,0.06);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-  }
+.kx-button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.90);
+  font-size: 13px;
+  transition: .15s ease;
+}
+.kx-button:hover{ background: rgba(255,255,255,.10); }
 
-  .kx-card {
-    @apply rounded-2xl;
-    background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.035));
-    border: 1px solid rgba(var(--kx-border), 0.10);
-    box-shadow:
-      0 10px 30px rgba(0,0,0,0.28),
-      inset 0 1px 0 rgba(255,255,255,0.06);
-  }
+.kx-badge{
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+}
 
-  .kx-input {
-    @apply w-full rounded-xl px-3 py-2 text-sm outline-none;
-    background: rgba(0,0,0,0.22);
-    border: 1px solid rgba(var(--kx-border), 0.10);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-  .kx-input:focus {
-    border-color: rgba(var(--kx-accent), 0.55);
-    box-shadow:
-      0 0 0 4px rgba(var(--kx-accent), 0.18),
-      inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-
-  .kx-button {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition;
-    border: 1px solid rgba(var(--kx-border), 0.12);
-    background: rgba(255,255,255,0.06);
-  }
-  .kx-button:hover { background: rgba(255,255,255,0.09); }
-  .kx-button:active { transform: translateY(0.5px); }
-
-  .kx-button-primary {
-    border-color: rgba(var(--kx-accent), 0.35);
-    background: linear-gradient(180deg, rgba(var(--kx-accent), 0.30), rgba(var(--kx-accent), 0.18));
-  }
-  .kx-button-primary:hover { background: rgba(var(--kx-accent), 0.28); }
-
-  /* Back-compat aliases used in some pages */
-  .kx-btn { @apply kx-button; }
-  .kx-btn-primary { @apply kx-button kx-button-primary; }
-
-  .kx-badge {
-    @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs;
-    border: 1px solid rgba(var(--kx-border), 0.12);
-    background: rgba(255,255,255,0.06);
-  }
-
-
-  /* Page scaffolding */
-  .kx-page {
-    @apply mx-auto w-full max-w-6xl px-4 md:px-6 py-5 md:py-7;
-  }
-  .kx-h1 { @apply text-[22px] md:text-[26px] font-semibold tracking-tight; }
-  .kx-h2 { @apply text-[15px] md:text-[16px] font-semibold tracking-tight; }
-  .kx-muted { @apply text-sm text-white/60; }
-  .kx-label { @apply text-xs text-white/55; }
-  .kx-link { @apply underline underline-offset-4 decoration-white/20 hover:decoration-white/40; }
-  .kx-divider { @apply my-4 h-px w-full bg-white/10; }
-  .kx-stack { @apply space-y-4; }
-
-  .kx-hairline {
-    border-color: rgba(var(--kx-border), 0.10);
-  }
+table{
+  border-collapse: separate;
+  border-spacing: 0;
 }
