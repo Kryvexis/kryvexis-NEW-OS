@@ -1,29 +1,77 @@
-import { Sidebar } from './nav'
-import Topbar from './topbar'
-import LogoutButton from './logout-button'
-import CommandPalette from './command-palette'
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Shell({ userEmail, children }: { userEmail: string; children: React.ReactNode }) {
+export default function Shell({
+  children,
+  userEmail,
+}: {
+  children: React.ReactNode;
+  userEmail: string;
+}) {
+  async function signOut() {
+    "use server";
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+  }
+
   return (
-    <div className="min-h-screen flex">
-      <Sidebar />
-      <main className="flex-1 flex flex-col">
-        <Topbar />
-        <CommandPalette />
-        <div className="px-4 py-4 md:px-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="kx-badge">
-              <span className="h-2 w-2 rounded-full" style={{ background: 'rgba(var(--kx-accent), 0.95)' }} />
-              <span className="ml-2 text-white/70">Signed in</span>
-              <span className="ml-2 text-white">{userEmail}</span>
-            </span>
+    <div className="min-h-screen bg-[#070A12] text-white">
+      <div className="flex min-h-screen">
+        {/* Sidebar */}
+        <aside className="hidden md:flex w-64 shrink-0 border-r border-white/10 bg-white/5">
+          <div className="w-full p-4 space-y-4">
+            <div className="text-sm font-semibold text-white/90">Kryvexis OS</div>
+
+            <nav className="space-y-1 text-sm">
+              <NavLink href="/dashboard">Dashboard</NavLink>
+              <NavLink href="/clients">Clients</NavLink>
+              <NavLink href="/products">Products</NavLink>
+              <NavLink href="/quotes">Quotes</NavLink>
+              <NavLink href="/invoices">Invoices</NavLink>
+              <NavLink href="/payments">Payments</NavLink>
+              <NavLink href="/reports">Reports</NavLink>
+              <NavLink href="/settings">Settings</NavLink>
+              <NavLink href="/help">Help</NavLink>
+            </nav>
+
+            <div className="pt-4 border-t border-white/10 text-xs text-white/60">
+              Signed in as
+              <div className="text-white/85 break-all">{userEmail}</div>
+            </div>
           </div>
-          <LogoutButton />
+        </aside>
+
+        {/* Main */}
+        <div className="flex-1 min-w-0">
+          {/* Top bar */}
+          <header className="sticky top-0 z-10 border-b border-white/10 bg-[#070A12]/70 backdrop-blur">
+            <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+              <div className="text-sm text-white/80">Kryvexis OS</div>
+
+              <form action={signOut}>
+                <button className="kx-button" type="submit">
+                  Sign out
+                </button>
+              </form>
+            </div>
+          </header>
+
+          <main className="mx-auto max-w-6xl px-4 py-6">
+            {children}
+          </main>
         </div>
-        <div className="px-4 md:px-6 pb-12">
-          <div className="mx-auto w-full max-w-6xl">{children}</div>
-        </div>
-      </main>
+      </div>
     </div>
-  )
+  );
+}
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="block rounded-xl border border-transparent px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white transition"
+    >
+      {children}
+    </Link>
+  );
 }
