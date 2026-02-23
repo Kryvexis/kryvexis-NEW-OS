@@ -1,6 +1,9 @@
+"use client";
+
+import * as React from "react";
 import Image from "next/image";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 function BootUI() {
   return (
@@ -28,15 +31,30 @@ function BootUI() {
   );
 }
 
-export default async function BootPage() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
+export default function BootPage() {
+  const router = useRouter();
 
-  // Show the splash briefly (premium OS feel)
-  await new Promise((r) => setTimeout(r, 900));
+  React.useEffect(() => {
+    let alive = true;
 
-  if (!data?.user) redirect("/login");
-  redirect("/dashboard");
+    (async () => {
+      // show splash briefly (premium OS feel)
+      await new Promise((r) => setTimeout(r, 900));
+      if (!alive) return;
+
+      const supabase = createClient();
+      const { data } = await supabase.auth.getUser();
+
+      if (!alive) return;
+
+      if (!data?.user) router.replace("/login");
+      else router.replace("/dashboard");
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [router]);
 
   return <BootUI />;
 }

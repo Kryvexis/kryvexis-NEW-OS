@@ -9,7 +9,10 @@ import { createClient } from "@/lib/supabase/client";
 export default function LoginPage() {
   const router = useRouter();
   const sp = useSearchParams();
-  const next = sp.get("next") || "/boot";
+
+  // Prevent redirect loops by never allowing next=/login (or empty)
+  const nextRaw = sp.get("next") || "/boot";
+  const next = nextRaw.startsWith("/login") ? "/boot" : nextRaw;
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -21,14 +24,18 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
     try {
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
+
       if (error) throw error;
-      router.push(next);
+
+      // Replace prevents history back into login loop
+      router.replace(next);
     } catch (err: any) {
       setError(err?.message || "Could not sign in.");
     } finally {
@@ -69,7 +76,12 @@ export default function LoginPage() {
               <a className="kx-auth-link" href="mailto:kryvexissolutions@gmail.com">
                 kryvexissolutions@gmail.com
               </a>
-              <a className="kx-auth-link" href="https://wa.me/27686282874" target="_blank" rel="noreferrer">
+              <a
+                className="kx-auth-link"
+                href="https://wa.me/27686282874"
+                target="_blank"
+                rel="noreferrer"
+              >
                 WhatsApp +27 68 628 2874
               </a>
             </div>
@@ -125,17 +137,20 @@ export default function LoginPage() {
               </button>
 
               <div className="kx-auth-row">
-                <Link className="kx-auth-link" href="/forgot-password">Forgot password?</Link>
+                <Link className="kx-auth-link" href="/forgot-password">
+                  Forgot password?
+                </Link>
                 <span className="kx-auth-muted">
-                  New? <Link className="kx-auth-link" href="/signup">Create account</Link>
+                  New?{" "}
+                  <Link className="kx-auth-link" href="/signup">
+                    Create account
+                  </Link>
                 </span>
               </div>
             </form>
           </div>
 
-          <div className="kx-auth-foot">
-            By signing in, you agree to Kryvexis terms.
-          </div>
+          <div className="kx-auth-foot">By signing in, you agree to Kryvexis terms.</div>
         </div>
       </div>
     </div>
