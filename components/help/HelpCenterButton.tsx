@@ -20,12 +20,7 @@ export default function HelpCenterButton() {
 
   return (
     <>
-      <button
-        className="kx-icon-btn"
-        data-tour="help-button"
-        onClick={() => setOpen(true)}
-        aria-label="Help"
-      >
+      <button className="kx-icon-btn" onClick={() => setOpen(true)} aria-label="Help">
         ?
       </button>
 
@@ -52,21 +47,6 @@ export default function HelpCenterButton() {
               <Link className="kx-button justify-start" href="/demo">
                 View Demo walkthrough
               </Link>
-              <button
-                className="kx-button justify-start"
-                type="button"
-                onClick={() => {
-                  try {
-                    // Ask the tour component to start (and reset progress).
-                    window.dispatchEvent(new Event("kx:tour:start"));
-                  } catch {
-                    // ignore
-                  }
-                  setOpen(false);
-                }}
-              >
-                Start guided tour
-              </button>
             </div>
           </section>
 
