@@ -9,7 +9,7 @@ type PageProps = {
 };
 
 export default async function Page({ params }: PageProps) {
-  const { id } = params;
+  const { id } = await params
   const supabase = await createClient()
   const [{ data: quote }, { data: items }, { data: company }] = await Promise.all([
     supabase.from('quotes').select('*, clients(name,email,phone,billing_address)').eq('id', id).maybeSingle(),
