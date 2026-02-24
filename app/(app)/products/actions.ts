@@ -85,9 +85,10 @@ export async function updateProductAction(formData: FormData) {
   return { ok: true }
 }
 
-export async function deleteProductAction(formData: FormData) {
+export async function deleteProductAction(formData: FormData): Promise<void> {
   const id = String(formData.get('id') || '')
-  if (!id) return { ok: false, error: 'Missing product id' }
+  // Server form actions must return void (Next.js). Treat missing id as a no-op.
+  if (!id) return
 
   const supabase = await createClient()
   const companyId = await requireCompanyId()
@@ -98,9 +99,12 @@ export async function deleteProductAction(formData: FormData) {
     .eq('company_id', companyId)
     .eq('id', id)
 
-  if (error) return { ok: false, error: error.message }
+  if (error) {
+    console.error('deleteProductAction:', error.message)
+    return
+  }
   revalidatePath('/products')
-  return { ok: true }
+  return
 }
 
 type ImportRow = {
