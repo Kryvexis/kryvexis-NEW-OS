@@ -32,8 +32,8 @@ export default function Shell({
               <div className="flex items-center gap-2">
                 <MobileNav />
                 <div className="flex items-center gap-2">
-                  <div className="md:hidden h-10 w-10 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,.10)', background: 'rgba(255,255,255,.06)' }}>
-                    <Image src="/kryvexis-logo.png" alt="Kryvexis" width={64} height={64} className="h-10 w-10 object-contain" priority />
+                  <div className="md:hidden h-8 w-8 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,.10)', background: 'rgba(255,255,255,.06)' }}>
+                    <Image src="/kryvexis-logo.png" alt="Kryvexis" width={64} height={64} className="h-8 w-8 object-contain" priority />
                   </div>
                   <div className="text-sm font-semibold tracking-tight text-white/85">Kryvexis OS</div>
                 </div>

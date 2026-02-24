@@ -1,8 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import ProductsUI from './ui'
-import Link from 'next/link'
-import { deleteProductAction } from './actions'
 
 function money(n: number) {
   return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(n)
@@ -44,7 +42,6 @@ export default async function ProductsPage() {
                 <th className="text-right px-4 py-3">Cost</th>
                 <th className="text-right px-4 py-3">Margin</th>
                 <th className="text-left px-4 py-3">Supplier</th>
-                <th className="text-right px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -61,31 +58,12 @@ export default async function ProductsPage() {
                     <td className="px-4 py-3 text-right text-white/70">{money(cost)}</td>
                     <td className="px-4 py-3 text-right font-semibold">{money(margin)}</td>
                     <td className="px-4 py-3 text-white/70">{p.suppliers?.name ?? '—'}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/products/${p.id}`}
-                          className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 hover:bg-white/10"
-                        >
-                          Edit
-                        </Link>
-                        <form action={deleteProductAction}>
-                          <input type="hidden" name="id" value={p.id} />
-                          <button
-                            type="submit"
-                            className="rounded-lg border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-xs text-red-100 hover:bg-red-500/15"
-                          >
-                            Delete
-                          </button>
-                        </form>
-                      </div>
-                    </td>
                   </tr>
                 )
               })}
               {(products ?? []).length === 0 && (
                 <tr>
-                  <td className="px-4 py-6 text-white/60" colSpan={8}>
+                  <td className="px-4 py-6 text-white/60" colSpan={7}>
                     No products yet.
                   </td>
                 </tr>

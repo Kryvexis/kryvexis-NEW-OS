@@ -1,167 +1,121 @@
-import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { fmtZar } from "@/lib/format";
-import QuoteStatus from "./ui-status";
-import ConvertButton from "./ui-convert";
+import Image from 'next/image'
+import { createClient } from '@/lib/supabase/server'
+import { fmtZar } from '@/lib/format'
+
 
 type PageProps = {
   params: Promise<{ id: string }>;
 };
 
-export default async function QuotePage({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
   const { id } = await params;
-
-  const supabase = await createClient();
-  const [{ data: quote }, { data: items }] = await Promise.all([
-    supabase
-      .from("quotes")
-      .select("id,number,issue_date,expiry_date,status,notes,terms,subtotal,discount_total,tax_total,total, clients(name,email,phone,billing_address)")
-      .eq("id", id)
-      .maybeSingle(),
-    supabase.from("quote_items").select("id,description,qty,unit_price,discount,tax_rate").eq("quote_id", id),
-  ]);
-
-  if (!quote) {
-    return (
-      <div className="kx-card p-4">
-        <div className="text-sm font-semibold">Quote not found</div>
-        <div className="text-sm text-white/60 mt-1">This quote may have been deleted.</div>
-      </div>
-    );
-  }
+  const supabase = await createClient()
+  const [{ data: quote }, { data: items }, { data: company }] = await Promise.all([
+    supabase.from('quotes').select('*, clients(name,email,phone,billing_address)').eq('id', id).maybeSingle(),
+    supabase.from('quote_items').select('*').eq('quote_id', id),
+    supabase.from('companies').select('id,name,address,phone,email,tax_id').maybeSingle(),
+  ])
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
-          <div className="text-xl font-semibold tracking-tight">Quote {quote.number ?? ""}</div>
-          <div className="text-sm text-white/60">
-            Client: <span className="text-white/85">{quote.clients?.name ?? "—"}</span>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Link className="kx-button" href={`/quotes/${quote.id}/print`} target="_blank">
-            Print / PDF
-          </Link>
-          <ConvertButton quoteId={quote.id} />
-        </div>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="kx-card p-4 lg:col-span-2">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <div className="text-xs text-white/60">Issue date</div>
-                <div className="mt-1 font-medium">{quote.issue_date ?? "—"}</div>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <div className="text-xs text-white/60">Expiry date</div>
-                <div className="mt-1 font-medium">{quote.expiry_date ?? "—"}</div>
-              </div>
+    <div className="min-h-screen bg-white text-black">
+      <div className="mx-auto max-w-4xl px-6 py-10">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 rounded-2xl border border-black/10 bg-black/5 flex items-center justify-center overflow-hidden">
+              <Image src="/kryvexis-logo.png" alt="Kryvexis" width={64} height={64} className="h-10 w-10 object-contain" priority />
             </div>
-
-            <div className="w-full md:w-[220px]">
-              <QuoteStatus quoteId={quote.id} current={quote.status ?? "Draft"} />
+            <div>
+              <div className="text-lg font-semibold tracking-tight">{company?.name || 'Kryvexis'}</div>
+              <div className="text-xs text-black/60">Quote</div>
             </div>
           </div>
 
-          <div className="mt-5">
-            <div className="text-sm font-semibold">Line items</div>
-            <div className="mt-3 rounded-2xl border border-white/10 bg-white/4 overflow-x-auto">
-              <table className="w-full text-sm min-w-[760px]">
-                <thead className="text-white/60 bg-white/5">
-                  <tr>
-                    <th className="text-left px-4 py-3">Description</th>
-                    <th className="text-right px-4 py-3">Qty</th>
-                    <th className="text-right px-4 py-3">Unit</th>
-                    <th className="text-right px-4 py-3">Discount</th>
-                    <th className="text-right px-4 py-3">Tax</th>
-                    <th className="text-right px-4 py-3">Line</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(items ?? []).map((it: any) => {
-                    const base = Number(it.qty ?? 0) * Number(it.unit_price ?? 0);
-                    const disc = Math.min(Number(it.discount ?? 0), base);
-                    const after = Math.max(0, base - disc);
-                    const tax = after * Number(it.tax_rate ?? 0);
-                    const line = after + tax;
-                    return (
-                      <tr key={it.id} className="border-t border-white/10">
-                        <td className="px-4 py-3 font-medium">{it.description ?? "—"}</td>
-                        <td className="px-4 py-3 text-right text-white/80">{Number(it.qty ?? 0)}</td>
-                        <td className="px-4 py-3 text-right text-white/80">{fmtZar(Number(it.unit_price ?? 0))}</td>
-                        <td className="px-4 py-3 text-right text-white/70">{fmtZar(Number(it.discount ?? 0))}</td>
-                        <td className="px-4 py-3 text-right text-white/70">{Math.round(Number(it.tax_rate ?? 0) * 100)}%</td>
-                        <td className="px-4 py-3 text-right text-white/85">{fmtZar(line)}</td>
-                      </tr>
-                    );
-                  })}
+          <div className="text-right">
+            <div className="text-2xl font-semibold">{quote?.number || ''}</div>
+            <div className="text-sm text-black/60">Issue: {quote?.issue_date || '—'}</div>
+            <div className="text-sm text-black/60">Expiry: {quote?.expiry_date || '—'}</div>
+          </div>
+        </div>
 
-                  {!items?.length && (
-                    <tr>
-                      <td className="px-4 py-6 text-white/60" colSpan={6}>
-                        No items on this quote.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+        <div className="mt-6 grid grid-cols-2 gap-6">
+          <div className="rounded-2xl border border-black/10 p-4">
+            <div className="text-xs font-semibold text-black/60">From</div>
+            <div className="mt-1 font-medium">{company?.name || 'Kryvexis'}</div>
+            {company?.address && <div className="text-sm text-black/70 mt-1">{company.address}</div>}
+            <div className="text-sm text-black/70 mt-1">{company?.email || ''}</div>
+            <div className="text-sm text-black/70">{company?.phone || ''}</div>
+            {company?.tax_id && <div className="text-sm text-black/70 mt-1">Tax: {company.tax_id}</div>}
+          </div>
 
-            {(quote.notes || quote.terms) && (
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                {quote.notes && (
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <div className="text-xs text-white/60">Notes</div>
-                    <div className="mt-1 text-sm text-white/80 whitespace-pre-wrap">{quote.notes}</div>
-                  </div>
-                )}
-                {quote.terms && (
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <div className="text-xs text-white/60">Terms</div>
-                    <div className="mt-1 text-sm text-white/80 whitespace-pre-wrap">{quote.terms}</div>
-                  </div>
-                )}
+          <div className="rounded-2xl border border-black/10 p-4">
+            <div className="text-xs font-semibold text-black/60">Bill To</div>
+            <div className="mt-1 font-medium">{(quote as any)?.clients?.name || '—'}</div>
+            {(quote as any)?.clients?.billing_address && <div className="text-sm text-black/70 mt-1">{(quote as any).clients.billing_address}</div>}
+            <div className="text-sm text-black/70 mt-1">{(quote as any)?.clients?.email || ''}</div>
+            <div className="text-sm text-black/70">{(quote as any)?.clients?.phone || ''}</div>
+          </div>
+        </div>
+
+        <div className="mt-6 overflow-hidden rounded-2xl border border-black/10">
+          <table className="w-full text-sm">
+            <thead className="bg-black/5">
+              <tr>
+                <th className="px-4 py-2 text-left font-semibold">Description</th>
+                <th className="px-4 py-2 text-right font-semibold">Qty</th>
+                <th className="px-4 py-2 text-right font-semibold">Unit</th>
+                <th className="px-4 py-2 text-right font-semibold">Line</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(items || []).map((it) => (
+                <tr key={it.id} className="border-t border-black/10">
+                  <td className="px-4 py-2">{it.description}</td>
+                  <td className="px-4 py-2 text-right">{Number(it.qty)}</td>
+                  <td className="px-4 py-2 text-right">{fmtZar(Number(it.unit_price))}</td>
+                  <td className="px-4 py-2 text-right font-medium">{fmtZar(Number(it.line_total))}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="mt-6 grid grid-cols-2 gap-6">
+          <div className="space-y-3">
+            {quote?.notes && (
+              <div className="rounded-2xl border border-black/10 p-4">
+                <div className="text-xs font-semibold text-black/60">Notes</div>
+                <div className="text-sm text-black/80 mt-1 whitespace-pre-wrap">{quote.notes}</div>
+              </div>
+            )}
+            {quote?.terms && (
+              <div className="rounded-2xl border border-black/10 p-4">
+                <div className="text-xs font-semibold text-black/60">Terms</div>
+                <div className="text-sm text-black/80 mt-1 whitespace-pre-wrap">{quote.terms}</div>
               </div>
             )}
           </div>
+
+          <div className="rounded-2xl border border-black/10 p-4 h-fit">
+            <div className="flex items-center justify-between text-sm"><span className="text-black/60">Subtotal</span><span>{fmtZar(Number(quote?.subtotal || 0))}</span></div>
+            <div className="flex items-center justify-between text-sm mt-2"><span className="text-black/60">Discount</span><span>- {fmtZar(Number(quote?.discount_total || 0))}</span></div>
+            <div className="flex items-center justify-between text-sm mt-2"><span className="text-black/60">Tax</span><span>{fmtZar(Number(quote?.tax_total || 0))}</span></div>
+            <div className="mt-3 pt-3 border-t border-black/10 flex items-center justify-between">
+              <span className="font-semibold">Total</span>
+              <span className="text-lg font-semibold">{fmtZar(Number(quote?.total || 0))}</span>
+            </div>
+          </div>
         </div>
 
-        <div className="kx-card p-4">
-          <div className="text-sm font-semibold">Summary</div>
-          <div className="mt-3 grid gap-2 text-sm">
-            <div className="flex justify-between text-white/70">
-              <span>Subtotal</span>
-              <span className="text-white/85">{fmtZar(Number(quote.subtotal ?? 0))}</span>
-            </div>
-            <div className="flex justify-between text-white/70">
-              <span>Discounts</span>
-              <span className="text-white/85">- {fmtZar(Number(quote.discount_total ?? 0))}</span>
-            </div>
-            <div className="flex justify-between text-white/70">
-              <span>Tax</span>
-              <span className="text-white/85">{fmtZar(Number(quote.tax_total ?? 0))}</span>
-            </div>
-            <div className="mt-2 flex justify-between font-semibold">
-              <span>Total</span>
-              <span>{fmtZar(Number(quote.total ?? 0))}</span>
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div className="text-xs text-white/60">Client details</div>
-            <div className="mt-1 text-sm text-white/80">{quote.clients?.name ?? "—"}</div>
-            {quote.clients?.email && <div className="text-sm text-white/70 mt-1">{quote.clients.email}</div>}
-            {quote.clients?.phone && <div className="text-sm text-white/70">{quote.clients.phone}</div>}
-            {quote.clients?.billing_address && (
-              <div className="text-sm text-white/70 mt-1 whitespace-pre-wrap">{quote.clients.billing_address}</div>
-            )}
-          </div>
+        <div className="mt-8 text-xs text-black/50">
+          Tip: Use your browser print dialog to <span className="font-medium">Save as PDF</span>.
         </div>
       </div>
+
+      <style>{`
+        @media print {
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+      `}</style>
     </div>
-  );
+  )
 }
