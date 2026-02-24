@@ -32,7 +32,7 @@ export default function Onboarding() {
         Getting started
       </button>
 
-      <Modal open={open} title="Welcome to Kryvexis OS" onClose={() => setOpen(false)}>
+      <Modal open={open} title="Welcome to Kryvexis OS" onClose={closeAndRemember}>
         <div className="grid gap-5">
           <div className="text-sm text-white/70">
             Kryvexis is designed as a simple 3-layer workflow. Follow this and you’ll be productive fast.
@@ -77,7 +77,7 @@ export default function Onboarding() {
           </div>
 
           <div className="flex items-center justify-end gap-2">
-            <button className="kx-btn" onClick={() => setOpen(false)} type="button">
+            <button className="kx-btn" onClick={closeAndRemember} type="button">
               Not now
             </button>
             <button className="kx-btn-primary" onClick={closeAndRemember} type="button">
