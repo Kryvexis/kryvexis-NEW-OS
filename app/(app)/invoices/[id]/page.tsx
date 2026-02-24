@@ -1,4 +1,3 @@
-const client = (invoice as any)?.clients ?? (invoice as any)?.client ?? null;
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { fmtZar } from "@/lib/format";
