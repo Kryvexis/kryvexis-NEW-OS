@@ -52,23 +52,27 @@ const FIELD_HINTS: Record<Entity, string[]> = {
   suppliers: ["Required: name", "Optional: email,phone,notes"],
 };
 
-export default function ImportStation() {
-  const [entity, setEntity] = React.useState<Entity>("products");
-  const [csv, setCsv] = React.useState(TEMPLATES.products);
+function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
+  const [csv, setCsv] = React.useState(TEMPLATES[entity]);
   const [busy, setBusy] = React.useState(false);
   const [msg, setMsg] = React.useState<{ kind: "ok" | "err"; text: string } | null>(null);
-
-  React.useEffect(() => {
-    setCsv(TEMPLATES[entity]);
-    setMsg(null);
-  }, [entity]);
+  const [details, setDetails] = React.useState<{ inserted: number; skipped: number; errors: string[] } | null>(null);
 
   const parsed = React.useMemo(() => parseCSV(csv), [csv]);
   const preview = parsed.rows.slice(0, 5);
 
+  async function onUpload(file?: File | null) {
+    if (!file) return;
+    const text = await file.text();
+    setCsv(text);
+    setMsg(null);
+    setDetails(null);
+  }
+
   async function runImport() {
     setBusy(true);
     setMsg(null);
+    setDetails(null);
     try {
       const res = await fetch(`/api/import/${entity}`, {
         method: "POST",
@@ -77,7 +81,16 @@ export default function ImportStation() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || "Import failed");
-      setMsg({ kind: "ok", text: `Imported ${data.inserted ?? 0} row(s).` });
+      setDetails({
+        inserted: Number(data.inserted ?? 0),
+        skipped: Number(data.skipped ?? 0),
+        errors: Array.isArray(data.errors) ? data.errors.slice(0, 10).map(String) : [],
+      });
+      setMsg({
+        kind: "ok",
+        text: `Imported ${data.inserted ?? 0} row(s). Skipped ${data.skipped ?? 0}.` +
+          (Array.isArray(data.errors) && data.errors.length ? ` Errors: ${data.errors.length}.` : ""),
+      });
     } catch (e: any) {
       setMsg({ kind: "err", text: e?.message || "Import failed" });
     } finally {
@@ -86,44 +99,47 @@ export default function ImportStation() {
   }
 
   return (
-    <div className="kx-card p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-2">
-          {(["products","clients","suppliers"] as Entity[]).map((t) => (
-            <button
-              key={t}
-              type="button"
-              className={"kx-chip " + (entity === t ? "kx-chip-active" : "")}
-              onClick={() => setEntity(t)}
-            >
-              {t === "products" ? "Products" : t === "clients" ? "Clients" : "Suppliers"}
-            </button>
-          ))}
+    <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+      <div className="p-4 border-b border-white/10 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold">{title}</div>
+          <div className="text-xs text-white/55 mt-1">CSV upload → preview → import</div>
         </div>
-        <button
-          type="button"
-          className="kx-button"
-          onClick={() => navigator.clipboard.writeText(TEMPLATES[entity])}
-        >
+        <button type="button" className="kx-button" onClick={() => navigator.clipboard.writeText(TEMPLATES[entity])}>
           Copy template
         </button>
       </div>
 
-      <div className="mt-3 text-sm text-white/60">
-        <ul className="list-disc pl-5 space-y-1">
-          {FIELD_HINTS[entity].map((h) => <li key={h}>{h}</li>)}
-        </ul>
-      </div>
-
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <div className="p-4 grid gap-4 md:grid-cols-2">
         <div className="grid gap-2">
-          <div className="text-xs text-white/55 uppercase tracking-wider">Paste CSV</div>
-          <textarea
-            className="kx-input w-full min-h-[220px] p-3 font-mono text-xs leading-relaxed"
-            value={csv}
-            onChange={(e) => setCsv(e.target.value)}
+          <div className="text-xs text-white/55 uppercase tracking-wider">Upload CSV</div>
+          <input
+            type="file"
+            accept=".csv,text/csv"
+            className="kx-input"
+            onChange={(e) => onUpload(e.target.files?.[0])}
           />
-          <div className="flex items-center gap-2">
+
+          <div className="text-xs text-white/55 uppercase tracking-wider mt-2">Or paste CSV</div>
+          <textarea
+            className="kx-input w-full min-h-[180px] p-3 font-mono text-xs leading-relaxed"
+            value={csv}
+            onChange={(e) => {
+              setCsv(e.target.value);
+              setMsg(null);
+              setDetails(null);
+            }}
+          />
+
+          <div className="mt-1 text-sm text-white/60">
+            <ul className="list-disc pl-5 space-y-1">
+              {FIELD_HINTS[entity].map((h) => (
+                <li key={h}>{h}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
             <button type="button" className="kx-button" disabled={busy || parsed.rows.length === 0} onClick={runImport}>
               {busy ? "Importing…" : `Import ${parsed.rows.length} row(s)`}
             </button>
@@ -133,6 +149,17 @@ export default function ImportStation() {
               </div>
             )}
           </div>
+
+          {details?.errors?.length ? (
+            <div className="mt-2 rounded-2xl border border-white/10 bg-black/20 p-3">
+              <div className="text-xs text-white/60 mb-2">First {details.errors.length} issue(s)</div>
+              <ul className="list-disc pl-5 text-xs text-white/70 space-y-1">
+                {details.errors.map((e, i) => (
+                  <li key={i}>{e}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
 
         <div className="grid gap-2">
@@ -161,7 +188,7 @@ export default function ImportStation() {
                 {!preview.length && (
                   <tr>
                     <td className="px-3 py-8 text-white/55" colSpan={Math.max(1, parsed.headers.length)}>
-                      Paste CSV to preview.
+                      Upload or paste CSV to preview.
                     </td>
                   </tr>
                 )}
@@ -171,6 +198,16 @@ export default function ImportStation() {
           <div className="text-xs text-white/45">Only 5 rows are rendered in the preview to keep UI fast.</div>
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function ImportStation() {
+  return (
+    <div className="grid gap-5">
+      <ImportBlock entity="clients" title="Import Clients" />
+      <ImportBlock entity="products" title="Import Products" />
+      <ImportBlock entity="suppliers" title="Import Suppliers" />
     </div>
   );
 }

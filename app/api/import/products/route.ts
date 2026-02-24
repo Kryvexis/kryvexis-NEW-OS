@@ -21,19 +21,85 @@ export async function POST(req: Request) {
     const supabase = await createClient();
     const companyId = await requireCompanyId();
 
-    const payload = rows.map((r: any) => {
-      const row = r || {};
-      return { company_id: companyId, name: String(row.name||'').trim(), sku: row.sku||null, type: (String(row.type||'product').toLowerCase()==='service'?'service':'product'), unit_price: row.unit_price? Number(row.unit_price): 0, stock_on_hand: row.stock_on_hand? Number(row.stock_on_hand): null, low_stock_threshold: row.low_stock_threshold? Number(row.low_stock_threshold): null, is_active: (toBool(row.is_active) ?? true) };
-      
-      
-    }).filter((r: any) => r.name);
+    const { data: existing } = await supabase
+      .from("products")
+      .select("id,name,sku")
+      .eq("company_id", companyId)
+      .limit(3000);
+    const existingNames = new Set((existing || []).map((p: any) => String(p?.name || "").trim().toLowerCase()).filter(Boolean));
+    const existingSkus = new Set((existing || []).map((p: any) => String(p?.sku || "").trim().toLowerCase()).filter(Boolean));
 
-    if (!payload.length) return NextResponse.json({ error: "No valid rows (missing name)" }, { status: 400 });
+    const errors: string[] = [];
+    let skipped = 0;
+    const seenNames = new Set<string>();
+    const seenSkus = new Set<string>();
+
+    const payload = rows
+      .map((r: any, idx: number) => {
+        const row = r || {};
+        const name = String(row.name || "").trim();
+        if (!name) {
+          errors.push(`Row ${idx + 2}: missing name`);
+          return null;
+        }
+
+        const sku = String(row.sku || "").trim();
+        const nameKey = name.toLowerCase();
+        const skuKey = sku ? sku.toLowerCase() : "";
+
+        const isDupExisting = skuKey ? existingSkus.has(skuKey) : existingNames.has(nameKey);
+        const isDupLocal = skuKey ? seenSkus.has(skuKey) : seenNames.has(nameKey);
+        if (isDupExisting || isDupLocal) {
+          skipped++;
+          return null;
+        }
+        if (skuKey) seenSkus.add(skuKey);
+        else seenNames.add(nameKey);
+
+        const type = String(row.type || "product").toLowerCase() === "service" ? "service" : "product";
+
+        const unit = row.unit_price === "" || row.unit_price == null ? 0 : Number(row.unit_price);
+        if (!Number.isFinite(unit)) {
+          errors.push(`Row ${idx + 2}: invalid unit_price`);
+          return null;
+        }
+
+        const soh = row.stock_on_hand === "" || row.stock_on_hand == null ? null : Number(row.stock_on_hand);
+        if (soh != null && !Number.isFinite(soh)) {
+          errors.push(`Row ${idx + 2}: invalid stock_on_hand`);
+          return null;
+        }
+
+        const low = row.low_stock_threshold === "" || row.low_stock_threshold == null ? null : Number(row.low_stock_threshold);
+        if (low != null && !Number.isFinite(low)) {
+          errors.push(`Row ${idx + 2}: invalid low_stock_threshold`);
+          return null;
+        }
+
+        return {
+          company_id: companyId,
+          name,
+          sku: sku || null,
+          type,
+          unit_price: unit,
+          stock_on_hand: soh,
+          low_stock_threshold: low,
+          is_active: toBool(row.is_active) ?? true,
+        };
+      })
+      .filter(Boolean) as any[];
+
+    if (!payload.length) {
+      return NextResponse.json(
+        { inserted: 0, skipped, errors: errors.length ? errors : ["No valid rows to import."] },
+        { status: 200 }
+      );
+    }
 
     const { error } = await supabase.from("products").insert(payload);
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-    return NextResponse.json({ inserted: payload.length });
+    return NextResponse.json({ inserted: payload.length, skipped, errors });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || "Import failed" }, { status: 500 });
   }

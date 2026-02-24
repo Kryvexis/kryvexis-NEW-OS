@@ -2,12 +2,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import ProductsUI from './ui'
-import Link from 'next/link'
-import { deleteProductAction } from './actions'
-
-function money(n: number) {
-  return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(n)
-}
+import ProductList from './ProductList'
 
 export default async function ProductsPage() {
   const supabase = await createClient()
@@ -18,7 +13,7 @@ export default async function ProductsPage() {
     .select('id,name,sku,type,unit_price,cost_price,supplier_id,is_active,created_at, suppliers(name)')
     .eq('company_id', companyId)
     .order('created_at', { ascending: false })
-    .limit(5)
+    .limit(500)
 
   return (
     <div className="space-y-4">
@@ -29,72 +24,9 @@ export default async function ProductsPage() {
 
       <ProductsUI />
 
-      <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
-        <div className="p-4 border-b border-white/10">
-          <div className="text-sm font-semibold">All items</div>
-          {error && <div className="text-sm text-red-200 mt-1">{error.message}</div>}
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="text-white/60">
-              <tr>
-                <th className="text-left px-4 py-3">Name</th>
-                <th className="text-left px-4 py-3">SKU</th>
-                <th className="text-left px-4 py-3">Type</th>
-                <th className="text-right px-4 py-3">Sell</th>
-                <th className="text-right px-4 py-3">Cost</th>
-                <th className="text-right px-4 py-3">Margin</th>
-                <th className="text-left px-4 py-3">Supplier</th>
-                <th className="text-right px-4 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(products ?? []).map((p: any) => {
-                const sell = Number(p.unit_price ?? 0)
-                const cost = Number(p.cost_price ?? 0)
-                const margin = sell - cost
-                return (
-                  <tr key={p.id} className="border-t border-white/5 hover:bg-white/5">
-                    <td className="px-4 py-3 font-medium">{p.name}</td>
-                    <td className="px-4 py-3 text-white/70">{p.sku ?? '—'}</td>
-                    <td className="px-4 py-3 text-white/70">{p.type}</td>
-                    <td className="px-4 py-3 text-right text-white/70">{money(sell)}</td>
-                    <td className="px-4 py-3 text-right text-white/70">{money(cost)}</td>
-                    <td className="px-4 py-3 text-right font-semibold">{money(margin)}</td>
-                    <td className="px-4 py-3 text-white/70">{p.suppliers?.name ?? '—'}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/products/${p.id}`}
-                          className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 hover:bg-white/10"
-                        >
-                          Edit
-                        </Link>
-                        <form action={deleteProductAction}>
-                          <input type="hidden" name="id" value={p.id} />
-                          <button
-                            type="submit"
-                            className="rounded-lg border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-xs text-red-100 hover:bg-red-500/15"
-                          >
-                            Delete
-                          </button>
-                        </form>
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })}
-              {(products ?? []).length === 0 && (
-                <tr>
-                  <td className="px-4 py-6 text-white/60" colSpan={8}>
-                    No products yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {error && <div className="text-sm text-red-200">{error.message}</div>}
+
+      <ProductList products={(products as any) || []} />
     </div>
   )
 }

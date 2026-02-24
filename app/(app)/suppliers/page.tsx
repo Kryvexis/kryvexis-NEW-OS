@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import { Card } from '@/components/card'
 import { createSupplierAction } from './actions'
+import SupplierList from './SupplierList'
 
 export default async function Page() {
   const supabase = await createClient()
@@ -12,6 +13,7 @@ export default async function Page() {
     .select('id,name,email,phone,created_at')
     .eq('company_id', companyId)
     .order('created_at', { ascending: false })
+    .limit(500)
 
   return (
     <div className="space-y-4">
@@ -36,36 +38,7 @@ export default async function Page() {
         </form>
       </Card>
 
-      <Card>
-        <div className="text-sm text-white/60 mb-3">Suppliers</div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="text-white/50">
-              <tr className="border-b border-white/10">
-                <th className="py-2 text-left font-medium">Name</th>
-                <th className="py-2 text-left font-medium">Email</th>
-                <th className="py-2 text-left font-medium">Phone</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(suppliers || []).map((s) => (
-                <tr key={s.id} className="border-b border-white/5 hover:bg-white/5">
-                  <td className="py-2">{s.name}</td>
-                  <td className="py-2 text-white/70">{s.email || '—'}</td>
-                  <td className="py-2 text-white/70">{s.phone || '—'}</td>
-                </tr>
-              ))}
-              {!suppliers?.length && (
-                <tr>
-                  <td className="py-6 text-white/50" colSpan={3}>
-                    No suppliers yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+      <SupplierList suppliers={(suppliers as any) || []} />
     </div>
   )
 }

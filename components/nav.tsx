@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
-function Icon({ name }: { name: 'dashboard' | 'clients' | 'products' | 'suppliers' | 'upload' | 'quotes' | 'invoices' | 'payments' | 'accounts' | 'reports' | 'settings' | 'help' }) {
+function Icon({ name }: { name: 'dashboard' | 'clients' | 'products' | 'suppliers' | 'upload' | 'quotes' | 'invoices' | 'payments' | 'accounts' | 'reports' | 'settings' | 'help' | 'accountCenter' }) {
   const common = 'h-4 w-4'
   switch (name) {
     case 'dashboard':
@@ -63,6 +63,13 @@ function Icon({ name }: { name: 'dashboard' | 'clients' | 'products' | 'supplier
           <path d="M8.5 8h7M8.5 12h7M8.5 16h4" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
         </svg>
       )
+    case 'accountCenter':
+      return (
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+          <path d="M4 22a8 8 0 0 1 16 0" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
+        </svg>
+      )
     case 'reports':
       return (
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -96,11 +103,13 @@ export const navItems = [
   { href: '/clients', label: 'Clients', icon: 'clients' as const },
   { href: '/products', label: 'Products', icon: 'products' as const },
   { href: '/suppliers', label: 'Suppliers', icon: 'suppliers' as const },
+  { href: '/import-station', label: 'Import Station', icon: 'upload' as const },
   { href: '/quotes', label: 'Quotes', icon: 'quotes' as const },
   { href: '/invoices', label: 'Invoices', icon: 'invoices' as const },
   { href: '/payments', label: 'Payments', icon: 'payments' as const },
   { href: '/accounts', label: 'Accounts', icon: 'accounts' as const },
   { href: '/reports', label: 'Reports', icon: 'reports' as const },
+  { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
   { href: '/settings', label: 'Settings', icon: 'settings' as const },
   { href: '/help', label: 'Help', icon: 'help' as const },
 ]
