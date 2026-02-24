@@ -127,3 +127,68 @@
   .kx-auth-shell{ grid-template-columns: 1fr; }
   .kx-auth-brand{ display:none; }
 }
+
+/* === Kryvexis premium auth overrides (login + boot) === */
+.kx-auth-shell{
+  max-width: 1100px;
+  padding: 28px 18px;
+}
+.kx-auth-brandCard,
+.kx-auth-card{
+  border-radius: 18px;
+}
+.kx-auth-logo{
+  width: 44px !important;
+  height: 44px !important;
+}
+.kx-auth-title{
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+.kx-auth-subtitle{
+  font-size: 14px;
+}
+.kx-auth-input{
+  height: 44px;
+  font-size: 14px;
+  border-radius: 12px;
+}
+.kx-auth-primary{
+  height: 44px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+@media (max-width: 640px){
+  .kx-auth-shell{
+    padding: 18px 14px;
+  }
+  .kx-auth-brandCard{
+    display:none; /* premium: focus on form on mobile */
+  }
+  .kx-auth-card{
+    padding: 18px 16px;
+  }
+  .kx-auth-title{
+    font-size: 22px;
+  }
+}
+
+/* Boot screen: larger, smoother bar */
+.kx-boot-card{
+  border-radius: 18px;
+}
+.kx-boot-logo{
+  width: 120px !important;
+  height: 120px !important;
+}
+.kx-boot-title{
+  font-size: 28px;
+  letter-spacing: -0.02em;
+}
+.kx-boot-bar{
+  height: 10px;
+  border-radius: 999px;
+}
+.kx-boot-barFill{
+  border-radius: 999px;
+}

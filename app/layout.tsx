@@ -1,4 +1,6 @@
 import './globals.css'
+import '../styles/kx-auth-splash.css'
+import '../styles/kx-mobile-pack.css'
 
 // Root layout must NOT enforce auth redirects.
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
