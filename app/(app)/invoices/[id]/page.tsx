@@ -44,7 +44,7 @@ export default async function InvoicePage({ params }: PageProps) {
         <div>
           <div className="text-xl font-semibold tracking-tight">Invoice {invoice.number ?? ""}</div>
           <div className="text-sm text-white/60">
-            Client: <span className="text-white/85">{client?.name ?? '—'}</span>
+            Client: <span className="text-white/85">{((invoice as any)?.clients?.name ?? (invoice as any)?.((invoice as any)?.clients?.name ?? (invoice as any)?.client?.name ?? '—') ?? '—')}</span>
           </div>
         </div>
 
@@ -203,9 +203,9 @@ export default async function InvoicePage({ params }: PageProps) {
 
           <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="text-xs text-white/60">Client details</div>
-            <div className="mt-1 text-sm text-white/80">{client?.name ?? '—'}</div>
-            {client?.email && <div className="text-sm text-white/70 mt-1">{invoice.clients.email}</div>}
-            {client?.phone && <div className="text-sm text-white/70">{invoice.clients.phone}</div>}
+            <div className="mt-1 text-sm text-white/80">{((invoice as any)?.clients?.name ?? (invoice as any)?.((invoice as any)?.clients?.name ?? (invoice as any)?.client?.name ?? '—') ?? '—')}</div>
+            {((invoice as any)?.clients?.email ?? (invoice as any)?.client?.email ?? '—') && <div className="text-sm text-white/70 mt-1">{invoice.clients.email}</div>}
+            {((invoice as any)?.clients?.phone ?? (invoice as any)?.client?.phone ?? '—') && <div className="text-sm text-white/70">{invoice.clients.phone}</div>}
             {invoice.clients?.billing_address && (
               <div className="text-sm text-white/70 mt-1 whitespace-pre-wrap">{invoice.clients.billing_address}</div>
             )}
