@@ -1,12 +1,15 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { navItems } from './nav'
+import { navBottomItems, navMainItems } from './nav'
 
 export default function Topbar() {
   const [q, setQ] = useState('')
   const placeholder = useMemo(() => {
-    const labels = navItems.map((n) => n.label).join(', ')
+    const labels = [...navMainItems, ...navBottomItems]
+      .filter((n) => n.href !== '/help')
+      .map((n) => n.label)
+      .join(', ')
     return `Search: ${labels}`
   }, [])
 
