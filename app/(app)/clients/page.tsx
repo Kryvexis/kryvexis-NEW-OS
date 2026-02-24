@@ -9,7 +9,7 @@ export default async function ClientsPage() {
     .from("clients")
     .select("id,name,tags_json,created_at,email,phone")
     .order("name", { ascending: true })
-    .limit(500);
+    .limit(5);
 
   return (
     <div className="grid gap-6">

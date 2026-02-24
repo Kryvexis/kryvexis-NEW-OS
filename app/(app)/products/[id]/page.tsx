@@ -4,6 +4,6 @@ import ProductEditUI from "./ui";
 type Params = { id: string };
 
 export default async function Page({ params }: { params: Promise<Params> }) {
-  const { id } = await params;
+  const { id } = params;
   return <ProductEditUI id={id} />;
 }

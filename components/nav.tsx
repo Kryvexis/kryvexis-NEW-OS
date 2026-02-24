@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
-function Icon({ name }: { name: 'dashboard' | 'clients' | 'products' | 'suppliers' | 'quotes' | 'invoices' | 'payments' | 'accounts' | 'reports' | 'settings' | 'help' }) {
+function Icon({ name }: { name: 'dashboard' | 'clients' | 'products' | 'suppliers' | 'upload' | 'quotes' | 'invoices' | 'payments' | 'accounts' | 'reports' | 'settings' | 'help' }) {
   const common = 'h-4 w-4'
   switch (name) {
     case 'dashboard':
@@ -71,6 +71,8 @@ function Icon({ name }: { name: 'dashboard' | 'clients' | 'products' | 'supplier
           <path d="M8 16v-5M12 16v-8M16 16v-3" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
         </svg>
       )
+    case 'upload':
+      return '⬆️'
     case 'help':
       return (
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">

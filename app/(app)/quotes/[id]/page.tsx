@@ -10,7 +10,7 @@ type PageProps = {
 };
 
 export default async function QuotePage({ params }: PageProps) {
-  const { id } = await params;
+  const { id } = params;
 
   const supabase = await createClient();
   const [{ data: quote }, { data: items }] = await Promise.all([

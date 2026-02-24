@@ -18,7 +18,7 @@ export default async function ProductsPage() {
     .select('id,name,sku,type,unit_price,cost_price,supplier_id,is_active,created_at, suppliers(name)')
     .eq('company_id', companyId)
     .order('created_at', { ascending: false })
-    .limit(200)
+    .limit(5)
 
   return (
     <div className="space-y-4">

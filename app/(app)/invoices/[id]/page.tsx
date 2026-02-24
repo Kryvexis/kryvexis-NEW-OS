@@ -10,7 +10,7 @@ type PageProps = {
 };
 
 export default async function InvoicePage({ params }: PageProps) {
-  const { id } = await params;
+  const { id } = params;
 
   const supabase = await createClient();
   const [{ data: invoice }, { data: items }, { data: pays }] = await Promise.all([

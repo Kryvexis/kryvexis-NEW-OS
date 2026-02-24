@@ -3,8 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/card'
 import { fmtZar } from '@/lib/format'
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function Page({ params }: { params: { id: string } }) {
+  const { id } = params;
 const supabase = await createClient();
 
   // ... keep everything else the same
