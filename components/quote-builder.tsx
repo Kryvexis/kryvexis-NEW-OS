@@ -119,8 +119,8 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
 
           <div className="mt-5">
             <div className="text-sm font-semibold">Line items</div>
-            <div className="mt-3 overflow-x-auto rounded-2xl border border-white/10">
-              <table className="w-full text-sm min-w-[860px]">
+            <div className="mt-3 overflow-hidden rounded-2xl border border-white/10">
+              <table className="w-full text-sm">
                 <thead className="bg-white/5 text-white/60">
                   <tr>
                     <th className="px-3 py-2 text-left font-medium">Item</th>
