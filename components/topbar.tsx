@@ -24,7 +24,7 @@ export default function Topbar() {
           placeholder={placeholder}
           className="kx-input pr-16"
         />
-        <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] text-white/50">
+        <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] text-[rgba(var(--kx-fg),.50)]">
           <span className="kx-badge px-1.5 py-0.5">Ctrl</span>
           <span className="kx-badge px-1.5 py-0.5">K</span>
         </div>
