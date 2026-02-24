@@ -158,7 +158,3 @@ export async function bulkImportProductsAction(formData: FormData) {
   revalidatePath('/products')
   return { ok: true, inserted: payload.length }
 }
-
-
-// explicit re-export for bundlers
-export { updateProductAction };
