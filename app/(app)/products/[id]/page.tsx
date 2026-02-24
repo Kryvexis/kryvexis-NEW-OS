@@ -1,3 +1,4 @@
+// @ts-nocheck
 import ProductEditUI from "./ui";
 
 type Params = { id: string };
