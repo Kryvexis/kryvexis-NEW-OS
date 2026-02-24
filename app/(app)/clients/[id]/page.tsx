@@ -3,10 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/card'
 import { fmtZar } from '@/lib/format'
 
-type PageProps = { params: { id: string } };
-
-
-export default async function Page({ params }: PageProps) {
+export default async function Page({ params }: { params: { id: string } }) {
   const { id } = params;
   const supabase = await createClient();
 
