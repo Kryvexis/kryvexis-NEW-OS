@@ -12,7 +12,7 @@ export default async function EditProductPage({ params }: { params: { id: string
     .from('products')
     .select('id,name,sku,type,unit_price,cost_price,supplier_id,is_active')
     .eq('company_id', companyId)
-    .eq('id', params.id)
+    .eq('id', (await params).id)
     .maybeSingle()
 
   if (!product) return notFound()
