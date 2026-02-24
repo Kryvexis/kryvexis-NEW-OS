@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { createClient } from "@/lib/supabase/server";
-import HelpCenterButton from "@/components/help/HelpCenterButton";
+import HelpCenterWidget from "@/components/help/HelpCenterWidget";
 import Onboarding from "@/components/onboarding/Onboarding";
 import MobileNav from "@/components/nav/MobileNav";
 import { Sidebar } from '@/components/nav'
@@ -41,7 +41,7 @@ export default function Shell({
 
               <div className="flex items-center gap-2">
                 <Onboarding />
-                <HelpCenterButton />
+                <HelpCenterWidget />
 
                 <form action={signOut}>
                   <button className="kx-button" type="submit">
