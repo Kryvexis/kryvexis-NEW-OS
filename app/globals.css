@@ -9,6 +9,9 @@
   --kx-fg: 255 255 255;
   --kx-muted: 255 255 255;
   --kx-accent: 34 211 238;
+  --kx-border: 255 255 255;
+  --kx-surface: 18 22 36;
+  --kx-surface-2: 24 30 50;
 }
 
 html[data-theme='light']{
@@ -16,6 +19,9 @@ html[data-theme='light']{
   --kx-shell: 255 255 255;
   --kx-fg: 11 15 26;
   --kx-muted: 11 15 26;
+  --kx-border: 11 15 26;
+  --kx-surface: 255 255 255;
+  --kx-surface-2: 248 250 255;
 }
 
 /* ---------- Base ---------- */
@@ -93,11 +99,11 @@ html[data-theme='light'] .kx-navlink:hover{
   display: grid;
   place-items: center;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
-  color: rgba(255,255,255,.92);
+  border: 1px solid rgba(var(--kx-border),.12);
+  background: rgba(var(--kx-border),.06);
+  color: rgba(var(--kx-fg),.92);
 }
-.kx-icon-btn:hover{ background: rgba(255,255,255,.10); }
+.kx-icon-btn:hover{ background: rgba(var(--kx-border),.10); }
 
 .kx-tooltip-wrap{ position: relative; display: inline-flex; align-items: center; }
 .kx-tooltip{
@@ -109,9 +115,9 @@ html[data-theme='light'] .kx-navlink:hover{
   max-width: 280px;
   padding: 10px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(7,10,18,.92);
-  color: rgba(255,255,255,.92);
+  border: 1px solid rgba(var(--kx-border),.12);
+  background: rgba(var(--kx-bg),.92);
+  color: rgba(var(--kx-fg),.92);
   font-size: 12px;
   line-height: 1.35;
   box-shadow: 0 18px 60px rgba(0,0,0,.45);
@@ -129,24 +135,24 @@ html[data-theme='light'] .kx-navlink:hover{
 .kx-kbd{
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 12px;
-  border: 1px solid rgba(255,255,255,.12);
-  border-bottom-color: rgba(255,255,255,.18);
-  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(var(--kx-border),.12);
+  border-bottom-color: rgba(var(--kx-border),.18);
+  background: rgba(var(--kx-border),.06);
   padding: 2px 6px;
   border-radius: 8px;
-  color: rgba(255,255,255,.92);
+  color: rgba(var(--kx-fg),.92);
 }
 
 /* ---------- Utilities used across the app ---------- */
-.kx-hairline{ border-color: rgba(255,255,255,.10); }
+.kx-hairline{ border-color: rgba(var(--kx-border),.10); }
 .kx-surface{
-  background: rgba(18,22,36,.62);
-  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(var(--kx-surface),.70);
+  border: 1px solid rgba(var(--kx-border),.10);
   backdrop-filter: blur(10px);
 }
 .kx-card{
-  background: rgba(18,22,36,.70);
-  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(var(--kx-surface),.78);
+  border: 1px solid rgba(var(--kx-border),.10);
   border-radius: 18px;
 backdrop-filter: blur(10px);
 }
@@ -159,21 +165,21 @@ backdrop-filter: blur(10px);
   height: 36px;
   padding: 0 12px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
-  color: rgba(255,255,255,.90);
+  border: 1px solid rgba(var(--kx-border),.12);
+  background: rgba(var(--kx-border),.06);
+  color: rgba(var(--kx-fg),.90);
   font-size: 13px;
   transition: .15s ease;
 }
-.kx-button:hover{ background: rgba(255,255,255,.10); }
+.kx-button:hover{ background: rgba(var(--kx-border),.10); }
 
 .kx-badge{
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
   padding: 8px 12px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(var(--kx-border),.10);
+  background: rgba(var(--kx-border),.05);
 }
 
 table{
@@ -197,10 +203,39 @@ table{
   gap:6px;
   padding: 4px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(var(--kx-border),.12);
+  background: rgba(var(--kx-border),.06);
   font-size: 12px;
-  color: rgba(255,255,255,.86);
+  color: rgba(var(--kx-fg),.86);
+}
+
+/* =========================================================
+   Theme safety net
+   Some legacy components still ship hard-coded Tailwind colors
+   (bg-white / text-white). These overrides ensure the app
+   still visibly switches between light/dark.
+   ========================================================= */
+
+html[data-theme='dark'] [class*='bg-white'],
+html[data-theme='dark'] [class*='bg-slate-'],
+html[data-theme='dark'] [class*='bg-gray-']{
+  background-color: rgba(var(--kx-surface), .82) !important;
+}
+
+html[data-theme='dark'] [class*='text-black'],
+html[data-theme='dark'] [class*='text-slate-9'],
+html[data-theme='dark'] [class*='text-gray-9']{
+  color: rgba(var(--kx-fg), .92) !important;
+}
+
+html[data-theme='light'] [class*='text-white']{
+  color: rgba(var(--kx-fg), .92) !important;
+}
+
+html[data-theme='light'] [class*='bg-black'],
+html[data-theme='light'] [class*='bg-slate-9'],
+html[data-theme='light'] [class*='bg-gray-9']{
+  background-color: rgba(var(--kx-surface), .92) !important;
 }
 
 /* =========================================================
