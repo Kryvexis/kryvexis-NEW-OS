@@ -155,13 +155,13 @@ export default function HelpCenterWidget() {
   }
 
   async function next() {
-    if (stepIdx >= STEPS.length - 1) {
-      stopTour();
-      return;
-    }
-    const nxt = Math.min(stepIdx + 1, STEPS.length - 1);
-    await goToStep(nxt);
+  if (stepIdx >= STEPS.length - 1) {
+    stopTour();
+    return;
   }
+  const nxt = Math.min(stepIdx + 1, STEPS.length - 1);
+  await goToStep(nxt);
+}
 
   async function prev() {
     const prv = Math.max(stepIdx - 1, 0);
@@ -276,14 +276,4 @@ function popoverStyle(rect: DOMRect | null): React.CSSProperties {
 
 function clamp(v: number, min: number, max: number) {
   return Math.max(min, Math.min(max, v));
-}
-  const pad = 12;
-  const vw = typeof window !== "undefined" ? window.innerWidth : 1200;
-
-  // Prefer right side if there's space, else below
-  const rightSpace = vw - rect.right;
-  if (rightSpace > 360) {
-    return { top: Math.max(12, rect.top - 8), left: rect.right + pad };
-  }
-  return { top: rect.bottom + pad, left: Math.max(12, rect.left) };
 }
