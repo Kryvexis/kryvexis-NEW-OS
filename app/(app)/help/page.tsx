@@ -1,40 +1,44 @@
-import { Card } from '@/components/card'
+"use client";
+import * as React from "react";
 
-export default function Page() {
+const FAQ = [
+  { cat:"Getting started", q:"How do I add a product?", a:"Go to Products → Add product/service → Save."},
+  { cat:"Getting started", q:"How do I create a quote?", a:"Quotes → New Quote → Select client → Add items → Save."},
+  { cat:"Billing", q:"How do I invoice?", a:"Convert a quote to invoice or create new invoice manually."},
+  { cat:"Printing", q:"Why are print pages white?", a:"Print layouts are optimized for paper and PDF export."},
+];
+
+export default function HelpPage(){
+  const [q,setQ]=React.useState("");
+  const cats=[...new Set(FAQ.map(f=>f.cat))];
+
   return (
-    <div className="kx-page space-y-4">
-      <div>
-        <div className="kx-h1">Help & Support</div>
-        <div className="kx-muted">Get assistance, report issues, or ask for new features.</div>
+    <div className="grid gap-6">
+      <div className="kx-card p-5">
+        <div className="kx-h1">Help Center</div>
+        <div className="kx-sub">Search guides and FAQs</div>
+        <input
+          className="kx-input mt-3 w-full p-2"
+          placeholder="Search help..."
+          value={q}
+          onChange={e=>setQ(e.target.value)}
+        />
       </div>
 
-      <Card>
-        <div className="kx-h2">Contact Kryvexis Support</div>
-        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div className="kx-label">Email</div>
-            <a className="kx-link text-sm" href="mailto:kryvexissolutions@gmail.com">kryvexissolutions@gmail.com</a>
-            <div className="text-xs text-white/50 mt-1">Best for invoices, screenshots, and detailed help.</div>
-          </div>
-
-          <div>
-            <div className="kx-label">WhatsApp</div>
-            <a className="kx-link text-sm" href="https://wa.me/27686282874" target="_blank" rel="noreferrer">+27 68 628 2874</a>
-            <div className="text-xs text-white/50 mt-1">Fast support for quick questions.</div>
+      {cats.map(c=>(
+        <div key={c} className="kx-card p-5">
+          <div className="font-semibold text-white/90 mb-2">{c}</div>
+          <div className="grid gap-2">
+            {FAQ.filter(f=>f.cat===c && (f.q.toLowerCase().includes(q.toLowerCase())||f.a.toLowerCase().includes(q.toLowerCase())))
+              .map((f,i)=>(
+                <div key={i} className="kx-panel p-3">
+                  <div className="font-medium">{f.q}</div>
+                  <div className="text-white/70 text-sm mt-1">{f.a}</div>
+                </div>
+              ))}
           </div>
         </div>
-
-        <div className="kx-divider" />
-
-        <div className="text-sm text-white/70">
-          <div className="font-medium text-white/85 mb-2">Common fixes</div>
-          <ul className="list-disc pl-5 space-y-1 text-sm text-white/65">
-            <li>If pages feel stuck, refresh and try again.</li>
-            <li>If you changed <span className="text-white">.env.local</span>, restart the dev server.</li>
-            <li>For billing / plan upgrades (EFT or cash), message us on WhatsApp or email for activation.</li>
-          </ul>
-        </div>
-      </Card>
+      ))}
     </div>
-  )
+  );
 }

@@ -87,6 +87,16 @@ function useTourPopover(targetSelector: string | null) {
 }
 
 export default function HelpCenterWidget() {
+  // Auto-run tour on first login
+  React.useEffect(() => {
+    const done = localStorage.getItem("kx-tour-done");
+    if (!done) {
+      startTour();
+      localStorage.setItem("kx-tour-done", "1");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [open, setOpen] = React.useState(false);
   const [tourOn, setTourOn] = React.useState(false);
   const [stepIdx, setStepIdx] = React.useState(0);
