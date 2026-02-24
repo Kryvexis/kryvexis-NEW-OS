@@ -1,179 +1,175 @@
-@import '../styles/globals.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ✅ Alias so pages using kx-button are styled */
-.kx-button{ @apply rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/15 transition; }
+/* ---------- Kryvexis Design Tokens ---------- */
+:root{
+  --kx-bg: 7 10 18;
+  --kx-panel: 255 255 255;
+  --kx-accent: 34 211 238;
+}
 
-/* keep your existing helpers */
-.kx-input{ @apply rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/10; }
-.kx-btn{ @apply rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90 hover:bg-white/10 transition; }
-.kx-btn-primary{ @apply rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/15 transition; }
+/* ---------- Base ---------- */
+html, body{
+  height: 100%;
+}
 
-.kx-input{ @apply rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/10; }
-.kx-btn{ @apply rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90 hover:bg-white/10 transition; }
-.kx-btn-primary{ @apply rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/15 transition; }
+body{
+  background:
+    radial-gradient(900px 700px at 20% 0%, rgba(34,211,238,.12), transparent 60%),
+    radial-gradient(800px 650px at 95% 10%, rgba(255,255,255,.05), transparent 62%),
+    rgb(var(--kx-bg));
+  color: rgba(255,255,255,.92);
+}
 
-/* --- Kryvexis Auth Layout --- */
-.kx-auth{
-  min-height: 100vh;
+/* ---------- Modal / Tooltip / Onboarding ---------- */
+.kx-modal-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.52);
+  backdrop-filter: blur(3px);
   display: grid;
   place-items: center;
-  padding: 24px;
-  color: rgba(255,255,255,0.92);
-  background: radial-gradient(900px 700px at 20% 0%, rgba(34,211,238,.12), transparent 60%),
-              radial-gradient(800px 650px at 95% 10%, rgba(255,255,255,.05), transparent 62%),
-              #070A12;
-}
-
-.kx-auth-shell{
-  width: min(1040px, 100%);
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 18px;
-  align-items: stretch;
-}
-
-@media (max-width: 900px){
-  .kx-auth-shell{ grid-template-columns: 1fr; }
-}
-
-.kx-auth-brandCard,
-.kx-auth-card{
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 18px;
   padding: 18px;
-  backdrop-filter: blur(18px);
+  z-index: 50;
 }
 
-.kx-auth-logoRow{
+.kx-modal{
+  width: min(560px, 100%);
+  max-height: min(86vh, 820px);
+  overflow: auto;
+  border-radius: 22px;
+  background: rgba(11,15,26,.92);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 30px 90px rgba(0,0,0,.45);
+  backdrop-filter: blur(10px);
+}
+
+.kx-modal-header{
   display: flex;
-  gap: 12px;
   align-items: center;
-}
-
-.kx-auth-brandName{
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.kx-auth-tag{
-  font-size: 13px;
-  color: rgba(255,255,255,0.68);
-}
-
-.kx-auth-bullets{
-  margin-top: 14px;
-  display: grid;
-  gap: 8px;
-  font-size: 14px;
-}
-
-.kx-auth-contact{
-  margin-top: 16px;
-  display: grid;
-  gap: 6px;
-  font-size: 13px;
-}
-
-.kx-auth-link{
-  color: rgba(34,211,238,0.95);
-  text-decoration: none;
-}
-.kx-auth-link:hover{ text-decoration: underline; }
-
-.kx-auth-formWrap{
-  display: grid;
-  gap: 10px;
-}
-
-.kx-auth-title{
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.kx-auth-subtitle{
-  margin-top: 4px;
-  font-size: 13px;
-  color: rgba(255,255,255,0.68);
-}
-
-.kx-auth-error{
-  margin-top: 10px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(239,68,68,0.12);
-  border: 1px solid rgba(239,68,68,0.25);
-  color: rgba(255,255,255,0.92);
-  font-size: 13px;
-}
-
-.kx-auth-form{
-  margin-top: 12px;
-  display: grid;
-  gap: 12px;
-}
-
-.kx-auth-label{
-  display: grid;
-  gap: 6px;
-  font-size: 13px;
-  color: rgba(255,255,255,0.78);
-}
-
-.kx-auth-input{
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.05);
-  padding: 10px 12px;
-  color: rgba(255,255,255,0.92);
-  outline: none;
-}
-.kx-auth-input::placeholder{ color: rgba(255,255,255,0.40); }
-
-.kx-auth-pwRow{
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
-  align-items: center;
-}
-
-.kx-auth-pwBtn{
-  height: 40px;
-  padding: 0 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.85);
-}
-.kx-auth-pwBtn:hover{ background: rgba(255,255,255,0.10); }
-
-.kx-auth-primary{
-  height: 42px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.95);
-  font-weight: 600;
-}
-.kx-auth-primary:hover{ background: rgba(255,255,255,0.16); }
-.kx-auth-primary:disabled{ opacity: .65; cursor: not-allowed; }
-
-.kx-auth-row{
-  display: flex;
   justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
-  font-size: 13px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
 }
 
-.kx-auth-muted{ color: rgba(255,255,255,0.68); }
+.kx-modal-title{ font-weight: 700; letter-spacing: -0.01em; }
+.kx-modal-body{ padding: 16px 18px; }
 
-.kx-auth-foot{
+.kx-icon-btn{
+  height: 36px;
+  width: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.92);
+}
+.kx-icon-btn:hover{ background: rgba(255,255,255,.10); }
+
+.kx-tooltip-wrap{ position: relative; display: inline-flex; align-items: center; }
+.kx-tooltip{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 10px);
+  width: max-content;
+  max-width: 280px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(7,10,18,.92);
+  color: rgba(255,255,255,.92);
   font-size: 12px;
-  color: rgba(255,255,255,0.55);
-  text-align: center;
+  line-height: 1.35;
+  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease, transform .12s ease;
+}
+.kx-tooltip-wrap:hover .kx-tooltip,
+.kx-tooltip-wrap:focus-within .kx-tooltip,
+.kx-tooltip-wrap.is-open .kx-tooltip{
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.kx-kbd{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-bottom-color: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.06);
+  padding: 2px 6px;
+  border-radius: 8px;
+  color: rgba(255,255,255,.92);
+}
+
+/* ---------- Utilities used across the app ---------- */
+.kx-hairline{ border-color: rgba(255,255,255,.10); }
+.kx-surface{
+  background: rgba(18,22,36,.62);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(10px);
+}
+.kx-card{
+  background: rgba(18,22,36,.70);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  padding: 14px;
+  backdrop-filter: blur(10px);
+}
+
+.kx-button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.90);
+  font-size: 13px;
+  transition: .15s ease;
+}
+.kx-button:hover{ background: rgba(255,255,255,.10); }
+
+.kx-badge{
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+}
+
+table{
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Tooltip mobile tweaks */
+@media (max-width: 860px){
+  .kx-tooltip{
+    max-width: min(80vw, 320px);
+    font-size: 13px;
+    padding: 12px 12px;
+    border-radius: 16px;
+  }
+}
+
+.kx-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  font-size: 12px;
+  color: rgba(255,255,255,.86);
 }

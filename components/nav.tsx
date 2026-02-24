@@ -109,8 +109,8 @@ export function Sidebar({ userEmail }: { userEmail?: string }) {
     <aside className="hidden md:flex md:w-[280px] md:flex-col border-r kx-hairline" style={{ background: 'rgba(8,11,20,.70)' }}>
       <div className="px-5 pt-5 pb-4">
         <div className="flex items-center gap-3">
-          <div className="h-11 w-11 rounded-2xl flex items-center justify-center overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,.10)', background: 'rgba(255,255,255,.06)', boxShadow: '0 0 0 1px rgba(34,211,238,.10), 0 14px 40px rgba(0,0,0,.35)' }}>
-            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={64} height={64} className="h-10 w-10 object-contain" priority />
+          <div className="h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,.10)', background: 'rgba(255,255,255,.06)', boxShadow: '0 0 0 1px rgba(34,211,238,.10), 0 14px 40px rgba(0,0,0,.35)' }}>
+            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={64} height={64} className="h-12 w-12 object-contain" priority />
           </div>
           <div>
             <div className="text-[15px] font-semibold tracking-tight">Kryvexis OS</div>
