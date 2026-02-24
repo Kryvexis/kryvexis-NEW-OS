@@ -10,15 +10,15 @@ const NAV = [
   ["Clients", "/clients"],
   ["Products", "/products"],
   ["Suppliers", "/suppliers"],
-  ["Import Station", "/import-station"],
   ["Quotes", "/quotes"],
   ["Invoices", "/invoices"],
   ["Payments", "/payments"],
   ["Accounts", "/accounts"],
   ["Reports", "/reports"],
-  ["Account Center", "/account-center"],
   ["Settings", "/settings"],
   ["Help", "/help"],
+  ["Import Center", "/import-station"],
+  ["Account Center", "/account-center"],
 ] as const;
 
 export default function MobileNav() {

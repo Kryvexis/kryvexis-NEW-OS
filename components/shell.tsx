@@ -1,32 +1,35 @@
 import Image from 'next/image'
 import MobileNav from "@/components/nav/MobileNav";
 import { Sidebar } from '@/components/nav'
+import ThemeToggle from '@/components/theme/ThemeToggle'
 
 export default function Shell({
   children,
   userEmail,
   workspaceName,
+  memberType,
 }: {
   children: React.ReactNode;
   userEmail: string;
   workspaceName?: string;
+  memberType?: string;
 }) {
   return (
     <div className="min-h-screen text-white">
       <div className="flex min-h-screen">
         {/* Sidebar (desktop) */}
-        <Sidebar userEmail={userEmail} workspaceName={workspaceName} />
+        <Sidebar userEmail={userEmail} workspaceName={workspaceName} memberType={memberType} />
 
         {/* Main */}
         <div className="flex-1 min-w-0">
           {/* Top bar */}
-          <header className="sticky top-0 z-10 border-b border-white/10 bg-[#070A12]/70 backdrop-blur">
+          <header className="sticky top-0 z-10 border-b border-white/10 backdrop-blur" style={{ background: 'rgba(var(--kx-shell), .72)' }}>
             <div className="mx-auto max-w-7xl px-4 md:px-6 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <MobileNav />
                 <div className="flex items-center gap-2">
-                  <div className="md:hidden h-10 w-10 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,.10)', background: 'rgba(255,255,255,.06)' }}>
-                    <Image src="/kryvexis-logo.png" alt="Kryvexis" width={64} height={64} className="h-10 w-10 object-contain" priority />
+                  <div className="md:hidden overflow-hidden" style={{ filter: 'drop-shadow(0 0 14px rgba(var(--kx-accent), .22))' }}>
+                    <Image src="/kryvexis-logo.png" alt="Kryvexis" width={52} height={52} className="h-[52px] w-[52px] object-contain" priority />
                   </div>
                   <div className="text-sm font-semibold tracking-tight text-white/85">Kryvexis OS</div>
                 </div>
@@ -34,6 +37,7 @@ export default function Shell({
 
               {/* Top-right controls intentionally minimal. (Sign out is in Account Center.) */}
               <div className="flex items-center gap-2">
+                <ThemeToggle />
                 <button
                   type="button"
                   disabled

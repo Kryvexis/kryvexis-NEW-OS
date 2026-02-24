@@ -99,23 +99,27 @@ function Icon({ name }: { name: 'dashboard' | 'clients' | 'products' | 'supplier
   }
 }
 
-export const navItems = [
+export const navMainItems = [
   { href: '/dashboard', label: 'Dashboard', icon: 'dashboard' as const },
   { href: '/clients', label: 'Clients', icon: 'clients' as const },
   { href: '/products', label: 'Products', icon: 'products' as const },
   { href: '/suppliers', label: 'Suppliers', icon: 'suppliers' as const },
-  { href: '/import-station', label: 'Import Station', icon: 'upload' as const },
   { href: '/quotes', label: 'Quotes', icon: 'quotes' as const },
   { href: '/invoices', label: 'Invoices', icon: 'invoices' as const },
   { href: '/payments', label: 'Payments', icon: 'payments' as const },
   { href: '/accounts', label: 'Accounts', icon: 'accounts' as const },
   { href: '/reports', label: 'Reports', icon: 'reports' as const },
-  { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
-  { href: '/settings', label: 'Settings', icon: 'settings' as const },
-  { href: '/help', label: 'Help', icon: 'help' as const },
 ]
 
-export function Sidebar({ userEmail, workspaceName }: { userEmail?: string; workspaceName?: string }) {
+// Bottom section: keep this near the footer. Import Center must be second-to-last.
+export const navBottomItems = [
+  { href: '/settings', label: 'Settings', icon: 'settings' as const },
+  { href: '/help', label: 'Help', icon: 'help' as const },
+  { href: '/import-station', label: 'Import Center', icon: 'upload' as const },
+  { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
+]
+
+export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: string; workspaceName?: string; memberType?: string }) {
   const pathname = usePathname() || ''
   const [collapsed, setCollapsed] = useState(false)
 
@@ -144,43 +148,29 @@ export function Sidebar({ userEmail, workspaceName }: { userEmail?: string; work
         'hidden md:flex md:flex-col border-r kx-hairline transition-[width] duration-300 ' +
         widthCls
       }
-      style={{ background: 'rgba(8,11,20,.70)' }}
+      style={{ background: 'rgba(var(--kx-shell), .78)' }}
     >
       <div className={collapsed ? 'px-3 pt-5 pb-4' : 'px-5 pt-5 pb-4'}>
         <div className={collapsed ? 'flex flex-col items-center gap-3' : 'flex items-start justify-between gap-3'}>
           <div className={collapsed ? 'flex flex-col items-center' : 'flex flex-col'}>
-            <div
-              className={
-                'rounded-2xl flex items-center justify-center overflow-hidden border ' +
-                (collapsed ? 'h-14 w-14' : 'h-16 w-16')
-              }
+            {/* Logo (no "block" container). Double-size with soft glow. */}
+            <Image
+              src="/kryvexis-logo.png"
+              alt="Kryvexis"
+              width={collapsed ? 92 : 132}
+              height={collapsed ? 92 : 132}
+              className={collapsed ? 'h-[92px] w-[92px] object-contain' : 'h-[132px] w-[132px] object-contain'}
               style={{
-                borderColor: 'rgba(255,255,255,.10)',
-                background: 'rgba(255,255,255,.06)',
-                boxShadow:
-                  '0 0 0 1px rgba(34,211,238,.14), 0 14px 40px rgba(0,0,0,.35), 0 0 22px rgba(34,211,238,.18)',
+                filter:
+                  'drop-shadow(0 0 18px rgba(var(--kx-accent), .22)) drop-shadow(0 10px 28px rgba(0,0,0,.35))',
               }}
-            >
-              <Image
-                src="/kryvexis-logo.png"
-                alt="Kryvexis"
-                width={72}
-                height={72}
-                className={collapsed ? 'h-12 w-12 object-contain' : 'h-14 w-14 object-contain'}
-                priority
-              />
+              priority
+            />
+
+            <div className={collapsed ? 'mt-2 text-center' : 'mt-2'}>
+              <div className={collapsed ? 'text-[12px] font-semibold tracking-tight' : 'text-[15px] font-semibold tracking-tight'}>Kryvexis OS</div>
+              {!collapsed && <div className="text-xs text-white/55">{workspaceName ?? 'Workspace'}</div>}
             </div>
-
-            {!collapsed && (
-              <div className="mt-2">
-                <div className="text-[15px] font-semibold tracking-tight">Kryvexis OS</div>
-                <div className="text-xs text-white/55">{workspaceName ?? 'Workspace'}</div>
-              </div>
-            )}
-
-            {collapsed && (
-              <div className="mt-2 text-[11px] text-white/60">Kryvexis OS</div>
-            )}
           </div>
 
           <button
@@ -207,8 +197,9 @@ export function Sidebar({ userEmail, workspaceName }: { userEmail?: string; work
         </div>
       </div>
 
-      <nav className={(collapsed ? 'px-2' : 'px-3') + ' pb-4 space-y-1'}>
-        {navItems.map((it) => {
+      {/* Main navigation */}
+      <nav className={(collapsed ? 'px-2' : 'px-3') + ' pb-2 space-y-1'}>
+        {navMainItems.map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
             <Link
@@ -217,7 +208,34 @@ export function Sidebar({ userEmail, workspaceName }: { userEmail?: string; work
               data-tour={`nav-${it.icon}`}
               title={collapsed ? it.label : undefined}
               className={
-                'group flex items-center rounded-xl py-2 text-sm border transition ' +
+                'kx-navlink group flex items-center rounded-xl py-2 text-sm border transition ' +
+                (on
+                  ? 'border-white/14 bg-white/8 text-white'
+                  : 'border-transparent hover:border-white/10 hover:bg-white/5 text-white/70')
+              }
+            >
+              <span className={(collapsed ? 'mx-auto' : 'ml-3') + ' ' + (on ? 'text-white' : 'text-white/70 group-hover:text-white/90')}>
+                <Icon name={it.icon} />
+              </span>
+              {!collapsed && <span className="ml-2 tracking-tight">{it.label}</span>}
+              {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(var(--kx-accent), 0.95)' }} />}
+            </Link>
+          )
+        })}
+      </nav>
+
+      {/* Bottom navigation */}
+      <div className="mt-auto" />
+      <nav className={(collapsed ? 'px-2' : 'px-3') + ' pt-2 pb-3 space-y-1'}>
+        {navBottomItems.map((it) => {
+          const on = pathname === it.href || pathname.startsWith(it.href + '/')
+          return (
+            <Link
+              key={it.href}
+              href={it.href}
+              title={collapsed ? it.label : undefined}
+              className={
+                'kx-navlink group flex items-center rounded-xl py-2 text-sm border transition ' +
                 (on
                   ? 'border-white/14 bg-white/8 text-white'
                   : 'border-transparent hover:border-white/10 hover:bg-white/5 text-white/70')
@@ -235,8 +253,17 @@ export function Sidebar({ userEmail, workspaceName }: { userEmail?: string; work
 
       {userEmail && !collapsed && (
         <div className="mt-auto px-5 py-4 border-t" style={{ borderColor: 'rgba(255,255,255,.08)' }}>
-          <div className="text-[11px] uppercase tracking-wider text-white/45">Signed in as</div>
-          <div className="mt-1 text-xs text-white/80 break-all">{userEmail}</div>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-white/45">Signed in as</div>
+              <div className="mt-1 text-xs text-white/80 break-all">{userEmail}</div>
+            </div>
+            {memberType && (
+              <span className="kx-chip" title="Member type">
+                {memberType}
+              </span>
+            )}
+          </div>
         </div>
       )}
     </aside>

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/card'
+import ThemeControls from '@/components/theme/ThemeControls'
 
 export default async function Page() {
   const supabase = await createClient()
@@ -34,6 +35,10 @@ export default async function Page() {
           <div>{company?.address || '—'}</div>
         </div>
         <div className="mt-4 text-xs text-white/55">Next: editable profile, invoice numbering, tax rates, theme, PDF automation.</div>
+      </Card>
+
+      <Card>
+        <ThemeControls />
       </Card>
 
 

@@ -132,6 +132,39 @@ export default async function AccountCenterPage() {
         </div>
       </Card>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card>
+          <div className="text-sm font-semibold">Security</div>
+          <div className="mt-2 text-sm text-white/70">
+            Password & security controls.
+          </div>
+          <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-white/70">
+            Change password and enable extra security checks (coming soon).
+          </div>
+        </Card>
+
+        <Card>
+          <div className="text-sm font-semibold">Team & Roles</div>
+          <div className="mt-2 text-sm text-white/70">
+            Invite staff, assign roles (staff / accounts / manager).
+          </div>
+          <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-white/70">
+            Next: manage users, permissions, and activity log.
+          </div>
+        </Card>
+      </div>
+
+      <Card>
+        <div className="text-sm font-semibold">Preferences</div>
+        <div className="mt-2 text-sm text-white/70">Notifications and workflow preferences.</div>
+        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div className="text-white/60">Notifications</div>
+          <div className="text-white/70">Coming soon (invoice reminders, payments, stock alerts).</div>
+          <div className="text-white/60">Default currency</div>
+          <div className="text-white/70">Coming soon</div>
+        </div>
+      </Card>
+
       <Card>
         <div className="text-sm font-semibold">Support</div>
         <div className="mt-2 text-sm text-white/70">Need assistance? Contact Kryvexis Support.</div>
