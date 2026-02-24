@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
 function Icon({ name }: { name: 'dashboard' | 'clients' | 'products' | 'suppliers' | 'upload' | 'quotes' | 'invoices' | 'payments' | 'accounts' | 'reports' | 'settings' | 'help' | 'accountCenter' }) {
@@ -114,23 +115,99 @@ export const navItems = [
   { href: '/help', label: 'Help', icon: 'help' as const },
 ]
 
-export function Sidebar({ userEmail }: { userEmail?: string }) {
+export function Sidebar({ userEmail, workspaceName }: { userEmail?: string; workspaceName?: string }) {
   const pathname = usePathname() || ''
+  const [collapsed, setCollapsed] = useState(false)
+
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem('kx_sidebar_collapsed')
+      setCollapsed(v === '1')
+    } catch {}
+  }, [])
+
+  const toggleCollapsed = () => {
+    setCollapsed((v) => {
+      const next = !v
+      try {
+        localStorage.setItem('kx_sidebar_collapsed', next ? '1' : '0')
+      } catch {}
+      return next
+    })
+  }
+
+  const widthCls = collapsed ? 'md:w-[92px]' : 'md:w-[280px]'
+
   return (
-    <aside className="hidden md:flex md:w-[280px] md:flex-col border-r kx-hairline" style={{ background: 'rgba(8,11,20,.70)' }}>
-      <div className="px-5 pt-5 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,.10)', background: 'rgba(255,255,255,.06)', boxShadow: '0 0 0 1px rgba(34,211,238,.10), 0 14px 40px rgba(0,0,0,.35)' }}>
-            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={64} height={64} className="h-12 w-12 object-contain" priority />
+    <aside
+      className={
+        'hidden md:flex md:flex-col border-r kx-hairline transition-[width] duration-300 ' +
+        widthCls
+      }
+      style={{ background: 'rgba(8,11,20,.70)' }}
+    >
+      <div className={collapsed ? 'px-3 pt-5 pb-4' : 'px-5 pt-5 pb-4'}>
+        <div className={collapsed ? 'flex flex-col items-center gap-3' : 'flex items-start justify-between gap-3'}>
+          <div className={collapsed ? 'flex flex-col items-center' : 'flex flex-col'}>
+            <div
+              className={
+                'rounded-2xl flex items-center justify-center overflow-hidden border ' +
+                (collapsed ? 'h-14 w-14' : 'h-16 w-16')
+              }
+              style={{
+                borderColor: 'rgba(255,255,255,.10)',
+                background: 'rgba(255,255,255,.06)',
+                boxShadow:
+                  '0 0 0 1px rgba(34,211,238,.14), 0 14px 40px rgba(0,0,0,.35), 0 0 22px rgba(34,211,238,.18)',
+              }}
+            >
+              <Image
+                src="/kryvexis-logo.png"
+                alt="Kryvexis"
+                width={72}
+                height={72}
+                className={collapsed ? 'h-12 w-12 object-contain' : 'h-14 w-14 object-contain'}
+                priority
+              />
+            </div>
+
+            {!collapsed && (
+              <div className="mt-2">
+                <div className="text-[15px] font-semibold tracking-tight">Kryvexis OS</div>
+                <div className="text-xs text-white/55">{workspaceName ?? 'Workspace'}</div>
+              </div>
+            )}
+
+            {collapsed && (
+              <div className="mt-2 text-[11px] text-white/60">Kryvexis OS</div>
+            )}
           </div>
-          <div>
-            <div className="text-[15px] font-semibold tracking-tight">Kryvexis OS</div>
-            <div className="text-xs text-white/50">v1.0.0</div>
-          </div>
+
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className={
+              'h-10 w-10 rounded-xl border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white/90 ' +
+              (collapsed ? '' : '')
+            }
+          >
+            <svg
+              className={
+                'mx-auto h-5 w-5 transition-transform duration-300 ' +
+                (collapsed ? 'rotate-180' : '')
+              }
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M14 6 8 12l6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
       </div>
 
-      <nav className="px-3 pb-4 space-y-1">
+      <nav className={(collapsed ? 'px-2' : 'px-3') + ' pb-4 space-y-1'}>
         {navItems.map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
@@ -138,24 +215,25 @@ export function Sidebar({ userEmail }: { userEmail?: string }) {
               key={it.href}
               href={it.href}
               data-tour={`nav-${it.icon}`}
+              title={collapsed ? it.label : undefined}
               className={
-                'group flex items-center gap-2 rounded-xl px-3 py-2 text-sm border transition ' +
+                'group flex items-center rounded-xl py-2 text-sm border transition ' +
                 (on
                   ? 'border-white/14 bg-white/8 text-white'
                   : 'border-transparent hover:border-white/10 hover:bg-white/5 text-white/70')
               }
             >
-              <span className={on ? 'text-white' : 'text-white/70 group-hover:text-white/90'}>
+              <span className={(collapsed ? 'mx-auto' : 'ml-3') + ' ' + (on ? 'text-white' : 'text-white/70 group-hover:text-white/90')}>
                 <Icon name={it.icon} />
               </span>
-              <span className="tracking-tight">{it.label}</span>
+              {!collapsed && <span className="ml-2 tracking-tight">{it.label}</span>}
               {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(var(--kx-accent), 0.95)' }} />}
             </Link>
           )
         })}
       </nav>
 
-      {userEmail && (
+      {userEmail && !collapsed && (
         <div className="mt-auto px-5 py-4 border-t" style={{ borderColor: 'rgba(255,255,255,.08)' }}>
           <div className="text-[11px] uppercase tracking-wider text-white/45">Signed in as</div>
           <div className="mt-1 text-xs text-white/80 break-all">{userEmail}</div>

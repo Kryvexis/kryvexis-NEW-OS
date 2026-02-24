@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { requireCompany } from '@/lib/kx'
 import Shell from '@/components/shell'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -7,5 +8,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { data } = await supabase.auth.getUser()
   if (!data.user) redirect('/login')
 
-  return <Shell userEmail={data.user.email ?? 'user'}><div className="kx-page">{children}</div></Shell>
+  const company = await requireCompany()
+
+  return (
+    <Shell userEmail={data.user.email ?? 'user'} workspaceName={company?.name ?? 'Workspace'}>
+      <div className="kx-page">{children}</div>
+    </Shell>
+  )
 }

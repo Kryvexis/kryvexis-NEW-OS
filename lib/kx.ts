@@ -34,3 +34,33 @@ export async function requireCompanyId() {
   if (createErr) throw createErr
   return created.id as string
 }
+
+/**
+ * Returns the current user's company details.
+ * Uses the same auto-create behaviour as requireCompanyId.
+ */
+export async function requireCompany() {
+  const supabase = await createClient()
+  const { data: userData, error: userErr } = await supabase.auth.getUser()
+  if (userErr || !userData.user) throw new Error('Not authenticated')
+
+  const uid = userData.user.id
+
+  const { data: company, error } = await supabase
+    .from('companies')
+    .select('id,name')
+    .eq('owner_user_id', uid)
+    .maybeSingle()
+
+  if (error) throw error
+  if (company?.id) return { id: company.id as string, name: (company as any).name as string }
+
+  const { data: created, error: createErr } = await supabase
+    .from('companies')
+    .insert({ owner_user_id: uid, name: 'Kryvexis' })
+    .select('id,name')
+    .single()
+
+  if (createErr) throw createErr
+  return { id: created.id as string, name: (created as any).name as string }
+}

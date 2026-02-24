@@ -1,28 +1,21 @@
 import Image from 'next/image'
-import { createClient } from "@/lib/supabase/server";
-import HelpCenterWidget from "@/components/help/HelpCenterWidget";
-import Onboarding from "@/components/onboarding/Onboarding";
 import MobileNav from "@/components/nav/MobileNav";
 import { Sidebar } from '@/components/nav'
 
 export default function Shell({
   children,
   userEmail,
+  workspaceName,
 }: {
   children: React.ReactNode;
   userEmail: string;
+  workspaceName?: string;
 }) {
-  async function signOut() {
-    "use server";
-    const supabase = await createClient();
-    await supabase.auth.signOut();
-  }
-
   return (
     <div className="min-h-screen text-white">
       <div className="flex min-h-screen">
         {/* Sidebar (desktop) */}
-        <Sidebar userEmail={userEmail} />
+        <Sidebar userEmail={userEmail} workspaceName={workspaceName} />
 
         {/* Main */}
         <div className="flex-1 min-w-0">
@@ -39,15 +32,19 @@ export default function Shell({
                 </div>
               </div>
 
+              {/* Top-right controls intentionally minimal. (Sign out is in Account Center.) */}
               <div className="flex items-center gap-2">
-                <Onboarding />
-                <HelpCenterWidget />
-
-                <form action={signOut}>
-                  <button className="kx-button" type="submit">
-                    Sign out
-                  </button>
-                </form>
+                <button
+                  type="button"
+                  disabled
+                  title="Notifications (coming soon)"
+                  className="h-10 w-10 rounded-xl border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white/90 disabled:opacity-60 disabled:hover:bg-white/5"
+                >
+                  <svg className="mx-auto h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 7h18s-3 0-3-7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9"/>
+                    <path d="M13.7 21a2 2 0 0 1-3.4 0" stroke="currentColor" strokeWidth="1.5" opacity="0.6" strokeLinecap="round"/>
+                  </svg>
+                </button>
               </div>
             </div>
           </header>
