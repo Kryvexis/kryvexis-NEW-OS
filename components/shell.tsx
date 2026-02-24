@@ -20,6 +20,9 @@ export default function Shell({
 
   return (
     <div className="min-h-screen text-white">
+      {/* Auto-run guided tour for new users */}
+      <Onboarding />
+
       <div className="flex min-h-screen">
         {/* Sidebar (desktop) */}
         <Sidebar userEmail={userEmail} />
@@ -40,7 +43,6 @@ export default function Shell({
               </div>
 
               <div className="flex items-center gap-2">
-                <Onboarding />
                 <HelpCenterButton />
 
                 <form action={signOut}>

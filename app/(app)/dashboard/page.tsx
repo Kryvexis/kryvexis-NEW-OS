@@ -83,8 +83,8 @@ export default async function Page() {
           <div className="text-sm text-white/60">Command center: sales, income, and performance.</div>
         </div>
         <div className="flex gap-2">
-          <Link href="/quotes/new" className="kx-button">New Quote</Link>
-          <Link href="/invoices/new" className="kx-button">New Invoice</Link>
+          <Link href="/quotes/new" className="kx-button" data-tour="new-quote">New Quote</Link>
+          <Link href="/invoices/new" className="kx-button" data-tour="new-invoice">New Invoice</Link>
         </div>
       </div>
 

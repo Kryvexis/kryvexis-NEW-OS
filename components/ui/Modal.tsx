@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 
 export function Modal({
   open,
@@ -24,7 +25,8 @@ export function Modal({
 
   if (!open) return null;
 
-  return (
+  // Render in a portal to avoid positioning issues caused by parent stacking contexts.
+  return createPortal(
     <div
       className="kx-modal-backdrop"
       role="dialog"
@@ -43,6 +45,7 @@ export function Modal({
         </div>
         <div className="kx-modal-body">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

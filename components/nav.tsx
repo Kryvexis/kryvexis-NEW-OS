@@ -126,6 +126,7 @@ export function Sidebar({ userEmail }: { userEmail?: string }) {
             <Link
               key={it.href}
               href={it.href}
+              data-tour={`nav-${it.icon}`}
               className={
                 'group flex items-center gap-2 rounded-xl px-3 py-2 text-sm border transition ' +
                 (on
