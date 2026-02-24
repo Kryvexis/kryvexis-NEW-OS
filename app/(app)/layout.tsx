@@ -7,5 +7,5 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { data } = await supabase.auth.getUser()
   if (!data.user) redirect('/login')
 
-  return <Shell userEmail={data.user.email ?? 'user'}>{children}</Shell>
+  return <Shell userEmail={data.user.email ?? 'user'}><div className="kx-page">{children}</div></Shell>
 }

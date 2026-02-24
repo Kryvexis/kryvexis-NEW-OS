@@ -2,7 +2,7 @@ import clsx from 'clsx'
 
 export function Card({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div className={clsx('kx-card p-6', className)}>
+    <div className={clsx('kx-card p-5 md:p-6', className)}>
       {children}
     </div>
   )
