@@ -1,15 +1,13 @@
-// @ts-nocheck
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/card'
 import { fmtZar } from '@/lib/format'
 
-type PageProps = {
-  params: Promise<{ id: string }>;
-};
+type PageProps = { params: { id: string } };
+
 
 export default async function Page({ params }: PageProps) {
-  const { id } = await params;
+  const { id } = params;
   const supabase = await createClient();
 
   // ... keep everything else the same

@@ -155,6 +155,10 @@ export default function HelpCenterWidget() {
   }
 
   async function next() {
+    if (stepIdx >= STEPS.length - 1) {
+      stopTour();
+      return;
+    }
     const nxt = Math.min(stepIdx + 1, STEPS.length - 1);
     await goToStep(nxt);
   }
@@ -239,7 +243,7 @@ export default function HelpCenterWidget() {
               <button className="kx-button" onClick={stopTour}>End</button>
               <div className="flex gap-2">
                 <button className="kx-button" onClick={prev} disabled={stepIdx === 0}>Back</button>
-                <button className="kx-button" onClick={next} disabled={stepIdx === STEPS.length - 1}>Next</button>
+                <button className="kx-button" onClick={next} disabled={stepIdx === STEPS.length - 1}>{stepIdx === STEPS.length - 1 ? "Finish" : "Next"}</button>
               </div>
             </div>
 
@@ -256,9 +260,23 @@ export default function HelpCenterWidget() {
 }
 
 function popoverStyle(rect: DOMRect | null): React.CSSProperties {
-  if (!rect) {
-    return { bottom: 90, right: 16 };
+  const vw = typeof window !== "undefined" ? window.innerWidth : 1200;
+  const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+  const maxW = Math.min(360, vw - 24);
+  const pad = 12;
+
+  if (!rect) return { top: 86, right: 18 };
+
+  // Prefer right side if there's space, else place below
+  if (vw - rect.right > maxW + 24) {
+    return { top: clamp(rect.top - 6, 12, vh - 220), left: rect.right + pad };
   }
+  return { top: clamp(rect.bottom + pad, 12, vh - 220), left: clamp(rect.left, 12, vw - maxW - 12) };
+}
+
+function clamp(v: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, v));
+}
   const pad = 12;
   const vw = typeof window !== "undefined" ? window.innerWidth : 1200;
 
