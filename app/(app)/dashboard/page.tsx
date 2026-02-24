@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import { Card } from '@/components/card'
 import { fmtZar } from '@/lib/format'
+import ClientQuickPanel from '@/components/clients/ClientQuickPanel'
 
 function monthKey(iso?: string | null) {
   if (!iso) return ''
@@ -22,7 +23,7 @@ export default async function Page() {
     supabase.from('invoices').select('id,number,total,balance_due,status,issue_date,due_date,client_id, clients(name)').eq('company_id', companyId).limit(2000),
     supabase.from('quotes').select('id,number,total,status,issue_date,client_id, clients(name)').eq('company_id', companyId).limit(2000),
     supabase.from('payments').select('id,amount,payment_date,invoice_id').eq('company_id', companyId).limit(5000),
-    supabase.from('clients').select('id,name').eq('company_id', companyId).limit(5000),
+    supabase.from('clients').select('id,name,tags_json,created_at').eq('company_id', companyId).limit(5000),
     supabase.from('activity_logs').select('id,action,entity_type,entity_id,created_at').eq('company_id', companyId).order('created_at', { ascending: false }).limit(20),
   ])
 
@@ -107,6 +108,8 @@ export default async function Page() {
         </Card>
       </div>
 
+      <ClientQuickPanel clients={(clients as any) || []} />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <Card className="lg:col-span-2">
           <div className="flex items-center justify-between">
@@ -140,6 +143,8 @@ export default async function Page() {
           </div>
         </Card>
       </div>
+
+      <ClientQuickPanel clients={(clients as any) || []} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <Card>
