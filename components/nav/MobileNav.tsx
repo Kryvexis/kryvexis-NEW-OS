@@ -23,7 +23,7 @@ export default function MobileNav() {
 
   return (
     <>
-      <button  data-tour=\"mobile-nav\" className="kx-icon-btn md:hidden" onClick={() => setOpen(true)} aria-label="Menu">
+      <button  data-tour="mobile-nav" className="kx-icon-btn md:hidden" onClick={() => setOpen(true)} aria-label="Menu">
         ☰
       </button>
 
