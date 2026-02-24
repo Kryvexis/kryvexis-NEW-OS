@@ -8,7 +8,7 @@
 .kx-button{ @apply rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/15 transition; }
 
 /* keep your existing helpers */
-.kx-input{ @apply rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/10; }
+.kx-input{ @apply rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/10 focus:border-white/15; min-height: 40px; }
 .kx-btn{ @apply rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90 hover:bg-white/10 transition; }
 .kx-btn-primary{ @apply rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/15 transition; }
 
@@ -176,4 +176,13 @@
   font-size: 12px;
   color: rgba(255,255,255,0.55);
   text-align: center;
+}
+
+/* ✅ Premium primary button */
+.kx-button-primary{
+  @apply border-white/10 bg-white/12 text-white;
+  box-shadow: 0 0 0 1px rgba(34,211,238,0.10), 0 14px 50px rgba(0,0,0,0.35);
+}
+.kx-button-primary:hover{
+  @apply bg-white/16;
 }
