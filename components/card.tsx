@@ -13,5 +13,5 @@ export function CardTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function CardSub({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={clsx('text-xs text-[rgba(var(--kx-fg),.60)]', className)}>{children}</div>
+  return <div className={clsx('text-xs text-white/60', className)}>{children}</div>
 }

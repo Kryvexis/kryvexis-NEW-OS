@@ -105,20 +105,6 @@ body{
 
 /* ---------- Utilities used across the app ---------- */
 .kx-hairline{ border-color: rgba(255,255,255,.10); }
-.kx-surface{
-  background: rgba(18,22,36,.62);
-  border: 1px solid rgba(255,255,255,.08);
-  backdrop-filter: blur(10px);
-}
-.kx-card{
-  background: rgba(var(--kx-surface),.78);
-  border: 1px solid rgba(var(--kx-border),.10);
-  border-radius: 18px;
-  padding: 14px;
-  backdrop-filter: blur(10px);
-}
-
-
 .kx-button{
   display: inline-flex;
   align-items: center;
@@ -183,4 +169,8 @@ html[data-theme="light"] svg{
   filter: invert(1) hue-rotate(180deg);
 }
 
-html[data-theme='light'] body{ background: rgb(var(--kx-bg)); color: rgba(var(--kx-fg),.92); }
+
+/* Theme-aware surfaces (fallback if this file is imported) */
+.kx-surface{ background: rgba(var(--kx-surface),.62); border: 1px solid rgba(var(--kx-border),.10); backdrop-filter: blur(10px); }
+.kx-card{ background: rgba(var(--kx-surface),.88); border: 1px solid rgba(var(--kx-border),.10); border-radius: 18px; padding: 14px; backdrop-filter: blur(10px); }
+html[data-theme='dark'] .kx-card{ background: rgba(var(--kx-surface),.78); }
