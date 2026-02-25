@@ -43,7 +43,7 @@ export default async function Page() {
       <div className="flex items-end justify-between">
         <div>
           <div className="text-xl font-semibold">Accounts</div>
-        <div className="text-sm text-white/60">Track income & expenses. Simple cash flow view.</div>
+        <div className="text-sm kx-muted">Track income & expenses. Simple cash flow view.</div>
       </div>
         <div className="flex items-center gap-2">
           <Link href="/api/transactions/export" className="kx-button">Export CSV</Link>
@@ -52,15 +52,15 @@ export default async function Page() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Card>
-          <div className="text-xs text-white/55">Income</div>
+          <div className="text-xs kx-muted2">Income</div>
           <div className="text-xl font-semibold mt-1">{fmtZar(income)}</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Expenses</div>
+          <div className="text-xs kx-muted2">Expenses</div>
           <div className="text-xl font-semibold mt-1">{fmtZar(expense)}</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Net</div>
+          <div className="text-xs kx-muted2">Net</div>
           <div className="text-xl font-semibold mt-1">{fmtZar(income - expense)}</div>
         </Card>
       </div>
@@ -69,26 +69,26 @@ export default async function Page() {
         <div className="flex items-center justify-between">
           <div>
             <div className="text-sm font-semibold">Cash flow</div>
-            <div className="text-xs text-white/55">Income vs expenses (last {series.length} months)</div>
+            <div className="text-xs kx-muted2">Income vs expenses (last {series.length} months)</div>
           </div>
         </div>
         <div className="mt-4 grid grid-cols-6 gap-3 h-44">
           {series.map((s) => (
             <div key={s.key} className="flex flex-col items-center justify-end gap-2">
               <div className="w-full flex items-end gap-2">
-                <div className="flex-1 rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+                <div className="flex-1 rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
                   <div className="bg-white/25" style={{ height: `${Math.max(6, Math.round((s.income / maxV) * 140))}px` }} />
                 </div>
-                <div className="flex-1 rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+                <div className="flex-1 rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
                   <div className="bg-white/25" style={{ height: `${Math.max(6, Math.round((s.expense / maxV) * 140))}px` }} />
                 </div>
               </div>
-              <div className="text-[11px] text-white/55">{s.label}</div>
+              <div className="text-[11px] kx-muted2">{s.label}</div>
             </div>
           ))}
-          {!series.length && <div className="col-span-6 text-sm text-white/55">No transactions yet.</div>}
+          {!series.length && <div className="col-span-6 text-sm kx-muted2">No transactions yet.</div>}
         </div>
-        <div className="mt-2 text-xs text-white/55">Left bar = income · Right bar = expense</div>
+        <div className="mt-2 text-xs kx-muted2">Left bar = income · Right bar = expense</div>
       </Card>
 
 
@@ -113,11 +113,11 @@ export default async function Page() {
       </Card>
 
       <Card>
-        <div className="text-sm text-white/60 mb-3">Recent transactions</div>
+        <div className="text-sm kx-muted mb-3">Recent transactions</div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-white/50">
-              <tr className="border-b border-white/10">
+            <thead className="text-[rgba(var(--kx-fg),.92)]/50">
+              <tr className="border-b border-[rgba(var(--kx-border),.12)]">
                 <th className="py-2 text-left font-medium">Date</th>
                 <th className="py-2 text-left font-medium">Type</th>
                 <th className="py-2 text-left font-medium">Category</th>
@@ -127,17 +127,17 @@ export default async function Page() {
             </thead>
             <tbody>
               {(txs || []).map((t) => (
-                <tr key={t.id} className="border-b border-white/5 hover:bg-white/5">
-                  <td className="py-2 text-white/70">{t.tx_date || new Date(t.created_at).toISOString().slice(0, 10)}</td>
+                <tr key={t.id} className="border-b border-white/5 hover:bg-[rgba(var(--kx-border),.06)]">
+                  <td className="py-2 kx-muted">{t.tx_date || new Date(t.created_at).toISOString().slice(0, 10)}</td>
                   <td className="py-2">{t.kind === 'income' ? 'Income' : 'Expense'}</td>
-                  <td className="py-2 text-white/70">{t.category || '—'}</td>
-                  <td className="py-2 text-white/70">{t.memo || '—'}</td>
+                  <td className="py-2 kx-muted">{t.category || '—'}</td>
+                  <td className="py-2 kx-muted">{t.memo || '—'}</td>
                   <td className="py-2 text-right font-medium">{fmtZar(Number(t.amount))}</td>
                 </tr>
               ))}
               {!txs?.length && (
                 <tr>
-                  <td className="py-6 text-white/50" colSpan={5}>
+                  <td className="py-6 text-[rgba(var(--kx-fg),.92)]/50" colSpan={5}>
                     No transactions yet.
                   </td>
                 </tr>

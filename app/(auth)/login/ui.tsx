@@ -45,17 +45,17 @@ export default function LoginUI() {
           </div>
           <div>
             <div className="text-lg font-semibold tracking-tight">Kryvexis OS</div>
-            <div className="text-xs text-white/55">Sign in to manage clients, quotes, invoices and payments.</div>
+            <div className="text-xs kx-muted2">Sign in to manage clients, quotes, invoices and payments.</div>
           </div>
         </div>
 
         <div className="space-y-3">
           <label className="block">
-            <div className="text-xs text-white/60 mb-1">Email</div>
+            <div className="text-xs kx-muted mb-1">Email</div>
             <input value={email} onChange={(e) => setEmail(e.target.value)} className="kx-input w-full" placeholder="you@company.com" />
           </label>
           <label className="block">
-            <div className="text-xs text-white/60 mb-1">Password</div>
+            <div className="text-xs kx-muted mb-1">Password</div>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="kx-input w-full" placeholder="••••••••" />
           </label>
           {error && <div className="text-xs text-red-300 bg-red-500/10 border border-red-400/20 rounded-xl px-3 py-2">{error}</div>}
@@ -67,7 +67,7 @@ export default function LoginUI() {
             Send magic link
           </button>
 
-          <div className="text-xs text-white/45">
+          <div className="text-xs text-[rgba(var(--kx-fg),.92)]/45">
             Tip: create an account in Supabase Auth, or enable email/password and sign in.
           </div>
         </div>

@@ -8,7 +8,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
     <div className="min-h-screen bg-kx flex items-center justify-center p-6">
       <div className="kx-card max-w-xl w-full">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-2xl bg-[rgba(var(--kx-border),.10)] border border-[rgba(var(--kx-border),.15)] flex items-center justify-center">
             <span className="text-lg">⚠️</span>
           </div>
           <div>

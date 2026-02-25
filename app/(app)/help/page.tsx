@@ -27,13 +27,13 @@ export default function HelpPage(){
 
       {cats.map(c=>(
         <div key={c} className="kx-card p-5">
-          <div className="font-semibold text-white/90 mb-2">{c}</div>
+          <div className="font-semibold text-[rgba(var(--kx-fg),.92)]/90 mb-2">{c}</div>
           <div className="grid gap-2">
             {FAQ.filter(f=>f.cat===c && (f.q.toLowerCase().includes(q.toLowerCase())||f.a.toLowerCase().includes(q.toLowerCase())))
               .map((f,i)=>(
                 <div key={i} className="kx-panel p-3">
                   <div className="font-medium">{f.q}</div>
-                  <div className="text-white/70 text-sm mt-1">{f.a}</div>
+                  <div className="kx-muted text-sm mt-1">{f.a}</div>
                 </div>
               ))}
           </div>

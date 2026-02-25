@@ -13,7 +13,7 @@ export default function SupplierList({ suppliers }: { suppliers: SupplierRow[] }
   return (
     <div className="kx-card p-5">
       <div className="text-sm font-semibold mb-1">Suppliers</div>
-      <div className="text-xs text-white/55 mb-4">Showing max 5 by default. Use search + View more.</div>
+      <div className="text-xs kx-muted2 mb-4">Showing max 5 by default. Use search + View more.</div>
 
       <LimitedList
         items={suppliers || []}
@@ -21,11 +21,11 @@ export default function SupplierList({ suppliers }: { suppliers: SupplierRow[] }
         placeholder="Type e.g. W…"
         emptyText="No suppliers yet."
         render={(s) => (
-          <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-3">
+          <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] px-3 py-3">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
-                <div className="text-sm font-medium text-white/90">{s.name}</div>
-                <div className="text-xs text-white/60">
+                <div className="text-sm font-medium text-[rgba(var(--kx-fg),.92)]/90">{s.name}</div>
+                <div className="text-xs kx-muted">
                   {(s.email || "—")}{s.phone ? ` · ${s.phone}` : ""}
                 </div>
               </div>

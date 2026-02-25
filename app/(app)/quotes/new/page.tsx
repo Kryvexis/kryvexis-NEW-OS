@@ -15,13 +15,13 @@ export default async function Page() {
     <div className="space-y-4">
       <div>
         <div className="text-2xl font-semibold tracking-tight">New Quote</div>
-        <div className="text-sm text-white/60">Create a quote quickly, then convert it to an invoice.</div>
+        <div className="text-sm kx-muted">Create a quote quickly, then convert it to an invoice.</div>
       </div>
 
       {(!clients?.length || !products?.length) && (
-        <div className="kx-card p-4 text-sm text-white/70">
+        <div className="kx-card p-4 text-sm kx-muted">
           <div className="font-semibold">Quick setup</div>
-          <div className="mt-1 text-white/60">To build quotes you need at least 1 client and 1 product.</div>
+          <div className="mt-1 kx-muted">To build quotes you need at least 1 client and 1 product.</div>
         </div>
       )}
 

@@ -25,26 +25,26 @@ export default async function Page() {
     <div className="space-y-4">
       <div>
         <div className="text-xl font-semibold">Reports</div>
-        <div className="text-sm text-white/60">Quick insights: revenue, outstanding invoices, top clients.</div>
+        <div className="text-sm kx-muted">Quick insights: revenue, outstanding invoices, top clients.</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Card>
-          <div className="text-xs text-white/55">Total invoiced</div>
+          <div className="text-xs kx-muted2">Total invoiced</div>
           <div className="text-xl font-semibold mt-1">{fmtZar(totalInvoiced)}</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Outstanding</div>
+          <div className="text-xs kx-muted2">Outstanding</div>
           <div className="text-xl font-semibold mt-1">{fmtZar(outstanding)}</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Invoices</div>
+          <div className="text-xs kx-muted2">Invoices</div>
           <div className="text-xl font-semibold mt-1">{(invoices || []).length}</div>
         </Card>
       </div>
 
       <Card>
-        <div className="text-sm text-white/60 mb-2">Shortcuts</div>
+        <div className="text-sm kx-muted mb-2">Shortcuts</div>
         <div className="flex flex-wrap gap-2">
           <Link href="/invoices" className="kx-btn">View invoices</Link>
           <Link href="/payments" className="kx-btn">View payments</Link>
@@ -53,8 +53,8 @@ export default async function Page() {
       </Card>
 
       <Card>
-        <div className="text-sm text-white/60">Coming next</div>
-        <ul className="mt-2 text-sm text-white/70 list-disc pl-5 space-y-1">
+        <div className="text-sm kx-muted">Coming next</div>
+        <ul className="mt-2 text-sm kx-muted list-disc pl-5 space-y-1">
           <li>Monthly revenue graph</li>
           <li>Top clients by revenue</li>
           <li>Export to CSV/PDF</li>

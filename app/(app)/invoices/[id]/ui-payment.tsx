@@ -34,15 +34,15 @@ export default function PaymentForm({ invoiceId }: { invoiceId: string }) {
   return (
     <div className="mt-3 grid gap-3 md:grid-cols-4">
       <label className="block">
-        <div className="text-xs text-white/60 mb-1">Amount</div>
+        <div className="text-xs kx-muted mb-1">Amount</div>
         <input className="kx-input" value={amount} onChange={(e) => setAmount(e.target.value)} type="number" step="0.01" placeholder="0.00" />
       </label>
       <label className="block">
-        <div className="text-xs text-white/60 mb-1">Date</div>
+        <div className="text-xs kx-muted mb-1">Date</div>
         <input className="kx-input" value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} type="date" />
       </label>
       <label className="block">
-        <div className="text-xs text-white/60 mb-1">Method</div>
+        <div className="text-xs kx-muted mb-1">Method</div>
         <select className="kx-input" value={method} onChange={(e) => setMethod(e.target.value)}>
           <option>EFT</option>
           <option>Cash</option>
@@ -51,7 +51,7 @@ export default function PaymentForm({ invoiceId }: { invoiceId: string }) {
         </select>
       </label>
       <label className="block">
-        <div className="text-xs text-white/60 mb-1">Reference</div>
+        <div className="text-xs kx-muted mb-1">Reference</div>
         <input className="kx-input" value={reference} onChange={(e) => setReference(e.target.value)} placeholder="INV ref" />
       </label>
 

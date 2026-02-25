@@ -19,7 +19,7 @@ export default async function ProductsPage() {
     <div className="space-y-4">
       <div>
         <div className="text-xl font-semibold">Products</div>
-        <div className="text-sm text-white/60">Catalog of products and services.</div>
+        <div className="text-sm kx-muted">Catalog of products and services.</div>
       </div>
 
       <ProductsUI />

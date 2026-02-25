@@ -209,6 +209,33 @@ html[data-theme="dark"] .kx-panel{
   font-size: 13px;
   transition: .15s ease;
 }
+
+/* Text + border helpers */
+.kx-muted{ color: rgba(var(--kx-fg), .68); }
+.kx-muted2{ color: rgba(var(--kx-fg), .56); }
+.kx-muted3{ color: rgba(var(--kx-fg), .45); }
+.kx-border{ border-color: rgba(var(--kx-border), .18); }
+.kx-borderSoft{ border-color: rgba(var(--kx-border), .12); }
+
+/* Overlay + modal */
+.kx-overlay{ background: rgba(0,0,0,.55); }
+html.dark .kx-overlay,
+html[data-theme="dark"] .kx-overlay{ background: rgba(0,0,0,.62); }
+
+.kx-modal{
+  background: rgba(var(--kx-surface), .88);
+  border: 1px solid rgba(var(--kx-border), .14);
+  border-radius: 22px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 22px 70px rgba(0,0,0,.38);
+}
+
+.kx-pill{
+  background: rgba(var(--kx-border), .06);
+  border: 1px solid rgba(var(--kx-border), .12);
+  border-radius: 999px;
+}
 .kx-button:hover{ background: rgba(var(--kx-border),.10); }
 
 .kx-badge{

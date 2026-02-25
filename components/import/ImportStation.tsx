@@ -99,11 +99,11 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
-      <div className="p-4 border-b border-white/10 flex flex-wrap items-center justify-between gap-3">
+    <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
+      <div className="p-4 border-b border-[rgba(var(--kx-border),.12)] flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="text-sm font-semibold">{title}</div>
-          <div className="text-xs text-white/55 mt-1">CSV upload → preview → import</div>
+          <div className="text-xs kx-muted2 mt-1">CSV upload → preview → import</div>
         </div>
         <button type="button" className="kx-button" onClick={() => navigator.clipboard.writeText(TEMPLATES[entity])}>
           Copy template
@@ -112,7 +112,7 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
 
       <div className="p-4 grid gap-4 md:grid-cols-2">
         <div className="grid gap-2">
-          <div className="text-xs text-white/55 uppercase tracking-wider">Upload CSV</div>
+          <div className="text-xs kx-muted2 uppercase tracking-wider">Upload CSV</div>
           <input
             type="file"
             accept=".csv,text/csv"
@@ -120,7 +120,7 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
             onChange={(e) => onUpload(e.target.files?.[0])}
           />
 
-          <div className="text-xs text-white/55 uppercase tracking-wider mt-2">Or paste CSV</div>
+          <div className="text-xs kx-muted2 uppercase tracking-wider mt-2">Or paste CSV</div>
           <textarea
             className="kx-input w-full min-h-[180px] p-3 font-mono text-xs leading-relaxed"
             value={csv}
@@ -131,7 +131,7 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
             }}
           />
 
-          <div className="mt-1 text-sm text-white/60">
+          <div className="mt-1 text-sm kx-muted">
             <ul className="list-disc pl-5 space-y-1">
               {FIELD_HINTS[entity].map((h) => (
                 <li key={h}>{h}</li>
@@ -151,9 +151,9 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
           </div>
 
           {details?.errors?.length ? (
-            <div className="mt-2 rounded-2xl border border-white/10 bg-black/20 p-3">
-              <div className="text-xs text-white/60 mb-2">First {details.errors.length} issue(s)</div>
-              <ul className="list-disc pl-5 text-xs text-white/70 space-y-1">
+            <div className="mt-2 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-black/20 p-3">
+              <div className="text-xs kx-muted mb-2">First {details.errors.length} issue(s)</div>
+              <ul className="list-disc pl-5 text-xs kx-muted space-y-1">
                 {details.errors.map((e, i) => (
                   <li key={i}>{e}</li>
                 ))}
@@ -163,13 +163,13 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
         </div>
 
         <div className="grid gap-2">
-          <div className="text-xs text-white/55 uppercase tracking-wider">Preview (first 5 rows)</div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 overflow-auto">
+          <div className="text-xs kx-muted2 uppercase tracking-wider">Preview (first 5 rows)</div>
+          <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-auto">
             <table className="min-w-full text-xs">
               <thead className="sticky top-0 bg-black/30 backdrop-blur">
                 <tr>
                   {parsed.headers.map((h) => (
-                    <th key={h} className="px-3 py-2 text-left text-white/70 font-medium border-b border-white/10">
+                    <th key={h} className="px-3 py-2 text-left kx-muted font-medium border-b border-[rgba(var(--kx-border),.12)]">
                       {h}
                     </th>
                   ))}
@@ -179,7 +179,7 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
                 {preview.map((r, idx) => (
                   <tr key={idx} className="border-b border-white/5">
                     {parsed.headers.map((h) => (
-                      <td key={h} className="px-3 py-2 text-white/80 whitespace-nowrap">
+                      <td key={h} className="px-3 py-2 text-[rgba(var(--kx-fg),.82)] whitespace-nowrap">
                         {r[h]}
                       </td>
                     ))}
@@ -187,7 +187,7 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
                 ))}
                 {!preview.length && (
                   <tr>
-                    <td className="px-3 py-8 text-white/55" colSpan={Math.max(1, parsed.headers.length)}>
+                    <td className="px-3 py-8 kx-muted2" colSpan={Math.max(1, parsed.headers.length)}>
                       Upload or paste CSV to preview.
                     </td>
                   </tr>
@@ -195,7 +195,7 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
               </tbody>
             </table>
           </div>
-          <div className="text-xs text-white/45">Only 5 rows are rendered in the preview to keep UI fast.</div>
+          <div className="text-xs text-[rgba(var(--kx-fg),.92)]/45">Only 5 rows are rendered in the preview to keep UI fast.</div>
         </div>
       </div>
     </div>

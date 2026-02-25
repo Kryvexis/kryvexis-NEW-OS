@@ -19,7 +19,7 @@ export default function QuoteStatus({ quoteId, current }: { quoteId: string; cur
 
   return (
     <label className="block">
-      <div className="text-xs text-white/60 mb-1">Status</div>
+      <div className="text-xs kx-muted mb-1">Status</div>
       <select className="kx-input" value={value} onChange={(e) => save(e.target.value)} disabled={pending}>
         {STATUSES.map((s) => (
           <option key={s} value={s}>

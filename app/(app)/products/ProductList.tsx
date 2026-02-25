@@ -17,10 +17,10 @@ type ProductRow = {
 
 export default function ProductList({ products }: { products: ProductRow[] }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
-      <div className="p-4 border-b border-white/10">
+    <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
+      <div className="p-4 border-b border-[rgba(var(--kx-border),.12)]">
         <div className="text-sm font-semibold">All items</div>
-        <div className="text-xs text-white/55 mt-1">Showing max 5 by default. Use search + View more.</div>
+        <div className="text-xs kx-muted2 mt-1">Showing max 5 by default. Use search + View more.</div>
       </div>
 
       <div className="p-4">
@@ -35,21 +35,21 @@ export default function ProductList({ products }: { products: ProductRow[] }) {
             const margin = sell - cost;
 
             return (
-              <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+              <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-2 px-3 py-3">
                   <div className="md:col-span-4">
-                    <div className="text-sm font-medium text-white/90">{p.name}</div>
-                    <div className="text-xs text-white/55">{p.type ?? "—"}{p.sku ? ` · ${p.sku}` : ""}</div>
+                    <div className="text-sm font-medium text-[rgba(var(--kx-fg),.92)]/90">{p.name}</div>
+                    <div className="text-xs kx-muted2">{p.type ?? "—"}{p.sku ? ` · ${p.sku}` : ""}</div>
                   </div>
-                  <div className="md:col-span-2 text-xs text-white/70 md:text-right">Sell: {fmtZar(sell)}</div>
-                  <div className="md:col-span-2 text-xs text-white/70 md:text-right">Cost: {fmtZar(cost)}</div>
-                  <div className="md:col-span-2 text-xs font-semibold text-white/85 md:text-right">Margin: {fmtZar(margin)}</div>
-                  <div className="md:col-span-2 text-xs text-white/70 md:text-right">{p.suppliers?.name ?? "—"}</div>
+                  <div className="md:col-span-2 text-xs kx-muted md:text-right">Sell: {fmtZar(sell)}</div>
+                  <div className="md:col-span-2 text-xs kx-muted md:text-right">Cost: {fmtZar(cost)}</div>
+                  <div className="md:col-span-2 text-xs font-semibold text-[rgba(var(--kx-fg),.92)]/85 md:text-right">Margin: {fmtZar(margin)}</div>
+                  <div className="md:col-span-2 text-xs kx-muted md:text-right">{p.suppliers?.name ?? "—"}</div>
                 </div>
                 <div className="px-3 pb-3 flex items-center justify-end gap-2">
                   <Link
                     href={`/products/${p.id}`}
-                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 hover:bg-white/10"
+                    className="rounded-lg border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] px-3 py-1.5 text-xs text-[rgba(var(--kx-fg),.82)] hover:bg-[rgba(var(--kx-border),.10)]"
                   >
                     Edit
                   </Link>

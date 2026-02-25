@@ -42,7 +42,7 @@ export default function MobileNav() {
                 className={
                   "block rounded-xl border px-3 py-2 text-sm transition " +
                   (active
-                    ? "border-white/15 bg-white/10 text-[rgba(var(--kx-fg),.92)]"
+                    ? "border-white/15 bg-[rgba(var(--kx-border),.10)] text-[rgba(var(--kx-fg),.92)]"
                     : "border-[rgba(var(--kx-fg),.12)] bg-[rgba(var(--kx-fg),.05)] text-[rgba(var(--kx-fg),.92)]/80 hover:bg-[rgba(var(--kx-fg),.10)] hover:text-[rgba(var(--kx-fg),.92)]")
                 }
                 onClick={() => setOpen(false)}

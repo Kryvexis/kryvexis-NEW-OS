@@ -19,7 +19,7 @@ export default async function Page() {
     <div className="space-y-4">
       <div>
         <div className="text-xl font-semibold">Suppliers</div>
-        <div className="text-sm text-white/60">Manage suppliers and catalog sources.</div>
+        <div className="text-sm kx-muted">Manage suppliers and catalog sources.</div>
       </div>
 
       <Card>

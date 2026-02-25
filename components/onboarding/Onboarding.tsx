@@ -34,14 +34,14 @@ export default function Onboarding() {
 
       <Modal open={open} title="Welcome to Kryvexis OS" onClose={closeAndRemember}>
         <div className="grid gap-5">
-          <div className="text-sm text-white/70">
+          <div className="text-sm kx-muted">
             Kryvexis is designed as a simple 3-layer workflow. Follow this and you’ll be productive fast.
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="kx-card">
               <div className="text-sm font-semibold">Layer 1 — Setup</div>
-              <ul className="mt-2 text-sm text-white/70 space-y-1 list-disc pl-5">
+              <ul className="mt-2 text-sm kx-muted space-y-1 list-disc pl-5">
                 <li>Add Suppliers</li>
                 <li>Add Products (SKU, cost, selling price)</li>
                 <li>Add Clients (contacts + addresses)</li>
@@ -50,7 +50,7 @@ export default function Onboarding() {
 
             <div className="kx-card">
               <div className="text-sm font-semibold">Layer 2 — Daily Work</div>
-              <ul className="mt-2 text-sm text-white/70 space-y-1 list-disc pl-5">
+              <ul className="mt-2 text-sm kx-muted space-y-1 list-disc pl-5">
                 <li>Create a Quote</li>
                 <li>Convert Quote → Invoice</li>
                 <li>Print / Save PDF + send to client</li>
@@ -59,7 +59,7 @@ export default function Onboarding() {
 
             <div className="kx-card">
               <div className="text-sm font-semibold">Layer 3 — Control</div>
-              <ul className="mt-2 text-sm text-white/70 space-y-1 list-disc pl-5">
+              <ul className="mt-2 text-sm kx-muted space-y-1 list-disc pl-5">
                 <li>Record Payments (cash / EFT)</li>
                 <li>Track Accounts + Reports</li>
                 <li>Settings + Help Center</li>
@@ -69,7 +69,7 @@ export default function Onboarding() {
 
           <div className="kx-card">
             <div className="text-sm font-semibold">Pro tips</div>
-            <ul className="mt-2 text-sm text-white/70 space-y-1 list-disc pl-5">
+            <ul className="mt-2 text-sm kx-muted space-y-1 list-disc pl-5">
               <li>Use the Help button (<span className="kx-kbd">?</span>) anytime.</li>
               <li>Start with 5–10 products and 1 test client to learn the flow.</li>
               <li>Keep SKUs consistent — it makes reporting and re-ordering easier.</li>

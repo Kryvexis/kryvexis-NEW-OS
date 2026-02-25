@@ -48,7 +48,7 @@ export default async function Page({ params }: Props) {
       <div className="flex items-end justify-between">
         <div>
           <div className="text-2xl font-semibold tracking-tight">{client?.name || 'Client'}</div>
-          <div className="text-sm text-white/60">Purchase history summary (last 3 months) + invoices/quotes.</div>
+          <div className="text-sm kx-muted">Purchase history summary (last 3 months) + invoices/quotes.</div>
         </div>
         <div className="flex items-center gap-2"><Link href={`/quotes/new?clientId=${id}`} className="kx-button">New Quote</Link>
                                                  <Link href={`/invoices/new?clientId=${id}`} className="kx-button">New Invoice</Link>
@@ -57,34 +57,34 @@ export default async function Page({ params }: Props) {
 
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
         <Card>
-          <div className="text-xs text-white/55">Spent (last 3 months)</div>
+          <div className="text-xs kx-muted2">Spent (last 3 months)</div>
           <div className="text-2xl font-semibold mt-1">{fmtZar(spent3m)}</div>
-          <div className="text-xs text-white/55 mt-2">Since {sinceIso}</div>
+          <div className="text-xs kx-muted2 mt-2">Since {sinceIso}</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Outstanding</div>
+          <div className="text-xs kx-muted2">Outstanding</div>
           <div className="text-2xl font-semibold mt-1">{fmtZar(outstanding)}</div>
-          <div className="text-xs text-white/55 mt-2">Across all invoices</div>
+          <div className="text-xs kx-muted2 mt-2">Across all invoices</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Contact</div>
-          <div className="mt-2 text-sm text-white/80">{client?.email || '—'}</div>
-          <div className="text-sm text-white/80">{client?.phone || '—'}</div>
+          <div className="text-xs kx-muted2">Contact</div>
+          <div className="mt-2 text-sm text-[rgba(var(--kx-fg),.82)]">{client?.email || '—'}</div>
+          <div className="text-sm text-[rgba(var(--kx-fg),.82)]">{client?.phone || '—'}</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Lifetime value</div>
+          <div className="text-xs kx-muted2">Lifetime value</div>
           <div className="text-2xl font-semibold mt-1">{fmtZar(lifetime)}</div>
-          <div className="text-xs text-white/55 mt-2">{orderCount} invoice(s)</div>
+          <div className="text-xs kx-muted2 mt-2">{orderCount} invoice(s)</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Avg order value</div>
+          <div className="text-xs kx-muted2">Avg order value</div>
           <div className="text-2xl font-semibold mt-1">{fmtZar(avgOrder)}</div>
-          <div className="text-xs text-white/55 mt-2">Across all invoices</div>
+          <div className="text-xs kx-muted2 mt-2">Across all invoices</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Last purchase</div>
+          <div className="text-xs kx-muted2">Last purchase</div>
           <div className="text-2xl font-semibold mt-1">{lastPurchase || '—'}</div>
-          <div className="text-xs text-white/55 mt-2">Most recent invoice date</div>
+          <div className="text-xs kx-muted2 mt-2">Most recent invoice date</div>
         </Card>
       </div>
 
@@ -92,26 +92,26 @@ export default async function Page({ params }: Props) {
         <div className="flex items-center justify-between">
           <div>
             <div className="text-sm font-semibold">Top purchased items</div>
-            <div className="text-xs text-white/55">By invoice line totals</div>
+            <div className="text-xs kx-muted2">By invoice line totals</div>
           </div>
         </div>
         <div className="mt-3 space-y-2">
           {topProducts.map(([name, total]) => (
-            <div key={name} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-              <div className="text-sm text-white/80">{name}</div>
+            <div key={name} className="flex items-center justify-between rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] px-3 py-2">
+              <div className="text-sm text-[rgba(var(--kx-fg),.82)]">{name}</div>
               <div className="text-sm font-semibold">{fmtZar(total)}</div>
             </div>
           ))}
-          {!topProducts.length && <div className="text-sm text-white/55">No line items yet.</div>}
+          {!topProducts.length && <div className="text-sm kx-muted2">No line items yet.</div>}
         </div>
       </Card>
 
 <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <div className="text-sm font-semibold">Invoices</div>
-          <div className="mt-3 overflow-hidden rounded-2xl border border-white/10">
+          <div className="mt-3 overflow-hidden rounded-2xl border border-[rgba(var(--kx-border),.12)]">
             <table className="w-full text-sm">
-              <thead className="bg-white/5 text-white/60">
+              <thead className="bg-[rgba(var(--kx-border),.06)] kx-muted">
                 <tr>
                   <th className="px-4 py-2 text-left font-medium">Number</th>
                   <th className="px-4 py-2 text-left font-medium">Status</th>
@@ -121,16 +121,16 @@ export default async function Page({ params }: Props) {
               </thead>
               <tbody>
                 {(invoices || []).map((i) => (
-                  <tr key={i.id} className="border-t border-white/10">
-                    <td className="px-4 py-2"><Link className="text-white hover:underline" href={`/invoices/${i.id}`}>{i.number}</Link></td>
-                    <td className="px-4 py-2 text-white/70">{i.status}</td>
-                    <td className="px-4 py-2 text-white/70">{i.issue_date}</td>
+                  <tr key={i.id} className="border-t border-[rgba(var(--kx-border),.12)]">
+                    <td className="px-4 py-2"><Link className="text-[rgba(var(--kx-fg),.92)] hover:underline" href={`/invoices/${i.id}`}>{i.number}</Link></td>
+                    <td className="px-4 py-2 kx-muted">{i.status}</td>
+                    <td className="px-4 py-2 kx-muted">{i.issue_date}</td>
                     <td className="px-4 py-2 text-right font-medium">{fmtZar(Number(i.total || 0))}</td>
                   </tr>
                 ))}
                 {!invoices?.length && (
                   <tr>
-                    <td className="px-4 py-6 text-white/60" colSpan={4}>No invoices yet.</td>
+                    <td className="px-4 py-6 kx-muted" colSpan={4}>No invoices yet.</td>
                   </tr>
                 )}
               </tbody>
@@ -140,9 +140,9 @@ export default async function Page({ params }: Props) {
 
         <Card>
           <div className="text-sm font-semibold">Quotes</div>
-          <div className="mt-3 overflow-hidden rounded-2xl border border-white/10">
+          <div className="mt-3 overflow-hidden rounded-2xl border border-[rgba(var(--kx-border),.12)]">
             <table className="w-full text-sm">
-              <thead className="bg-white/5 text-white/60">
+              <thead className="bg-[rgba(var(--kx-border),.06)] kx-muted">
                 <tr>
                   <th className="px-4 py-2 text-left font-medium">Number</th>
                   <th className="px-4 py-2 text-left font-medium">Status</th>
@@ -152,16 +152,16 @@ export default async function Page({ params }: Props) {
               </thead>
               <tbody>
                 {(quotes || []).map((q) => (
-                  <tr key={q.id} className="border-t border-white/10">
-                    <td className="px-4 py-2"><Link className="text-white hover:underline" href={`/quotes/${q.id}`}>{q.number}</Link></td>
-                    <td className="px-4 py-2 text-white/70">{q.status}</td>
-                    <td className="px-4 py-2 text-white/70">{q.issue_date}</td>
+                  <tr key={q.id} className="border-t border-[rgba(var(--kx-border),.12)]">
+                    <td className="px-4 py-2"><Link className="text-[rgba(var(--kx-fg),.92)] hover:underline" href={`/quotes/${q.id}`}>{q.number}</Link></td>
+                    <td className="px-4 py-2 kx-muted">{q.status}</td>
+                    <td className="px-4 py-2 kx-muted">{q.issue_date}</td>
                     <td className="px-4 py-2 text-right font-medium">{fmtZar(Number(q.total || 0))}</td>
                   </tr>
                 ))}
                 {!quotes?.length && (
                   <tr>
-                    <td className="px-4 py-6 text-white/60" colSpan={4}>No quotes yet.</td>
+                    <td className="px-4 py-6 kx-muted" colSpan={4}>No quotes yet.</td>
                   </tr>
                 )}
               </tbody>

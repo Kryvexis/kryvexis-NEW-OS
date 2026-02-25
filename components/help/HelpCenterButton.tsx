@@ -27,11 +27,11 @@ export default function HelpCenterButton() {
       <Modal open={open} title="Help Center" onClose={() => setOpen(false)}>
         <div className="grid gap-6">
           <section className="grid gap-2">
-            <div className="text-sm font-semibold text-white/90">Quick start</div>
-            <ol className="list-decimal pl-5 text-sm text-white/70 space-y-1">
+            <div className="text-sm font-semibold text-[rgba(var(--kx-fg),.92)]/90">Quick start</div>
+            <ol className="list-decimal pl-5 text-sm kx-muted space-y-1">
               <li>
-                Add <span className="text-white">Clients</span>, <span className="text-white">Suppliers</span>, and{' '}
-                <span className="text-white">Products</span>
+                Add <span className="text-[rgba(var(--kx-fg),.92)]">Clients</span>, <span className="text-[rgba(var(--kx-fg),.92)]">Suppliers</span>, and{' '}
+                <span className="text-[rgba(var(--kx-fg),.92)]">Products</span>
               </li>
               <li>Create a Quote → convert to Invoice</li>
               <li>Record a Payment and keep accounts clean</li>
@@ -39,7 +39,7 @@ export default function HelpCenterButton() {
           </section>
 
           <section className="grid gap-2">
-            <div className="text-sm font-semibold text-white/90">Guides</div>
+            <div className="text-sm font-semibold text-[rgba(var(--kx-fg),.92)]/90">Guides</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <Link className="kx-button justify-start" href="/help">
                 Open Help & Support page
@@ -51,15 +51,15 @@ export default function HelpCenterButton() {
           </section>
 
           <section className="grid gap-2">
-            <div className="text-sm font-semibold text-white/90">Keyboard shortcuts</div>
-            <div className="text-sm text-white/70">
+            <div className="text-sm font-semibold text-[rgba(var(--kx-fg),.92)]/90">Keyboard shortcuts</div>
+            <div className="text-sm kx-muted">
               <span className="kx-kbd">?</span> opens this help center. <span className="kx-kbd">Esc</span> closes dialogs.
             </div>
           </section>
 
           <section className="grid gap-2">
-            <div className="text-sm font-semibold text-white/90">Contact</div>
-            <div className="text-sm text-white/70 grid gap-1">
+            <div className="text-sm font-semibold text-[rgba(var(--kx-fg),.92)]/90">Contact</div>
+            <div className="text-sm kx-muted grid gap-1">
               <a className="kx-auth-link" href="mailto:kryvexissolutions@gmail.com">
                 kryvexissolutions@gmail.com
               </a>

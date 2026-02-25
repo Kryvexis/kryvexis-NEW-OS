@@ -8,7 +8,7 @@ export default function DemoPage() {
     <div className="mx-auto max-w-5xl px-4 py-10 space-y-6">
       <div className="space-y-2">
         <div className="text-3xl font-semibold tracking-tight">Kryvexis OS — Demo Walkthrough</div>
-        <div className="text-white/70">
+        <div className="kx-muted">
           This page is safe to share with customers as a “how it works” demo. It explains the flow without exposing your
           data.
         </div>
@@ -28,19 +28,19 @@ export default function DemoPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Card>
           <div className="text-sm font-semibold">1) Setup once</div>
-          <div className="text-sm text-white/70 mt-2">
+          <div className="text-sm kx-muted mt-2">
             Add products, suppliers, and clients. Keep SKUs consistent and you’ll get clean reporting.
           </div>
         </Card>
         <Card>
           <div className="text-sm font-semibold">2) Daily workflow</div>
-          <div className="text-sm text-white/70 mt-2">
+          <div className="text-sm kx-muted mt-2">
             Quote → convert to invoice → print / save PDF. Fast, minimal, and business-ready.
           </div>
         </Card>
         <Card>
           <div className="text-sm font-semibold">3) Control & visibility</div>
-          <div className="text-sm text-white/70 mt-2">
+          <div className="text-sm kx-muted mt-2">
             Record payments (EFT / cash), track balances, and view reports for sales and performance.
           </div>
         </Card>
@@ -48,7 +48,7 @@ export default function DemoPage() {
 
       <Card>
         <div className="text-sm font-semibold">What your customer needs to get started</div>
-        <ul className="mt-3 list-disc pl-5 text-sm text-white/70 space-y-1">
+        <ul className="mt-3 list-disc pl-5 text-sm kx-muted space-y-1">
           <li>Internet connection + a browser (mobile or desktop)</li>
           <li>Their product list (even a basic spreadsheet)</li>
           <li>Their client list (names + contact details)</li>
@@ -58,7 +58,7 @@ export default function DemoPage() {
 
       <Card>
         <div className="text-sm font-semibold">Want a guided in-app tour?</div>
-        <div className="text-sm text-white/70 mt-2">
+        <div className="text-sm kx-muted mt-2">
           After signing in, click <span className="kx-kbd">Getting started</span> in the top bar, or press{' '}
           <span className="kx-kbd">?</span> for the help center.
         </div>

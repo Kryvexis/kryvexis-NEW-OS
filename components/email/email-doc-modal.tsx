@@ -65,31 +65,31 @@ export function EmailDocModal(props: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-[92vw] max-w-xl rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl shadow-2xl">
-        <div className="p-5 border-b border-white/10">
+      <div className="relative w-[92vw] max-w-xl rounded-3xl border border-[rgba(var(--kx-border),.12)] bg-black/60 backdrop-blur-xl shadow-2xl">
+        <div className="p-5 border-b border-[rgba(var(--kx-border),.12)]">
           <div className="text-base font-semibold">Send email</div>
-          <div className="text-xs text-white/60 mt-1">Uses your SMTP settings (no third‑party credits).</div>
+          <div className="text-xs kx-muted mt-1">Uses your SMTP settings (no third‑party credits).</div>
         </div>
         <div className="p-5 space-y-3">
           <label className="block">
-            <div className="text-xs text-white/60 mb-1">To</div>
+            <div className="text-xs kx-muted mb-1">To</div>
             <input className="kx-input" value={to} onChange={(e) => setTo(e.target.value)} placeholder="client@email.com" />
           </label>
           <label className="block">
-            <div className="text-xs text-white/60 mb-1">Subject</div>
+            <div className="text-xs kx-muted mb-1">Subject</div>
             <input className="kx-input" value={subject} onChange={(e) => setSubject(e.target.value)} />
           </label>
           <label className="block">
-            <div className="text-xs text-white/60 mb-1">Message</div>
+            <div className="text-xs kx-muted mb-1">Message</div>
             <textarea className="kx-input min-h-[120px]" value={message} onChange={(e) => setMessage(e.target.value)} />
           </label>
 
           {attachmentUrl ? (
-            <div className="text-xs text-white/60">
-              Attachment: <span className="text-white/80">{attachmentName || 'document.pdf'}</span>
+            <div className="text-xs kx-muted">
+              Attachment: <span className="text-[rgba(var(--kx-fg),.82)]">{attachmentName || 'document.pdf'}</span>
             </div>
           ) : (
-            <div className="text-xs text-white/50">Tip: generate the PDF first to attach it automatically.</div>
+            <div className="text-xs text-[rgba(var(--kx-fg),.92)]/50">Tip: generate the PDF first to attach it automatically.</div>
           )}
 
           {err && <div className="text-xs text-red-300">{err}</div>}

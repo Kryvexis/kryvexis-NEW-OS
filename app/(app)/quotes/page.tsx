@@ -21,7 +21,7 @@ export default async function QuotesPage() {
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-xl font-semibold">Quotes</div>
-          <div className="text-sm text-white/60">Create, send, and convert quotes into invoices.</div>
+          <div className="text-sm kx-muted">Create, send, and convert quotes into invoices.</div>
         </div>
 
         <Link className="kx-button kx-button-primary" href="/quotes/new">

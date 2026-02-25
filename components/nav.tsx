@@ -169,7 +169,7 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
 
             <div className={collapsed ? 'mt-2 text-center' : 'mt-2'}>
               <div className={collapsed ? 'text-[12px] font-semibold tracking-tight' : 'text-[15px] font-semibold tracking-tight'}>Kryvexis OS</div>
-              {!collapsed && <div className="text-xs text-[rgba(var(--kx-fg),.92)]/55">{workspaceName ?? 'Workspace'}</div>}
+              {!collapsed && <div className="text-xs kx-muted">{workspaceName ?? 'Workspace'}</div>}
             </div>
           </div>
 
@@ -210,8 +210,8 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
               className={
                 'kx-navlink group flex items-center rounded-xl py-2 text-sm border transition ' +
                 (on
-                  ? 'border-white/14 bg-white/8 text-[rgba(var(--kx-fg),.92)]'
-                  : 'border-transparent hover:border-[rgba(var(--kx-fg),.12)] hover:bg-[rgba(var(--kx-fg),.05)] text-[rgba(var(--kx-fg),.70)]')
+                  ? 'kx-border bg-[rgba(var(--kx-border),.08)] text-[rgba(var(--kx-fg),.92)]'
+                  : 'border-transparent hover:border-[rgba(var(--kx-border),.12)] hover:bg-[rgba(var(--kx-border),.06)] text-[rgba(var(--kx-fg),.70)]')
               }
             >
               <span className={(collapsed ? 'mx-auto' : 'ml-3') + ' ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
@@ -237,8 +237,8 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
               className={
                 'kx-navlink group flex items-center rounded-xl py-2 text-sm border transition ' +
                 (on
-                  ? 'border-white/14 bg-white/8 text-[rgba(var(--kx-fg),.92)]'
-                  : 'border-transparent hover:border-[rgba(var(--kx-fg),.12)] hover:bg-[rgba(var(--kx-fg),.05)] text-[rgba(var(--kx-fg),.70)]')
+                  ? 'kx-border bg-[rgba(var(--kx-border),.08)] text-[rgba(var(--kx-fg),.92)]'
+                  : 'border-transparent hover:border-[rgba(var(--kx-border),.12)] hover:bg-[rgba(var(--kx-border),.06)] text-[rgba(var(--kx-fg),.70)]')
               }
             >
               <span className={(collapsed ? 'mx-auto' : 'ml-3') + ' ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
@@ -252,11 +252,11 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
       </nav>
 
       {userEmail && !collapsed && (
-        <div className="mt-auto px-5 py-4 border-t" style={{ borderColor: 'rgba(255,255,255,.08)' }}>
+        <div className="mt-auto px-5 py-4 border-t" style={{ borderColor: 'rgba(var(--kx-border), .12)' }}>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-[rgba(var(--kx-fg),.92)]/45">Signed in as</div>
-              <div className="mt-1 text-xs text-[rgba(var(--kx-fg),.92)]/80 break-all">{userEmail}</div>
+              <div className="text-[11px] uppercase tracking-wider kx-muted3">Signed in as</div>
+              <div className="mt-1 text-xs text-[rgba(var(--kx-fg),.86)] break-all">{userEmail}</div>
             </div>
             {memberType && (
               <span className="kx-chip" title="Member type">

@@ -76,7 +76,7 @@ export default function CommandPalette() {
   return (
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-      <div className="absolute left-1/2 top-20 w-[92vw] max-w-2xl -translate-x-1/2 rounded-3xl border border-white/10 bg-black/70 backdrop-blur-xl shadow-2xl overflow-hidden">
+      <div className="absolute left-1/2 top-20 w-[92vw] max-w-2xl -translate-x-1/2 rounded-3xl border border-[rgba(var(--kx-border),.12)] bg-black/70 backdrop-blur-xl shadow-2xl overflow-hidden">
         <Command
           className="p-2"
           value={search}
@@ -92,23 +92,23 @@ export default function CommandPalette() {
             <Command.Input
               autoFocus
               placeholder="Search or type a command…"
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none"
+              className="w-full rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] px-3 py-2 text-sm outline-none"
             />
-            <div className="mt-2 text-[11px] text-white/50">Tip: Ctrl/⌘ K to open · Enter to run</div>
+            <div className="mt-2 text-[11px] text-[rgba(var(--kx-fg),.92)]/50">Tip: Ctrl/⌘ K to open · Enter to run</div>
           </div>
 
           <Command.List className="max-h-[60vh] overflow-auto px-2 pb-2">
-            <Command.Empty className="px-3 py-4 text-sm text-white/60">No results.</Command.Empty>
-            <Command.Group heading="Quick actions" className="text-white/60 text-xs px-2">
+            <Command.Empty className="px-3 py-4 text-sm kx-muted">No results.</Command.Empty>
+            <Command.Group heading="Quick actions" className="kx-muted text-xs px-2">
               {actions.map((a) => (
                 <Command.Item
                   key={`${a.label}-${a.hint}`}
                   value={`${a.label} ${a.hint}`}
-                  className="flex items-center justify-between rounded-2xl px-3 py-2 text-sm text-white/85 aria-selected:bg-white/10"
+                  className="flex items-center justify-between rounded-2xl px-3 py-2 text-sm text-[rgba(var(--kx-fg),.92)]/85 aria-selected:bg-[rgba(var(--kx-border),.10)]"
                   onSelect={() => { a.go(); setOpen(false); setSearch('') }}
                 >
                   <span>{a.label}</span>
-                  <span className="text-xs text-white/50">{a.hint}</span>
+                  <span className="text-xs text-[rgba(var(--kx-fg),.92)]/50">{a.hint}</span>
                 </Command.Item>
               ))}
             </Command.Group>

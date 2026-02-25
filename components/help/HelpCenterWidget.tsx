@@ -186,7 +186,7 @@ export default function HelpCenterWidget() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 z-[60] h-12 w-12 rounded-2xl border border-white/10 bg-white/10 backdrop-blur shadow-[0_14px_40px_rgba(0,0,0,.45)] hover:bg-white/12 active:translate-y-[1px]"
+        className="fixed bottom-5 right-5 z-[60] h-12 w-12 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.10)] backdrop-blur shadow-[0_14px_40px_rgba(0,0,0,.45)] hover:bg-white/12 active:translate-y-[1px]"
         aria-label="Help center"
         data-tour="help-fab"
       >
@@ -196,8 +196,8 @@ export default function HelpCenterWidget() {
       <Modal open={open} title="Help Center" onClose={() => setOpen(false)}>
         <div className="grid gap-5">
           <div className="kx-card p-4">
-            <div className="text-sm font-semibold text-white/90">Guided tour</div>
-            <div className="text-sm text-white/70 mt-1">A quick walkthrough of the main screens.</div>
+            <div className="text-sm font-semibold text-[rgba(var(--kx-fg),.92)]/90">Guided tour</div>
+            <div className="text-sm kx-muted mt-1">A quick walkthrough of the main screens.</div>
             <div className="mt-3 flex flex-wrap gap-2">
               <button className="kx-button" onClick={startTour}>Start tour</button>
               <Link className="kx-button" href="/help" onClick={() => setOpen(false)}>Open Help & Support page</Link>
@@ -205,17 +205,17 @@ export default function HelpCenterWidget() {
           </div>
 
           <div className="kx-card p-4">
-            <div className="text-sm font-semibold text-white/90">Quick answers</div>
-            <div className="mt-2 grid gap-2 text-sm text-white/75">
-              <div><span className="text-white/90 font-medium">Add products:</span> Products → Add product/service → Save.</div>
-              <div><span className="text-white/90 font-medium">Create quote:</span> Quotes → New Quote → Select client → Add items → Save.</div>
-              <div><span className="text-white/90 font-medium">Invoice:</span> Convert quote to invoice or create new invoice.</div>
+            <div className="text-sm font-semibold text-[rgba(var(--kx-fg),.92)]/90">Quick answers</div>
+            <div className="mt-2 grid gap-2 text-sm text-[rgba(var(--kx-fg),.92)]/75">
+              <div><span className="text-[rgba(var(--kx-fg),.92)]/90 font-medium">Add products:</span> Products → Add product/service → Save.</div>
+              <div><span className="text-[rgba(var(--kx-fg),.92)]/90 font-medium">Create quote:</span> Quotes → New Quote → Select client → Add items → Save.</div>
+              <div><span className="text-[rgba(var(--kx-fg),.92)]/90 font-medium">Invoice:</span> Convert quote to invoice or create new invoice.</div>
             </div>
           </div>
 
           <div className="kx-card p-4">
-            <div className="text-sm font-semibold text-white/90">Support</div>
-            <div className="text-sm text-white/70 mt-2">
+            <div className="text-sm font-semibold text-[rgba(var(--kx-fg),.92)]/90">Support</div>
+            <div className="text-sm kx-muted mt-2">
               Email:{" "}
               <a className="kx-link" href="mailto:kryvexissolutions@gmail.com">kryvexissolutions@gmail.com</a>
               <br />
@@ -235,9 +235,9 @@ export default function HelpCenterWidget() {
           aria-label="Guided tour"
         >
           <div className="kx-card p-4 w-[320px] max-w-[85vw]">
-            <div className="text-xs text-white/50">{stepIdx + 1} / {STEPS.length}</div>
-            <div className="mt-1 text-sm font-semibold text-white/90">{step.title}</div>
-            <div className="mt-1 text-sm text-white/70">{step.body}</div>
+            <div className="text-xs text-[rgba(var(--kx-fg),.92)]/50">{stepIdx + 1} / {STEPS.length}</div>
+            <div className="mt-1 text-sm font-semibold text-[rgba(var(--kx-fg),.92)]/90">{step.title}</div>
+            <div className="mt-1 text-sm kx-muted">{step.body}</div>
 
             <div className="mt-4 flex items-center justify-between gap-2">
               <button className="kx-button" onClick={stopTour}>End</button>
@@ -248,7 +248,7 @@ export default function HelpCenterWidget() {
             </div>
 
             {isMobile() && (
-              <div className="mt-3 text-xs text-white/45">
+              <div className="mt-3 text-xs text-[rgba(var(--kx-fg),.92)]/45">
                 Tip: Tap the highlighted menu item if you want to open it manually.
               </div>
             )}

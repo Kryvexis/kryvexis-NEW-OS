@@ -86,7 +86,7 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="text-sm font-semibold">Quote details</div>
-              <div className="text-xs text-white/55">Draft · totals update live</div>
+              <div className="text-xs kx-muted2">Draft · totals update live</div>
             </div>
             <button className="kx-button kx-button-primary" onClick={onSave} disabled={pending || !clientId}>
               {pending ? 'Saving…' : 'Save Quote'}
@@ -95,7 +95,7 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
 
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             <label className="block">
-              <div className="text-xs text-white/60 mb-1">Client</div>
+              <div className="text-xs kx-muted mb-1">Client</div>
               <select className="kx-input" value={clientId} onChange={(e) => setClientId(e.target.value)}>
                 {clients.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -107,11 +107,11 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
 
             <div className="grid grid-cols-2 gap-3">
               <label className="block">
-                <div className="text-xs text-white/60 mb-1">Issue date</div>
+                <div className="text-xs kx-muted mb-1">Issue date</div>
                 <input className="kx-input" type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} />
               </label>
               <label className="block">
-                <div className="text-xs text-white/60 mb-1">Expiry date</div>
+                <div className="text-xs kx-muted mb-1">Expiry date</div>
                 <input className="kx-input" type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
               </label>
             </div>
@@ -119,9 +119,9 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
 
           <div className="mt-5">
             <div className="text-sm font-semibold">Line items</div>
-            <div className="mt-3 overflow-x-auto rounded-2xl border border-white/10">
+            <div className="mt-3 overflow-x-auto rounded-2xl border border-[rgba(var(--kx-border),.12)]">
               <table className="w-full text-sm min-w-[860px]">
-                <thead className="bg-white/5 text-white/60">
+                <thead className="bg-[rgba(var(--kx-border),.06)] kx-muted">
                   <tr>
                     <th className="px-3 py-2 text-left font-medium">Item</th>
                     <th className="px-3 py-2 text-right font-medium">Qty</th>
@@ -140,7 +140,7 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
                     const tax = after * (it.tax_rate || 0)
                     const line = after + tax
                     return (
-                      <tr key={idx} className="border-t border-white/10">
+                      <tr key={idx} className="border-t border-[rgba(var(--kx-border),.12)]">
                         <td className="px-3 py-2">
                           <div className="space-y-2">
                             <select className="kx-input" value={it.product_id || ''} onChange={(e) => onPickProduct(idx, e.target.value)}>
@@ -222,11 +222,11 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
 
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             <label className="block">
-              <div className="text-xs text-white/60 mb-1">Notes</div>
+              <div className="text-xs kx-muted mb-1">Notes</div>
               <textarea className="kx-input min-h-[90px]" value={notes} onChange={(e) => setNotes(e.target.value)} />
             </label>
             <label className="block">
-              <div className="text-xs text-white/60 mb-1">Terms</div>
+              <div className="text-xs kx-muted mb-1">Terms</div>
               <textarea className="kx-input min-h-[90px]" value={terms} onChange={(e) => setTerms(e.target.value)} />
             </label>
           </div>
@@ -235,12 +235,12 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
         <div className="kx-card p-4 h-fit">
           <div className="text-sm font-semibold">Totals</div>
           <div className="mt-3 space-y-2 text-sm">
-            <div className="flex items-center justify-between text-white/70"><span>Subtotal</span><span>{fmtZar(totals.subtotal)}</span></div>
-            <div className="flex items-center justify-between text-white/70"><span>Discount</span><span>- {fmtZar(totals.discount_total)}</span></div>
-            <div className="flex items-center justify-between text-white/70"><span>Tax</span><span>{fmtZar(totals.tax_total)}</span></div>
-            <div className="pt-2 mt-2 border-t border-white/10 flex items-center justify-between font-semibold"><span>Total</span><span>{fmtZar(totals.total)}</span></div>
+            <div className="flex items-center justify-between kx-muted"><span>Subtotal</span><span>{fmtZar(totals.subtotal)}</span></div>
+            <div className="flex items-center justify-between kx-muted"><span>Discount</span><span>- {fmtZar(totals.discount_total)}</span></div>
+            <div className="flex items-center justify-between kx-muted"><span>Tax</span><span>{fmtZar(totals.tax_total)}</span></div>
+            <div className="pt-2 mt-2 border-t border-[rgba(var(--kx-border),.12)] flex items-center justify-between font-semibold"><span>Total</span><span>{fmtZar(totals.total)}</span></div>
           </div>
-          <div className="mt-4 text-xs text-white/55">
+          <div className="mt-4 text-xs kx-muted2">
             Tip: Once saved, open the quote and use <span className="font-medium">Convert → Invoice</span>.
           </div>
         </div>

@@ -58,7 +58,7 @@ export default function ClientPicker({ clients }: { clients: ClientLite[] }) {
     <div className="kx-card p-5">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div className="grid gap-1.5">
-          <div className="text-[11px] text-white/55 uppercase tracking-wider">Client type</div>
+          <div className="text-[11px] kx-muted2 uppercase tracking-wider">Client type</div>
           <select
             className="kx-input w-full px-3 py-2"
             value={bucket}
@@ -67,11 +67,11 @@ export default function ClientPicker({ clients }: { clients: ClientLite[] }) {
             <option value="account">Account clients</option>
             <option value="cash">Cash clients</option>
           </select>
-          <div className="text-[11px] text-white/45">Tag clients with “cash” or “account”.</div>
+          <div className="text-[11px] text-[rgba(var(--kx-fg),.92)]/45">Tag clients with “cash” or “account”.</div>
         </div>
 
         <div className="grid gap-1.5">
-          <div className="text-[11px] text-white/55 uppercase tracking-wider">Select client</div>
+          <div className="text-[11px] kx-muted2 uppercase tracking-wider">Select client</div>
           <select
             className="kx-input w-full px-3 py-2"
             value={selectedId}
@@ -85,19 +85,19 @@ export default function ClientPicker({ clients }: { clients: ClientLite[] }) {
           {selectedId ? (
             <Link className="text-xs kx-link mt-1" href={`/clients/${selectedId}`}>Open selected client →</Link>
           ) : (
-            <div className="text-xs text-white/45 mt-1">Or use the list below.</div>
+            <div className="text-xs text-[rgba(var(--kx-fg),.92)]/45 mt-1">Or use the list below.</div>
           )}
         </div>
 
         <div className="grid gap-1.5">
-          <div className="text-[11px] text-white/55 uppercase tracking-wider">Search</div>
+          <div className="text-[11px] kx-muted2 uppercase tracking-wider">Search</div>
           <input
             className="kx-input w-full px-3 py-2"
             value={q}
             onChange={(e) => { setQ(e.target.value); setShowAll(false); setSelectedId(""); }}
             placeholder="Type e.g. W…"
           />
-          <div className="text-xs text-white/45">{filtered.length} match{filtered.length === 1 ? "" : "es"}</div>
+          <div className="text-xs text-[rgba(var(--kx-fg),.92)]/45">{filtered.length} match{filtered.length === 1 ? "" : "es"}</div>
         </div>
       </div>
 
@@ -106,15 +106,15 @@ export default function ClientPicker({ clients }: { clients: ClientLite[] }) {
           <Link
             key={c.id}
             href={`/clients/${c.id}`}
-            className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-3 py-2 hover:bg-white/10"
+            className="flex items-center justify-between rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] px-3 py-2 hover:bg-[rgba(var(--kx-border),.10)]"
           >
-            <span className="text-sm text-white/85">{c.name}</span>
-            <span className="text-xs text-white/55">Open</span>
+            <span className="text-sm text-[rgba(var(--kx-fg),.92)]/85">{c.name}</span>
+            <span className="text-xs kx-muted2">Open</span>
           </Link>
         ))}
 
         {!visible.length && (
-          <div className="text-sm text-white/55">No clients in this bucket yet.</div>
+          <div className="text-sm kx-muted2">No clients in this bucket yet.</div>
         )}
 
         {filtered.length > 5 && (

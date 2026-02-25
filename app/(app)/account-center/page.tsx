@@ -91,34 +91,34 @@ export default async function AccountCenterPage() {
     <div className="space-y-4">
       <div>
         <div className="text-xl font-semibold">Account Center</div>
-        <div className="text-sm text-white/60">Profile, workspace, billing, and support — all in one place.</div>
+        <div className="text-sm kx-muted">Profile, workspace, billing, and support — all in one place.</div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <div className="text-sm font-semibold">Profile</div>
           <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-            <div className="text-white/60">Email</div>
+            <div className="kx-muted">Email</div>
             <div>{user?.email || "—"}</div>
-            <div className="text-white/60">User ID</div>
-            <div className="text-xs text-white/70 break-all">{user?.id || "—"}</div>
-            <div className="text-white/60">Last sign in</div>
-            <div className="text-white/70">{(user as any)?.last_sign_in_at ? String((user as any).last_sign_in_at).slice(0, 19).replace('T',' ') : "—"}</div>
+            <div className="kx-muted">User ID</div>
+            <div className="text-xs kx-muted break-all">{user?.id || "—"}</div>
+            <div className="kx-muted">Last sign in</div>
+            <div className="kx-muted">{(user as any)?.last_sign_in_at ? String((user as any).last_sign_in_at).slice(0, 19).replace('T',' ') : "—"}</div>
           </div>
         </Card>
 
         <Card>
           <div className="text-sm font-semibold">Workspace</div>
           <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-            <div className="text-white/60">Company</div>
+            <div className="kx-muted">Company</div>
             <div>{company?.name || "—"}</div>
-            <div className="text-white/60">Workspace ID</div>
-            <div className="text-xs text-white/70 break-all">{company?.id || "—"}</div>
-            <div className="text-white/60">Email</div>
+            <div className="kx-muted">Workspace ID</div>
+            <div className="text-xs kx-muted break-all">{company?.id || "—"}</div>
+            <div className="kx-muted">Email</div>
             <div>{company?.email || "—"}</div>
-            <div className="text-white/60">Phone</div>
+            <div className="kx-muted">Phone</div>
             <div>{company?.phone || "—"}</div>
-            <div className="text-white/60">Address</div>
+            <div className="kx-muted">Address</div>
             <div>{company?.address || "—"}</div>
           </div>
         </Card>
@@ -126,8 +126,8 @@ export default async function AccountCenterPage() {
 
       <Card>
         <div className="text-sm font-semibold">Billing</div>
-        <div className="mt-2 text-sm text-white/70">Billing is coming soon (Stripe + PayFast hybrid billing planned).</div>
-        <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-white/70">
+        <div className="mt-2 text-sm kx-muted">Billing is coming soon (Stripe + PayFast hybrid billing planned).</div>
+        <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-3 text-xs kx-muted">
           Current mode: manual payments (EFT + cash). Next: automated subscription billing.
         </div>
       </Card>
@@ -135,20 +135,20 @@ export default async function AccountCenterPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <div className="text-sm font-semibold">Security</div>
-          <div className="mt-2 text-sm text-white/70">
+          <div className="mt-2 text-sm kx-muted">
             Password & security controls.
           </div>
-          <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-white/70">
+          <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-3 text-xs kx-muted">
             Change password and enable extra security checks (coming soon).
           </div>
         </Card>
 
         <Card>
           <div className="text-sm font-semibold">Team & Roles</div>
-          <div className="mt-2 text-sm text-white/70">
+          <div className="mt-2 text-sm kx-muted">
             Invite staff, assign roles (staff / accounts / manager).
           </div>
-          <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-3 text-xs text-white/70">
+          <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-3 text-xs kx-muted">
             Next: manage users, permissions, and activity log.
           </div>
         </Card>
@@ -156,26 +156,26 @@ export default async function AccountCenterPage() {
 
       <Card>
         <div className="text-sm font-semibold">Preferences</div>
-        <div className="mt-2 text-sm text-white/70">Notifications and workflow preferences.</div>
+        <div className="mt-2 text-sm kx-muted">Notifications and workflow preferences.</div>
         <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-          <div className="text-white/60">Notifications</div>
-          <div className="text-white/70">Coming soon (invoice reminders, payments, stock alerts).</div>
-          <div className="text-white/60">Default currency</div>
-          <div className="text-white/70">Coming soon</div>
+          <div className="kx-muted">Notifications</div>
+          <div className="kx-muted">Coming soon (invoice reminders, payments, stock alerts).</div>
+          <div className="kx-muted">Default currency</div>
+          <div className="kx-muted">Coming soon</div>
         </div>
       </Card>
 
       <Card>
         <div className="text-sm font-semibold">Support</div>
-        <div className="mt-2 text-sm text-white/70">Need assistance? Contact Kryvexis Support.</div>
+        <div className="mt-2 text-sm kx-muted">Need assistance? Contact Kryvexis Support.</div>
         <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-          <div className="text-white/60">Email</div>
+          <div className="kx-muted">Email</div>
           <div>
             <a className="underline underline-offset-4 decoration-white/20 hover:decoration-white/40" href="mailto:kryvexissolutions@gmail.com">
               kryvexissolutions@gmail.com
             </a>
           </div>
-          <div className="text-white/60">WhatsApp</div>
+          <div className="kx-muted">WhatsApp</div>
           <div>
             <a className="underline underline-offset-4 decoration-white/20 hover:decoration-white/40" href="https://wa.me/27686282874" target="_blank" rel="noreferrer">
               +27 68 628 2874
@@ -196,7 +196,7 @@ export default async function AccountCenterPage() {
 
         <Card>
           <div className="text-sm font-semibold text-rose-200">Danger Zone</div>
-          <div className="mt-2 text-sm text-white/70">
+          <div className="mt-2 text-sm kx-muted">
             This will permanently delete your workspace data (clients, products, suppliers, quotes, invoices, payments) and sign you out.
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -206,8 +206,8 @@ export default async function AccountCenterPage() {
               </button>
             </form>
           </div>
-          <div className="mt-2 text-xs text-white/50">
-            Tip: If you want your login removed from authentication too, set <span className="text-white/70">SUPABASE_SERVICE_ROLE_KEY</span> in your env.
+          <div className="mt-2 text-xs text-[rgba(var(--kx-fg),.92)]/50">
+            Tip: If you want your login removed from authentication too, set <span className="kx-muted">SUPABASE_SERVICE_ROLE_KEY</span> in your env.
           </div>
         </Card>
       </div>

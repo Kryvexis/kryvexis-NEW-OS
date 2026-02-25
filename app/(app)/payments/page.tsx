@@ -22,14 +22,14 @@ export default async function Page() {
     <div className="space-y-4">
       <div>
         <div className="text-xl font-semibold">Payments</div>
-        <div className="text-sm text-white/60">All payments across invoices.</div>
+        <div className="text-sm kx-muted">All payments across invoices.</div>
       </div>
 
       <Card>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-white/50">
-              <tr className="border-b border-white/10">
+            <thead className="text-[rgba(var(--kx-fg),.92)]/50">
+              <tr className="border-b border-[rgba(var(--kx-border),.12)]">
                 <th className="py-2 text-left font-medium">Date</th>
                 <th className="py-2 text-left font-medium">Method</th>
                 <th className="py-2 text-left font-medium">Reference</th>
@@ -39,10 +39,10 @@ export default async function Page() {
             </thead>
             <tbody>
               {(payments || []).map((p) => (
-                <tr key={p.id} className="border-b border-white/5 hover:bg-white/5">
-                  <td className="py-2 text-white/70">{p.payment_date}</td>
-                  <td className="py-2 text-white/70">{p.method || '—'}</td>
-                  <td className="py-2 text-white/70">{p.reference || '—'}</td>
+                <tr key={p.id} className="border-b border-white/5 hover:bg-[rgba(var(--kx-border),.06)]">
+                  <td className="py-2 kx-muted">{p.payment_date}</td>
+                  <td className="py-2 kx-muted">{p.method || '—'}</td>
+                  <td className="py-2 kx-muted">{p.reference || '—'}</td>
                   <td className="py-2 text-right font-medium">{fmtZar(Number(p.amount))}</td>
                   <td className="py-2 text-right">
                     <Link className="kx-btn" href={`/invoices/${p.invoice_id}`}>Open</Link>
@@ -51,7 +51,7 @@ export default async function Page() {
               ))}
               {!payments?.length && (
                 <tr>
-                  <td className="py-6 text-white/50" colSpan={5}>
+                  <td className="py-6 text-[rgba(var(--kx-fg),.92)]/50" colSpan={5}>
                     No payments yet.
                   </td>
                 </tr>

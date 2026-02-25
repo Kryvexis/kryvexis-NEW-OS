@@ -21,7 +21,7 @@ export default async function InvoicesPage() {
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-xl font-semibold">Invoices</div>
-          <div className="text-sm text-white/60">Track what you&apos;ve billed, what&apos;s paid, and what&apos;s still due.</div>
+          <div className="text-sm kx-muted">Track what you&apos;ve billed, what&apos;s paid, and what&apos;s still due.</div>
         </div>
 
         <Link className="kx-button kx-button-primary" href="/invoices/new">
