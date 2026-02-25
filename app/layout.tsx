@@ -14,8 +14,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   try {
     const theme = localStorage.getItem('kx_theme') || 'dark';
     document.documentElement.dataset.theme = (theme === 'light') ? 'light' : 'dark';
-    document.documentElement.classList.toggle('dark', theme !== 'light');
-    document.documentElement.classList.toggle('kx-light', theme === 'light');
     const accent = localStorage.getItem('kx_accent') || 'cyan';
     const map = {
       cyan: '34 211 238',
