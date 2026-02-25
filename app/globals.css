@@ -14,7 +14,7 @@
   --kx-surface-2: 24 30 50;
 }
 
-html[data-theme='light'], html.kx-light, body[data-theme='light']{
+html[data-theme='light']{
   --kx-bg: 245 247 252;
   --kx-shell: 255 255 255;
   --kx-fg: 11 15 26;
@@ -37,7 +37,7 @@ body{
   color: rgba(var(--kx-fg), .92);
 }
 
-html[data-theme='light'], html.kx-light, body[data-theme='light'] body{
+html[data-theme='light'] body{
   background:
     radial-gradient(900px 700px at 20% 0%, rgba(var(--kx-accent),.10), transparent 60%),
     radial-gradient(900px 650px at 90% 0%, rgba(0,0,0,.04), transparent 60%),
@@ -52,7 +52,7 @@ html[data-theme='light'], html.kx-light, body[data-theme='light'] body{
     0 16px 40px rgba(0,0,0,.20);
 }
 
-html[data-theme='light'], html.kx-light, body[data-theme='light'] .kx-navlink:hover{
+html[data-theme='light'] .kx-navlink:hover{
   box-shadow:
     0 0 0 1px rgba(var(--kx-accent), .20),
     0 14px 40px rgba(0,0,0,.10);
@@ -151,10 +151,14 @@ html[data-theme='light'], html.kx-light, body[data-theme='light'] .kx-navlink:ho
   backdrop-filter: blur(10px);
 }
 .kx-card{
-  background: rgba(var(--kx-surface),.78);
-  border: 1px solid rgba(var(--kx-border),.10);
-  border-radius: 18px;
-backdrop-filter: blur(10px);
+  background: rgba(var(--kx-surface), .92);
+  border: 1px solid rgba(var(--kx-border), .10);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.10);
+}
+html[data-theme='light'] .kx-card{
+  box-shadow: 0 14px 34px rgba(0,0,0,.08);
 }
 
 .kx-button{
@@ -228,13 +232,13 @@ html[data-theme='dark'] [class*='text-gray-9']{
   color: rgba(var(--kx-fg), .92) !important;
 }
 
-html[data-theme='light'], html.kx-light, body[data-theme='light'] [class*='text-white']{
+html[data-theme='light'] [class*='text-white']{
   color: rgba(var(--kx-fg), .92) !important;
 }
 
-html[data-theme='light'], html.kx-light, body[data-theme='light'] [class*='bg-black'],
-html[data-theme='light'], html.kx-light, body[data-theme='light'] [class*='bg-slate-9'],
-html[data-theme='light'], html.kx-light, body[data-theme='light'] [class*='bg-gray-9']{
+html[data-theme='light'] [class*='bg-black'],
+html[data-theme='light'] [class*='bg-slate-9'],
+html[data-theme='light'] [class*='bg-gray-9']{
   background-color: rgba(var(--kx-surface), .92) !important;
 }
 
@@ -255,11 +259,11 @@ html[data-theme='light'], html.kx-light, body[data-theme='light'] [class*='bg-gr
 }
 
 /* Premium card */
-.kx-card{
+html[data-theme='dark'] .kx-card{
   background:
-    radial-gradient(120% 140% at 20% 0%, rgba(34,211,238,.10), transparent 55%),
-    linear-gradient(180deg, rgba(18,22,36,.78), rgba(14,18,30,.78));
-  border: 1px solid rgba(255,255,255,.10);
+    radial-gradient(120% 140% at 20% 0%, rgba(var(--kx-accent), .10), transparent 55%),
+    linear-gradient(180deg, rgba(var(--kx-surface),.82), rgba(var(--kx-shell),.82));
+  border: 1px solid rgba(var(--kx-border),.10);
   border-radius: 20px;
   backdrop-filter: blur(14px);
   box-shadow:
