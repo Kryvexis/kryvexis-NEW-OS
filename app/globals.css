@@ -2,61 +2,93 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ---------- Kryvexis Design Tokens ---------- */
-:root {
-  /* Light theme (default) */
-  --kx-accent: 16 185 129; /* emerald */
+/* =====================================================================
+   Kryvexis CSS Architecture (tokens → base → layout → components)
+   - Theme-driven (light/dark + runtime accent)
+   - Removes duplicated rules and undefined variables
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   1) TOKENS
+   Space-separated RGB values so we can use rgb()/rgba().
+   --------------------------------------------------------------------- */
+:root{
+  /* Brand accent (overridden at runtime via localStorage in app/layout.tsx) */
+  --kx-accent: 34 211 238; /* cyan */
+
+  /* Light theme defaults */
   --kx-bg: 245 247 252;
   --kx-shell: 255 255 255;
-  --kx-fg: 11 15 26;
-  --kx-muted: 30 41 59;
-  --kx-border: 30 41 59;
   --kx-surface: 255 255 255;
   --kx-surface-2: 249 250 251;
+  --kx-card: 255 255 255;
+  --kx-fg: 11 15 26;
+  --kx-muted: 51 65 85;
+  --kx-border: 15 23 42;
+
+  /* Derived tokens */
+  --kx-ring: var(--kx-accent);
+  --kx-radius-sm: 12px;
+  --kx-radius-md: 16px;
+  --kx-radius-lg: 20px;
+  --kx-radius-xl: 22px;
+  --kx-shadow-sm: 0 2px 10px rgba(15,23,42,.06);
+  --kx-shadow-md: 0 14px 36px rgba(15,23,42,.10);
+  --kx-shadow-lg: 0 22px 70px rgba(0,0,0,.38);
+  --kx-shadow-dark: 0 18px 55px rgba(0,0,0,.42);
 }
 
-
-html[data-theme='dark'] {
-  --kx-accent: 34 211 238; /* cyan */
+html[data-theme='dark']{
   --kx-bg: 7 10 18;
   --kx-shell: 8 11 20;
+  --kx-surface: 12 16 28;
+  --kx-surface-2: 16 22 38;
+  --kx-card: 12 16 28;
   --kx-fg: 255 255 255;
   --kx-muted: 226 232 240;
   --kx-border: 148 163 184;
-  --kx-surface: 12 16 28;
-  --kx-surface-2: 16 22 38;
+  color-scheme: dark;
 }
 
+html[data-theme='light']{ color-scheme: light; }
 
-html[data-theme='light'] {
-  --kx-accent: 16 185 129;
-  --kx-bg: 245 247 252;
-  --kx-shell: 255 255 255;
-  --kx-fg: 11 15 26;
-  --kx-muted: 30 41 59;
-  --kx-border: 30 41 59;
-  --kx-surface: 255 255 255;
-  --kx-surface-2: 249 250 251;
-  color-scheme: light;
-}
-
-/* ---------- Base ---------- */
-html, body{
-  height: 100%;
-}
+/* ---------------------------------------------------------------------
+   2) BASE
+   --------------------------------------------------------------------- */
+html, body{ height: 100%; }
 
 body{
-  background: rgb(var(--kx-surface));
+  background: rgb(var(--kx-bg));
   color: rgba(var(--kx-fg), .92);
+  text-rendering: geometricPrecision;
 }
 
+/* Premium, subtle backdrop in light mode */
 html[data-theme='light'] body{
   background:
     radial-gradient(900px 700px at 20% 0%, rgba(var(--kx-accent),.10), transparent 60%),
     radial-gradient(900px 650px at 90% 0%, rgba(0,0,0,.04), transparent 60%),
     rgb(var(--kx-bg));
-  color: rgba(var(--kx-fg), .92);
 }
+
+table{ border-collapse: separate; border-spacing: 0; }
+
+/* Accessible focus ring (works for non-tailwind elements too) */
+:where(button, a, input, select, textarea):focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--kx-ring), .28);
+}
+
+/* ---------------------------------------------------------------------
+   3) LAYOUT
+   --------------------------------------------------------------------- */
+.kx-page{
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 18px 18px 28px;
+}
+@media (max-width: 640px){ .kx-page{ padding: 14px 14px 22px; } }
 
 /* Sidebar / nav hover polish */
 .kx-navlink:hover{
@@ -64,14 +96,112 @@ html[data-theme='light'] body{
     0 0 0 1px rgba(var(--kx-accent), .18),
     0 16px 40px rgba(0,0,0,.20);
 }
-
 html[data-theme='light'] .kx-navlink:hover{
   box-shadow:
     0 0 0 1px rgba(var(--kx-accent), .20),
     0 14px 40px rgba(0,0,0,.10);
 }
 
-/* ---------- Modal / Tooltip / Onboarding ---------- */
+/* ---------------------------------------------------------------------
+   4) COMPONENTS
+   --------------------------------------------------------------------- */
+
+/* Surface helpers */
+.kx-hairline{ border-color: rgba(var(--kx-border),.10); }
+.kx-surface{
+  background: rgba(var(--kx-surface),.70);
+  border: 1px solid rgba(var(--kx-border),.10);
+  backdrop-filter: blur(10px);
+  border-radius: var(--kx-radius-lg);
+}
+
+/* Cards / panels */
+.kx-card{
+  background: linear-gradient(180deg, rgba(var(--kx-card), 1), rgba(var(--kx-surface-2), 1));
+  border: 1px solid rgba(var(--kx-border), .10);
+  border-radius: var(--kx-radius-lg);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--kx-shadow-md), var(--kx-shadow-sm);
+}
+
+html[data-theme="dark"] .kx-card{
+  box-shadow: var(--kx-shadow-dark), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.kx-panel{
+  background: rgba(var(--kx-surface), .82);
+  border: 1px solid rgba(var(--kx-border), .10);
+  border-radius: var(--kx-radius-lg);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 14px 40px rgba(0,0,0,.16);
+}
+html[data-theme="dark"] .kx-panel{ box-shadow: 0 14px 44px rgba(0,0,0,.36); }
+
+/* Buttons */
+.kx-button,
+.kx-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--kx-radius-sm);
+  border: 1px solid rgba(var(--kx-border),.12);
+  background: rgba(var(--kx-border),.06);
+  color: rgba(var(--kx-fg),.90);
+  font-size: 13px;
+  transition: background .15s ease, transform .12s ease, box-shadow .15s ease;
+}
+.kx-button:hover,
+.kx-btn:hover{ background: rgba(var(--kx-border),.10); }
+.kx-btn:active{ transform: translateY(1px); }
+
+/* Icon button */
+.kx-icon-btn{
+  height: 36px;
+  width: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--kx-radius-sm);
+  border: 1px solid rgba(var(--kx-border),.12);
+  background: rgba(var(--kx-border),.06);
+  color: rgba(var(--kx-fg),.92);
+  transition: background .15s ease;
+}
+.kx-icon-btn:hover{ background: rgba(var(--kx-border),.10); }
+
+/* Badges / chips */
+.kx-badge{
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 12px;
+  border: 1px solid rgba(var(--kx-border),.10);
+  background: rgba(var(--kx-border),.05);
+}
+
+.kx-chip,
+.kx-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--kx-border),.12);
+  background: rgba(var(--kx-border),.06);
+  font-size: 12px;
+  color: rgba(var(--kx-fg),.86);
+}
+
+/* Text helpers */
+.kx-muted{ color: rgba(var(--kx-fg), .68); }
+.kx-muted2{ color: rgba(var(--kx-fg), .56); }
+.kx-muted3{ color: rgba(var(--kx-fg), .45); }
+.kx-border{ border-color: rgba(var(--kx-border), .18); }
+.kx-borderSoft{ border-color: rgba(var(--kx-border), .12); }
+
+/* Modal */
 .kx-modal-backdrop{
   position: fixed;
   inset: 0;
@@ -87,11 +217,12 @@ html[data-theme='light'] .kx-navlink:hover{
   width: min(560px, 100%);
   max-height: min(86vh, 820px);
   overflow: auto;
-  border-radius: 22px;
-  background: rgba(11,15,26,.92);
-  border: 1px solid rgba(255,255,255,.10);
-  box-shadow: 0 30px 90px rgba(0,0,0,.45);
-  backdrop-filter: blur(10px);
+  border-radius: var(--kx-radius-xl);
+  background: rgba(var(--kx-surface), .88);
+  border: 1px solid rgba(var(--kx-border), .14);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: var(--kx-shadow-lg);
 }
 
 .kx-modal-header{
@@ -100,24 +231,12 @@ html[data-theme='light'] .kx-navlink:hover{
   justify-content: space-between;
   gap: 12px;
   padding: 16px 18px;
-  border-bottom: 1px solid rgba(255,255,255,.10);
+  border-bottom: 1px solid rgba(var(--kx-border),.12);
 }
-
 .kx-modal-title{ font-weight: 700; letter-spacing: -0.01em; }
 .kx-modal-body{ padding: 16px 18px; }
 
-.kx-icon-btn{
-  height: 36px;
-  width: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  border: 1px solid rgba(var(--kx-border),.12);
-  background: rgba(var(--kx-border),.06);
-  color: rgba(var(--kx-fg),.92);
-}
-.kx-icon-btn:hover{ background: rgba(var(--kx-border),.10); }
-
+/* Tooltip */
 .kx-tooltip-wrap{ position: relative; display: inline-flex; align-items: center; }
 .kx-tooltip{
   position: absolute;
@@ -127,13 +246,13 @@ html[data-theme='light'] .kx-navlink:hover{
   width: max-content;
   max-width: 280px;
   padding: 10px 12px;
-  border-radius: 14px;
+  border-radius: var(--kx-radius-sm);
   border: 1px solid rgba(var(--kx-border),.12);
-  background: rgba(var(--kx-bg),.92);
+  background: rgba(var(--kx-surface),.96);
   color: rgba(var(--kx-fg),.92);
   font-size: 12px;
   line-height: 1.35;
-  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+  box-shadow: 0 18px 60px rgba(0,0,0,.28);
   opacity: 0;
   pointer-events: none;
   transition: opacity .12s ease, transform .12s ease;
@@ -143,6 +262,14 @@ html[data-theme='light'] .kx-navlink:hover{
 .kx-tooltip-wrap.is-open .kx-tooltip{
   opacity: 1;
   transform: translateX(-50%) translateY(-2px);
+}
+@media (max-width: 860px){
+  .kx-tooltip{
+    max-width: min(80vw, 320px);
+    font-size: 13px;
+    padding: 12px 12px;
+    border-radius: var(--kx-radius-md);
+  }
 }
 
 .kx-kbd{
@@ -156,334 +283,61 @@ html[data-theme='light'] .kx-navlink:hover{
   color: rgba(var(--kx-fg),.92);
 }
 
-/* ---------- Utilities used across the app ---------- */
-.kx-hairline{ border-color: rgba(var(--kx-border),.10); }
-.kx-surface{
-  background: rgba(var(--kx-surface),.70);
-  border: 1px solid rgba(var(--kx-border),.10);
-  backdrop-filter: blur(10px);
-}
-/* Premium card (theme-aware) */
-.kx-card{
-  background: linear-gradient(180deg, rgba(var(--kx-surface), 1), rgba(var(--kx-surface-2), 1));
-  border: 1px solid rgba(var(--kx-border), .10);
-  border-radius: 20px;
-  backdrop-filter: blur(14px);
-  box-shadow:
-    0 14px 36px rgba(15,23,42,.10),
-    0 2px 10px rgba(15,23,42,.06);
-}
-
-/* Dark mode boosts depth */
-html.dark .kx-card,
-html[data-theme="dark"] .kx-card{
-  box-shadow:
-    0 18px 55px rgba(0,0,0,.42),
-    inset 0 1px 0 rgba(255,255,255,.08);
-}
-
-/* Panel variant */
-.kx-panel{
-  background: rgba(var(--kx-surface), .82);
-  border: 1px solid rgba(var(--kx-border), .10);
-  border-radius: 20px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 14px 40px rgba(0,0,0,.16);
-}
-html.dark .kx-panel,
-html[data-theme="dark"] .kx-panel{
-  box-shadow: 0 14px 44px rgba(0,0,0,.36);
-}
-.kx-button{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(var(--kx-border),.12);
-  background: rgba(var(--kx-border),.06);
-  color: rgba(var(--kx-fg),.90);
-  font-size: 13px;
-  transition: .15s ease;
-}
-
-/* Text + border helpers */
-.kx-muted{ color: rgba(var(--kx-fg), .68); }
-.kx-muted2{ color: rgba(var(--kx-fg), .56); }
-.kx-muted3{ color: rgba(var(--kx-fg), .45); }
-.kx-border{ border-color: rgba(var(--kx-border), .18); }
-.kx-borderSoft{ border-color: rgba(var(--kx-border), .12); }
-
-/* Overlay + modal */
-.kx-overlay{ background: rgba(0,0,0,.55); }
-html.dark .kx-overlay,
-html[data-theme="dark"] .kx-overlay{ background: rgba(0,0,0,.62); }
-
-.kx-modal{
-  background: rgba(var(--kx-surface), .88);
-  border: 1px solid rgba(var(--kx-border), .14);
-  border-radius: 22px;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 22px 70px rgba(0,0,0,.38);
-}
-
-.kx-pill{
-  background: rgba(var(--kx-border), .06);
-  border: 1px solid rgba(var(--kx-border), .12);
-  border-radius: 999px;
-}
-.kx-button:hover{ background: rgba(var(--kx-border),.10); }
-
-.kx-badge{
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 8px 12px;
-  border: 1px solid rgba(var(--kx-border),.10);
-  background: rgba(var(--kx-border),.05);
-}
-
-table{
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-/* Tooltip mobile tweaks */
-@media (max-width: 860px){
-  .kx-tooltip{
-    max-width: min(80vw, 320px);
-    font-size: 13px;
-    padding: 12px 12px;
-    border-radius: 16px;
-  }
-}
-
-.kx-chip{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(var(--kx-border),.12);
-  background: rgba(var(--kx-border),.06);
-  font-size: 12px;
-  color: rgba(var(--kx-fg),.86);
-}
-
-/* =========================================================
-   Theme tokenization layer
-
-   The app historically used Tailwind color utilities like:
-   - bg-white/5, border-white/10, text-white/60
-   - bg-black/20 (inputs), hover:bg-white/5, etc.
-
-   Those utilities compile to hard-coded RGB values, so they don't respond
-   to our theme variables. Instead of rewriting every page right now, we map
-   the common legacy utilities to Kryvexis theme tokens.
-
-   Result: the *whole UI* becomes theme-driven (light/dark) without needing
-   risky mass refactors.
-   ========================================================= */
-
-/* --- TEXT ------------------------------------------------ */
-/* Any legacy "text-white/..." becomes theme text */
-[class*='text-white/']{ color: rgba(var(--kx-fg), .92) !important; }
-[class*='text-white/90']{ color: rgba(var(--kx-fg), .96) !important; }
-[class*='text-white/85']{ color: rgba(var(--kx-fg), .92) !important; }
-[class*='text-white/80']{ color: rgba(var(--kx-fg), .88) !important; }
-[class*='text-white/70']{ color: rgba(var(--kx-fg), .84) !important; }
-[class*='text-white/60']{ color: rgba(var(--kx-muted), .96) !important; }
-[class*='text-white/55']{ color: rgba(var(--kx-muted), .90) !important; }
-[class*='text-white/50']{ color: rgba(var(--kx-muted), .84) !important; }
-
-/* Any hard-coded "text-black" becomes theme text */
-[class*='text-black'],
-[class*='text-slate-9'],
-[class*='text-gray-9']{ color: rgba(var(--kx-fg), .92) !important; }
-
-/* --- BACKGROUNDS ---------------------------------------- */
-/* Cards / panels */
-[class*='bg-white/5'],
-[class*='bg-white/4']{ background-color: rgba(var(--kx-card), .92) !important; }
-[class*='bg-white/10']{ background-color: rgba(var(--kx-card), 1) !important; }
-[class*='bg-white/15']{ background-color: rgba(var(--kx-surface-2), .92) !important; }
-
-/* Subtle fills */
-[class*='bg-white/25']{ background-color: rgba(var(--kx-muted), .22) !important; }
-
-/* Inputs */
-[class*='bg-black/20'],
-[class*='bg-black/30']{ background-color: rgba(var(--kx-surface), .72) !important; }
-
-/* Hard-coded dark panels */
-[class*='bg-black'],
-[class*='bg-slate-9'],
-[class*='bg-gray-9']{ background-color: rgba(var(--kx-surface), .92) !important; }
-
-/* --- BORDERS -------------------------------------------- */
-[class*='border-white/10']{ border-color: rgba(var(--kx-border), .85) !important; }
-[class*='border-white/15']{ border-color: rgba(var(--kx-border), .95) !important; }
-[class*='border-white/5']{ border-color: rgba(var(--kx-border), .70) !important; }
-
-/* Keep layout separators visible across themes */
-[class*='border-t'],
-[class*='border-b']{ border-color: rgba(var(--kx-border), .75); }
-
-/* --- HOVER / FOCUS -------------------------------------- */
-[class*='hover:bg-white/5']:hover{ background-color: rgba(var(--kx-surface-2), .75) !important; }
-[class*='hover:bg-white/10']:hover{ background-color: rgba(var(--kx-surface-2), .92) !important; }
-[class*='focus:border-cyan']{ border-color: rgba(var(--kx-ring), .70) !important; }
-
-/* =========================================================
-   Kryvexis Premium UI Pass (All Pages)
-   - consistent cards, tables, inputs, buttons, spacing
-   ========================================================= */
-
-/* Page rhythm */
-.kx-page{
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 18px 18px 28px;
-}
-@media (max-width: 640px){
-  .kx-page{ padding: 14px 14px 22px; }
-}
-
-/* Subtle "panel" variant */
-.kx-panel{
-  background: rgba(var(--kx-card), .92);
-  border: 1px solid rgba(var(--kx-border), .80);
-  border-radius: 20px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 14px 40px rgba(0,0,0,.10);
-}
-
 /* Headings */
-.kx-h1{
-  font-size: 26px;
-  letter-spacing: -0.02em;
-  font-weight: 700;
-}
-.kx-sub{
-  color: rgba(var(--kx-muted), .96);
-  font-size: 13px;
-}
+.kx-h1{ font-size: 26px; letter-spacing: -0.02em; font-weight: 700; }
+.kx-sub{ color: rgba(var(--kx-muted), .96); font-size: 13px; }
 
-/* Buttons */
-.kx-btn,
-.kx-auth-primary{
-  border-radius: 12px;
-  box-shadow:
-    0 12px 30px rgba(0,0,0,.35),
-    inset 0 1px 0 rgba(255,255,255,.12);
-}
-.kx-btn{
-  background: rgba(var(--kx-surface-2), .65);
-  border: 1px solid rgba(var(--kx-border), .85);
-  color: rgba(var(--kx-fg), .92);
-}
-.kx-btn:hover{ background: rgba(var(--kx-surface-2), .78); }
-.kx-btn:active{ transform: translateY(1px); }
-
-/* Inputs */
+/* Inputs (shared across app + auth) */
 .kx-input,
 .kx-auth-input{
-  border-radius: 12px;
-  border: 1px solid rgba(var(--kx-border), .90);
+  height: 44px;
+  border-radius: var(--kx-radius-sm);
+  border: 1px solid rgba(var(--kx-border), .14);
   background: rgba(var(--kx-surface), .80);
   color: rgba(var(--kx-fg), .92);
+  padding: 0 12px;
+  outline: none;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
 }
 .kx-input:focus,
 .kx-auth-input:focus{
-  outline: none;
-  border-color: rgba(var(--kx-accent), .55);
-  box-shadow:
-    0 0 0 3px rgba(var(--kx-accent), .16),
-    inset 0 1px 0 rgba(255,255,255,.06);
+  border-color: rgba(var(--kx-ring), .55);
+  box-shadow: 0 0 0 4px rgba(var(--kx-ring), .12);
 }
 
-/* Tables */
-.kx-table{
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  overflow: hidden;
-  border-radius: 16px;
-  border: 1px solid rgba(var(--kx-border), .80);
-  background: rgba(var(--kx-card), .92);
-}
-.kx-table th{
-  text-align: left;
-  font-size: 11px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: rgba(var(--kx-muted), .96);
-  background: rgba(var(--kx-surface-2), .55);
-  padding: 12px 14px;
-  border-bottom: 1px solid rgba(var(--kx-border), .70);
-}
-.kx-table td{
-  padding: 12px 14px;
-  border-bottom: 1px solid rgba(var(--kx-border), .55);
-  color: rgba(var(--kx-fg), .92);
-}
-.kx-table tr:hover td{
-  background: rgba(var(--kx-surface-2), .55);
-}
-.kx-table tr:last-child td{
-  border-bottom: none;
-}
 
-/* Mobile: tables become scrollable in a card */
-.kx-tableWrap{
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.kx-tableWrap::-webkit-scrollbar{ height: 10px; }
-.kx-tableWrap::-webkit-scrollbar-thumb{
-  background: rgba(var(--kx-border), .55);
-  border-radius: 999px;
-}
+   Maps common legacy utility outputs (bg-white/5 etc) to theme variables.
+   --------------------------------------------------------------------- */
 
-/* =========================================================
-   Kryvexis Guided Tour Spotlight
-   ========================================================= */
-.kx-tour-overlay{
+
+/* ---------------------------------------------------------------------
+   5) UTILITIES (semantic helpers)
+   --------------------------------------------------------------------- */
+.kx-row{
+  border-bottom: 1px solid rgba(var(--kx-border), .12);
+}
+.kx-row:hover{
+  background: rgba(var(--kx-border), .06);
+}
+.kx-bar{
+  background: rgba(var(--kx-ring), .30);
+  border-radius: 10px;
+}
+.kx-fab{
   position: fixed;
-  inset: 0;
-  background: rgba(5,8,16,.65);
-  backdrop-filter: blur(8px);
-  z-index: 9998;
-}
-
-.kx-tour-highlight{
-  position: relative;
-  z-index: 9999 !important;
-  box-shadow:
-    0 0 0 4px rgba(56,189,248,.45),
-    0 0 30px rgba(56,189,248,.35);
-  border-radius: 14px;
-}
-
-/* Help Center FAB */
-.kx-help-fab{
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
+  right: 20px;
+  bottom: 20px;
   z-index: 60;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--kx-radius-md);
+  border: 1px solid rgba(var(--kx-border), .12);
+  background: rgba(var(--kx-border), .10);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 14px 40px rgba(0,0,0,.45);
+  display: grid;
+  place-items: center;
+  transition: transform .12s ease, background-color .12s ease, border-color .12s ease;
 }
-
-/* Ensure spotlight highlight stays crisp */
-.kx-tour-overlay{
-  pointer-events: none;
-}
-.kx-tour-highlight{
-  filter: none !important;
-  backdrop-filter: none !important;
-  opacity: 1 !important;
-}
+.kx-fab:hover{ background: rgba(var(--kx-border), .14); }
+.kx-fab:active{ transform: translateY(1px); }
