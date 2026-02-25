@@ -248,33 +248,68 @@ table{
 }
 
 /* =========================================================
-   Theme safety net
-   Some legacy components still ship hard-coded Tailwind colors
-   (bg-white / text-white). These overrides ensure the app
-   still visibly switches between light/dark.
+   Theme tokenization layer
+
+   The app historically used Tailwind color utilities like:
+   - bg-white/5, border-white/10, text-white/60
+   - bg-black/20 (inputs), hover:bg-white/5, etc.
+
+   Those utilities compile to hard-coded RGB values, so they don't respond
+   to our theme variables. Instead of rewriting every page right now, we map
+   the common legacy utilities to Kryvexis theme tokens.
+
+   Result: the *whole UI* becomes theme-driven (light/dark) without needing
+   risky mass refactors.
    ========================================================= */
 
-html[data-theme='dark'] [class*='bg-white'],
-html[data-theme='dark'] [class*='bg-slate-'],
-html[data-theme='dark'] [class*='bg-gray-']{
-  background-color: rgba(var(--kx-surface), .82) !important;
-}
+/* --- TEXT ------------------------------------------------ */
+/* Any legacy "text-white/..." becomes theme text */
+[class*='text-white/']{ color: rgba(var(--kx-fg), .92) !important; }
+[class*='text-white/90']{ color: rgba(var(--kx-fg), .96) !important; }
+[class*='text-white/85']{ color: rgba(var(--kx-fg), .92) !important; }
+[class*='text-white/80']{ color: rgba(var(--kx-fg), .88) !important; }
+[class*='text-white/70']{ color: rgba(var(--kx-fg), .84) !important; }
+[class*='text-white/60']{ color: rgba(var(--kx-muted), .96) !important; }
+[class*='text-white/55']{ color: rgba(var(--kx-muted), .90) !important; }
+[class*='text-white/50']{ color: rgba(var(--kx-muted), .84) !important; }
 
-html[data-theme='dark'] [class*='text-black'],
-html[data-theme='dark'] [class*='text-slate-9'],
-html[data-theme='dark'] [class*='text-gray-9']{
-  color: rgba(var(--kx-fg), .92) !important;
-}
+/* Any hard-coded "text-black" becomes theme text */
+[class*='text-black'],
+[class*='text-slate-9'],
+[class*='text-gray-9']{ color: rgba(var(--kx-fg), .92) !important; }
 
-html[data-theme='light'] [class*='text-white']{
-  color: rgba(var(--kx-fg), .92) !important;
-}
+/* --- BACKGROUNDS ---------------------------------------- */
+/* Cards / panels */
+[class*='bg-white/5'],
+[class*='bg-white/4']{ background-color: rgba(var(--kx-card), .92) !important; }
+[class*='bg-white/10']{ background-color: rgba(var(--kx-card), 1) !important; }
+[class*='bg-white/15']{ background-color: rgba(var(--kx-surface-2), .92) !important; }
 
-html[data-theme='light'] [class*='bg-black'],
-html[data-theme='light'] [class*='bg-slate-9'],
-html[data-theme='light'] [class*='bg-gray-9']{
-  background-color: rgba(var(--kx-surface), .92) !important;
-}
+/* Subtle fills */
+[class*='bg-white/25']{ background-color: rgba(var(--kx-muted), .22) !important; }
+
+/* Inputs */
+[class*='bg-black/20'],
+[class*='bg-black/30']{ background-color: rgba(var(--kx-surface), .72) !important; }
+
+/* Hard-coded dark panels */
+[class*='bg-black'],
+[class*='bg-slate-9'],
+[class*='bg-gray-9']{ background-color: rgba(var(--kx-surface), .92) !important; }
+
+/* --- BORDERS -------------------------------------------- */
+[class*='border-white/10']{ border-color: rgba(var(--kx-border), .85) !important; }
+[class*='border-white/15']{ border-color: rgba(var(--kx-border), .95) !important; }
+[class*='border-white/5']{ border-color: rgba(var(--kx-border), .70) !important; }
+
+/* Keep layout separators visible across themes */
+[class*='border-t'],
+[class*='border-b']{ border-color: rgba(var(--kx-border), .75); }
+
+/* --- HOVER / FOCUS -------------------------------------- */
+[class*='hover:bg-white/5']:hover{ background-color: rgba(var(--kx-surface-2), .75) !important; }
+[class*='hover:bg-white/10']:hover{ background-color: rgba(var(--kx-surface-2), .92) !important; }
+[class*='focus:border-cyan']{ border-color: rgba(var(--kx-ring), .70) !important; }
 
 /* =========================================================
    Kryvexis Premium UI Pass (All Pages)
@@ -294,11 +329,11 @@ html[data-theme='light'] [class*='bg-gray-9']{
 
 /* Subtle "panel" variant */
 .kx-panel{
-  background: rgba(18,22,36,.64);
-  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(var(--kx-card), .92);
+  border: 1px solid rgba(var(--kx-border), .80);
   border-radius: 20px;
   backdrop-filter: blur(12px);
-  box-shadow: 0 14px 40px rgba(0,0,0,.35);
+  box-shadow: 0 14px 40px rgba(0,0,0,.10);
 }
 
 /* Headings */
@@ -308,7 +343,7 @@ html[data-theme='light'] [class*='bg-gray-9']{
   font-weight: 700;
 }
 .kx-sub{
-  color: rgba(255,255,255,.62);
+  color: rgba(var(--kx-muted), .96);
   font-size: 13px;
 }
 
@@ -321,18 +356,20 @@ html[data-theme='light'] [class*='bg-gray-9']{
     inset 0 1px 0 rgba(255,255,255,.12);
 }
 .kx-btn{
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(var(--kx-surface-2), .65);
+  border: 1px solid rgba(var(--kx-border), .85);
+  color: rgba(var(--kx-fg), .92);
 }
-.kx-btn:hover{ background: rgba(255,255,255,.11); }
+.kx-btn:hover{ background: rgba(var(--kx-surface-2), .78); }
 .kx-btn:active{ transform: translateY(1px); }
 
 /* Inputs */
 .kx-input,
 .kx-auth-input{
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(12,16,26,.55);
+  border: 1px solid rgba(var(--kx-border), .90);
+  background: rgba(var(--kx-surface), .80);
+  color: rgba(var(--kx-fg), .92);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
 }
 .kx-input:focus,
@@ -351,26 +388,26 @@ html[data-theme='light'] [class*='bg-gray-9']{
   border-spacing: 0;
   overflow: hidden;
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(18,22,36,.55);
+  border: 1px solid rgba(var(--kx-border), .80);
+  background: rgba(var(--kx-card), .92);
 }
 .kx-table th{
   text-align: left;
   font-size: 11px;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: rgba(255,255,255,.55);
-  background: rgba(255,255,255,.04);
+  color: rgba(var(--kx-muted), .96);
+  background: rgba(var(--kx-surface-2), .55);
   padding: 12px 14px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(var(--kx-border), .70);
 }
 .kx-table td{
   padding: 12px 14px;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  color: rgba(255,255,255,.86);
+  border-bottom: 1px solid rgba(var(--kx-border), .55);
+  color: rgba(var(--kx-fg), .92);
 }
 .kx-table tr:hover td{
-  background: rgba(255,255,255,.03);
+  background: rgba(var(--kx-surface-2), .55);
 }
 .kx-table tr:last-child td{
   border-bottom: none;
@@ -383,7 +420,7 @@ html[data-theme='light'] [class*='bg-gray-9']{
 }
 .kx-tableWrap::-webkit-scrollbar{ height: 10px; }
 .kx-tableWrap::-webkit-scrollbar-thumb{
-  background: rgba(255,255,255,.12);
+  background: rgba(var(--kx-border), .55);
   border-radius: 999px;
 }
 

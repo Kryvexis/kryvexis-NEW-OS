@@ -181,21 +181,3 @@ html[data-theme="light"] canvas,
 html[data-theme="light"] svg{
   filter: invert(1) hue-rotate(180deg);
 }
-:root {
-  --bg: #f5f6f8;
-  --card: #ffffff;
-  --text: #0f172a;
-  --border: #e5e7eb;
-}
-
-.dark {
-  --bg: #0a0a0a;
-  --card: #111111;
-  --text: #f8fafc;
-  --border: #262626;
-}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-}
