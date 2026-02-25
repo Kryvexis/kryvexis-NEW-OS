@@ -3,7 +3,17 @@
 @tailwind utilities;
 
 /* ---------- Kryvexis Design Tokens ---------- */
-:root{
+:root {
+  --kx-bg: 245 247 252;
+  --kx-shell: 255 255 255;
+  --kx-fg: 11 15 26;
+  --kx-muted: 11 15 26;
+  --kx-border: 11 15 26;
+  --kx-surface: 255 255 255;
+  --kx-surface-2: 248 250 255;
+}
+
+html[data-theme='dark'] {
   --kx-bg: 7 10 18;
   --kx-shell: 8 11 20;
   --kx-fg: 255 255 255;
@@ -12,9 +22,10 @@
   --kx-border: 255 255 255;
   --kx-surface: 18 22 36;
   --kx-surface-2: 24 30 50;
+  color-scheme: dark;
 }
 
-html[data-theme='light']{
+html[data-theme='light'] {
   --kx-bg: 245 247 252;
   --kx-shell: 255 255 255;
   --kx-fg: 11 15 26;
@@ -22,6 +33,7 @@ html[data-theme='light']{
   --kx-border: 11 15 26;
   --kx-surface: 255 255 255;
   --kx-surface-2: 248 250 255;
+  color-scheme: light;
 }
 
 /* ---------- Base ---------- */
