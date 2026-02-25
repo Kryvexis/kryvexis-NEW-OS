@@ -27,11 +27,6 @@ html[data-theme='light']{
 /* ---------- Base ---------- */
 html, body{
   height: 100%;
-  background:
-    radial-gradient(900px 700px at 20% 0%, rgba(var(--kx-accent), .12), transparent 60%),
-    radial-gradient(800px 650px at 95% 10%, rgba(var(--kx-border), .05), transparent 62%),
-    rgb(var(--kx-bg));
-  color: rgba(var(--kx-fg), .92);
 }
 
 body{

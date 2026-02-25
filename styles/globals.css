@@ -111,12 +111,13 @@ body{
   backdrop-filter: blur(10px);
 }
 .kx-card{
-  background: rgba(18,22,36,.70);
-  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(var(--kx-surface),.78);
+  border: 1px solid rgba(var(--kx-border),.10);
   border-radius: 18px;
   padding: 14px;
   backdrop-filter: blur(10px);
 }
+
 
 .kx-button{
   display: inline-flex;
@@ -181,3 +182,5 @@ html[data-theme="light"] canvas,
 html[data-theme="light"] svg{
   filter: invert(1) hue-rotate(180deg);
 }
+
+html[data-theme='light'] body{ background: rgb(var(--kx-bg)); color: rgba(var(--kx-fg),.92); }
