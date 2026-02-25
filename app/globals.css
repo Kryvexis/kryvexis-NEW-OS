@@ -3,31 +3,25 @@
 @tailwind utilities;
 
 /* ---------- Kryvexis Design Tokens ---------- */
-/* Default = LIGHT (clean) */
 :root{
-  --kx-bg: 245 247 252;
-  --kx-shell: 255 255 255;
-  --kx-fg: 11 15 26;
-  --kx-muted: 11 15 26;
-  --kx-accent: 34 211 238;
-  --kx-border: 11 15 26;
-  --kx-surface: 255 255 255;
-  --kx-surface-2: 248 250 255;
-}
-
-/* Dark mode overrides (match multiple selectors so it can't "miss") */
-html[data-theme='dark'],
-body[data-theme='dark'],
-.dark,
-html.dark,
-[data-theme='dark']{
   --kx-bg: 7 10 18;
   --kx-shell: 8 11 20;
   --kx-fg: 255 255 255;
   --kx-muted: 255 255 255;
+  --kx-accent: 34 211 238;
   --kx-border: 255 255 255;
   --kx-surface: 18 22 36;
   --kx-surface-2: 24 30 50;
+}
+
+html[data-theme='light']{
+  --kx-bg: 245 247 252;
+  --kx-shell: 255 255 255;
+  --kx-fg: 11 15 26;
+  --kx-muted: 11 15 26;
+  --kx-border: 11 15 26;
+  --kx-surface: 255 255 255;
+  --kx-surface-2: 248 250 255;
 }
 
 /* ---------- Base ---------- */
@@ -37,18 +31,16 @@ html, body{
 
 body{
   background:
-    radial-gradient(900px 700px at 20% 0%, rgba(var(--kx-accent),.10), transparent 60%),
-    radial-gradient(900px 650px at 90% 0%, rgba(0,0,0,.04), transparent 60%),
+    radial-gradient(900px 700px at 20% 0%, rgba(var(--kx-accent),.12), transparent 60%),
+    radial-gradient(800px 650px at 95% 10%, rgba(255,255,255,.06), transparent 62%),
     rgb(var(--kx-bg));
   color: rgba(var(--kx-fg), .92);
 }
 
-/* Dark mode background */
-html[data-theme='dark'] body,
-body[data-theme='dark']{
+html[data-theme='light'] body{
   background:
-    radial-gradient(900px 700px at 20% 0%, rgba(var(--kx-accent),.12), transparent 60%),
-    radial-gradient(800px 650px at 95% 10%, rgba(255,255,255,.06), transparent 62%),
+    radial-gradient(900px 700px at 20% 0%, rgba(var(--kx-accent),.10), transparent 60%),
+    radial-gradient(900px 650px at 90% 0%, rgba(0,0,0,.04), transparent 60%),
     rgb(var(--kx-bg));
   color: rgba(var(--kx-fg), .92);
 }
