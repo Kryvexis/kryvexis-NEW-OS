@@ -177,7 +177,7 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
               </thead>
               <tbody>
                 {preview.map((r, idx) => (
-                  <tr key={idx} className="kx-row">
+                  <tr key={idx} className="border-b border-white/5">
                     {parsed.headers.map((h) => (
                       <td key={h} className="px-3 py-2 text-[rgba(var(--kx-fg),.82)] whitespace-nowrap">
                         {r[h]}

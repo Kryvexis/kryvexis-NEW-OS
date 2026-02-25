@@ -70,7 +70,7 @@ export default async function QuotePage({ params }: PageProps) {
 
           <div className="mt-5">
             <div className="text-sm font-semibold">Line items</div>
-            <div className="mt-3 kx-surface overflow-x-auto">
+            <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-white/4 overflow-x-auto">
               <table className="w-full text-sm min-w-[760px]">
                 <thead className="kx-muted bg-[rgba(var(--kx-border),.06)]">
                   <tr>

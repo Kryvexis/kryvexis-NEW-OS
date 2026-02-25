@@ -39,7 +39,7 @@ export default async function Page() {
             </thead>
             <tbody>
               {(payments || []).map((p) => (
-                <tr key={p.id} className="kx-row">
+                <tr key={p.id} className="border-b border-white/5 hover:bg-[rgba(var(--kx-border),.06)]">
                   <td className="py-2 kx-muted">{p.payment_date}</td>
                   <td className="py-2 kx-muted">{p.method || '—'}</td>
                   <td className="py-2 kx-muted">{p.reference || '—'}</td>

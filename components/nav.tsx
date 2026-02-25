@@ -207,12 +207,7 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
               href={it.href}
               data-tour={`nav-${it.icon}`}
               title={collapsed ? it.label : undefined}
-              className={
-                'kx-navlink group flex items-center rounded-xl py-2 text-sm transition ' +
-                (on
-                  ? 'kx-border bg-[rgba(var(--kx-border),.08)] text-[rgba(var(--kx-fg),.92)]'
-                  : 'border-transparent hover:border-[rgba(var(--kx-border),.12)] hover:bg-[rgba(var(--kx-border),.06)] text-[rgba(var(--kx-fg),.70)]')
-              }
+              className={'kx-navlink group flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'is-active' : '')}
             >
               <span className={(collapsed ? 'mx-auto' : 'ml-3') + ' ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
                 <Icon name={it.icon} />
@@ -234,12 +229,7 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
               key={it.href}
               href={it.href}
               title={collapsed ? it.label : undefined}
-              className={
-                'kx-navlink group flex items-center rounded-xl py-2 text-sm transition ' +
-                (on
-                  ? 'kx-border bg-[rgba(var(--kx-border),.08)] text-[rgba(var(--kx-fg),.92)]'
-                  : 'border-transparent hover:border-[rgba(var(--kx-border),.12)] hover:bg-[rgba(var(--kx-border),.06)] text-[rgba(var(--kx-fg),.70)]')
-              }
+              className={'kx-navlink group flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'is-active' : '')}
             >
               <span className={(collapsed ? 'mx-auto' : 'ml-3') + ' ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
                 <Icon name={it.icon} />

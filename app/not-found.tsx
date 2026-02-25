@@ -4,7 +4,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-kx flex items-center justify-center p-6">
       <div className="kx-card max-w-xl w-full text-center">
-        <div className="mx-auto h-14 w-14 rounded-3xl bg-[rgba(var(--kx-border),.10)] border border-[rgba(var(--kx-border),.24)] flex items-center justify-center">
+        <div className="mx-auto h-14 w-14 rounded-3xl bg-[rgba(var(--kx-border),.10)] border border-white/15 flex items-center justify-center">
           <span className="text-2xl">🔎</span>
         </div>
         <h1 className="mt-4 text-xl font-semibold">Page not found</h1>

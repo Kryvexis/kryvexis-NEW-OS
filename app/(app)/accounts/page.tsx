@@ -77,10 +77,10 @@ export default async function Page() {
             <div key={s.key} className="flex flex-col items-center justify-end gap-2">
               <div className="w-full flex items-end gap-2">
                 <div className="flex-1 rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
-                  <div className="kx-bar" style={{ height: `${Math.max(6, Math.round((s.income / maxV) * 140))}px` }} />
+                  <div className="bg-white/25" style={{ height: `${Math.max(6, Math.round((s.income / maxV) * 140))}px` }} />
                 </div>
                 <div className="flex-1 rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
-                  <div className="kx-bar" style={{ height: `${Math.max(6, Math.round((s.expense / maxV) * 140))}px` }} />
+                  <div className="bg-white/25" style={{ height: `${Math.max(6, Math.round((s.expense / maxV) * 140))}px` }} />
                 </div>
               </div>
               <div className="text-[11px] kx-muted2">{s.label}</div>
@@ -127,7 +127,7 @@ export default async function Page() {
             </thead>
             <tbody>
               {(txs || []).map((t) => (
-                <tr key={t.id} className="kx-row">
+                <tr key={t.id} className="border-b border-white/5 hover:bg-[rgba(var(--kx-border),.06)]">
                   <td className="py-2 kx-muted">{t.tx_date || new Date(t.created_at).toISOString().slice(0, 10)}</td>
                   <td className="py-2">{t.kind === 'income' ? 'Income' : 'Expense'}</td>
                   <td className="py-2 kx-muted">{t.category || '—'}</td>
