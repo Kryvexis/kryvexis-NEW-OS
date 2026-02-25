@@ -13,9 +13,12 @@ function getTheme(): "dark" | "light" {
 function applyTheme(theme: "dark" | "light") {
   try {
     document.documentElement.dataset.theme = theme;
+    document.body.dataset.theme = theme;
     // Tailwind-style toggle (if used)
     document.documentElement.classList.toggle("dark", theme === "dark");
+    document.body.classList.toggle('dark', theme === 'dark');
     document.documentElement.classList.toggle("kx-light", theme === "light");
+    document.body.classList.toggle('kx-light', theme === 'light');
     localStorage.setItem("kx_theme", theme);
   } catch {}
 }

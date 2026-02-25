@@ -80,7 +80,7 @@ export default async function Page() {
       <div className="flex items-end justify-between">
         <div>
           <div className="text-xl font-semibold">Dashboard</div>
-          <div className="text-sm text-white/60">Command center: sales, income, and performance.</div>
+          <div className="text-sm text-[rgba(var(--kx-fg),..60)]">Command center: sales, income, and performance.</div>
         </div>
         <div className="flex gap-2">
           <Link href="/quotes/new" className="kx-button">New Quote</Link>
@@ -90,19 +90,19 @@ export default async function Page() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         <Card>
-          <div className="text-xs text-white/55">Revenue Invoiced</div>
+          <div className="text-xs text-[rgba(var(--kx-fg),..55)]">Revenue Invoiced</div>
           <div className="mt-1 text-2xl font-semibold">{fmtZar(totalInvoiced)}</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Collected</div>
+          <div className="text-xs text-[rgba(var(--kx-fg),..55)]">Collected</div>
           <div className="mt-1 text-2xl font-semibold">{fmtZar(collected)}</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Outstanding</div>
+          <div className="text-xs text-[rgba(var(--kx-fg),..55)]">Outstanding</div>
           <div className="mt-1 text-2xl font-semibold">{fmtZar(outstanding)}</div>
         </Card>
         <Card>
-          <div className="text-xs text-white/55">Open Quotes / Paid Invoices</div>
+          <div className="text-xs text-[rgba(var(--kx-fg),..55)]">Open Quotes / Paid Invoices</div>
           <div className="mt-1 text-2xl font-semibold">{openQuotes} / {paidInvoices}</div>
         </Card>
       </div>
@@ -112,7 +112,7 @@ export default async function Page() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm font-semibold">Revenue trend</div>
-              <div className="text-xs text-white/55">Last {revenueByMonth.length} months</div>
+              <div className="text-xs text-[rgba(var(--kx-fg),..55)]">Last {revenueByMonth.length} months</div>
             </div>
           </div>
           <div className="mt-4 flex items-end gap-3 h-40">
@@ -121,7 +121,7 @@ export default async function Page() {
                 <div className="w-full rounded-xl border border-white/10 bg-white/5 overflow-hidden">
                   <div className="w-full bg-white/25" style={{ height: `${Math.max(6, Math.round((m.value / maxRev) * 140))}px` }} />
                 </div>
-                <div className="text-[11px] text-white/55">{m.label}</div>
+                <div className="text-[11px] text-[rgba(var(--kx-fg),..55)]">{m.label}</div>
               </div>
             ))}
           </div>
@@ -132,11 +132,11 @@ export default async function Page() {
           <div className="mt-3 space-y-2">
             {statusList.map(([s, c]) => (
               <div key={s} className="flex items-center justify-between text-sm">
-                <span className="text-white/70">{s}</span>
+                <span className="text-[rgba(var(--kx-fg),..70)]">{s}</span>
                 <span className="font-semibold">{c}</span>
               </div>
             ))}
-            {!statusList.length && <div className="text-sm text-white/55">No invoices yet.</div>}
+            {!statusList.length && <div className="text-sm text-[rgba(var(--kx-fg),..55)]">No invoices yet.</div>}
           </div>
         </Card>
       </div>
@@ -147,11 +147,11 @@ export default async function Page() {
           <div className="mt-3 space-y-2">
             {topClients.map((c) => (
               <Link key={c.id} href={`/clients/${c.id}`} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2 hover:bg-white/10">
-                <span className="text-sm text-white/80">{c.name}</span>
+                <span className="text-sm text-[rgba(var(--kx-fg),..80)]">{c.name}</span>
                 <span className="text-sm font-semibold">{fmtZar(c.total)}</span>
               </Link>
             ))}
-            {!topClients.length && <div className="text-sm text-white/55">No clients yet.</div>}
+            {!topClients.length && <div className="text-sm text-[rgba(var(--kx-fg),..55)]">No clients yet.</div>}
           </div>
         </Card>
 
@@ -159,13 +159,13 @@ export default async function Page() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm font-semibold">Outstanding invoices</div>
-              <div className="text-xs text-white/55">Highest balances</div>
+              <div className="text-xs text-[rgba(var(--kx-fg),..55)]">Highest balances</div>
             </div>
             <Link href="/invoices" className="kx-button">View all</Link>
           </div>
           <div className="mt-3 overflow-hidden rounded-2xl border border-white/10">
             <table className="w-full text-sm">
-              <thead className="bg-white/5 text-white/70">
+              <thead className="bg-white/5 text-[rgba(var(--kx-fg),..70)]">
                 <tr>
                   <th className="px-3 py-2 text-left font-semibold">Invoice</th>
                   <th className="px-3 py-2 text-left font-semibold">Client</th>
@@ -178,12 +178,12 @@ export default async function Page() {
                     <td className="px-3 py-2">
                       <Link className="underline-offset-2 hover:underline" href={`/invoices/${i.id}`}>{i.number || 'Invoice'}</Link>
                     </td>
-                    <td className="px-3 py-2 text-white/70">{i.clients?.name || '—'}</td>
+                    <td className="px-3 py-2 text-[rgba(var(--kx-fg),..70)]">{i.clients?.name || '—'}</td>
                     <td className="px-3 py-2 text-right font-semibold">{fmtZar(Number(i.balance_due || 0))}</td>
                   </tr>
                 ))}
                 {!outstandingList.length && (
-                  <tr><td className="px-3 py-3 text-sm text-white/55" colSpan={3}>No outstanding invoices.</td></tr>
+                  <tr><td className="px-3 py-3 text-sm text-[rgba(var(--kx-fg),..55)]" colSpan={3}>No outstanding invoices.</td></tr>
                 )}
               </tbody>
             </table>
@@ -196,11 +196,11 @@ export default async function Page() {
         <div className="mt-3 space-y-2">
           {(activity || []).map((a:any) => (
             <div key={a.id} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-              <div className="text-sm text-white/80">{a.action} · <span className="text-white/55">{a.entity_type}</span></div>
-              <div className="text-xs text-white/55">{String(a.created_at || '').slice(0, 19).replace('T', ' ')}</div>
+              <div className="text-sm text-[rgba(var(--kx-fg),..80)]">{a.action} · <span className="text-[rgba(var(--kx-fg),..55)]">{a.entity_type}</span></div>
+              <div className="text-xs text-[rgba(var(--kx-fg),..55)]">{String(a.created_at || '').slice(0, 19).replace('T', ' ')}</div>
             </div>
           ))}
-          {(!activity || activity.length===0) && <div className="text-sm text-white/55">No activity yet.</div>}
+          {(!activity || activity.length===0) && <div className="text-sm text-[rgba(var(--kx-fg),..55)]">No activity yet.</div>}
         </div>
       </Card>
     </div>
