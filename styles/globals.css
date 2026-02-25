@@ -181,28 +181,3 @@ html[data-theme="light"] canvas,
 html[data-theme="light"] svg{
   filter: invert(1) hue-rotate(180deg);
 }
-
-
-
-/* ---------- Theme Foundation Fix ---------- */
-:root{
-  --kx-bg: 255 255 255;
-  --kx-card: 241 245 249;
-  --kx-text: 15 23 42;
-}
-
-[data-theme="dark"]{
-  --kx-bg: 7 10 18;
-  --kx-card: 30 41 59;
-  --kx-text: 248 250 252;
-}
-
-body{
-  background: rgb(var(--kx-bg)) !important;
-  color: rgb(var(--kx-text)) !important;
-}
-
-.kx-card{
-  background: rgb(var(--kx-card)) !important;
-  border-radius: 16px;
-}
