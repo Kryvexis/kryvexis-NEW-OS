@@ -1,33 +1,29 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import { requireCompany } from '@/lib/kx'
-import Shell from '@/components/shell'
 
-export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
-  const { data } = await supabase.auth.getUser()
-  if (!data.user) redirect('/login')
+import "./globals.css";
 
-  const company = await requireCompany()
-
-  // Member type badge (staff / accounts / manager). Best-effort; defaults to manager.
-  let memberType: string | undefined = 'manager'
+const themeInitScript = `
+(() => {
   try {
-    const { data: cu } = await supabase
-      .from('company_users')
-      .select('role')
-      .eq('user_id', data.user.id)
-      .maybeSingle()
-    const r = (cu as any)?.role
-    if (typeof r === 'string' && r.trim()) memberType = r
-  } catch {
-    // ignore (RLS / missing table)
-    memberType = 'manager'
-  }
+    const storedTheme = localStorage.getItem("kx-theme");
+    const theme = storedTheme || "light";
 
+    const storedAccent = localStorage.getItem("kx-accent");
+    const accent = storedAccent || "34 211 238";
+
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.style.setProperty("--kx-accent", accent);
+  } catch (e) {}
+})();
+`;
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Shell userEmail={data.user.email ?? 'user'} workspaceName={company?.name ?? 'Workspace'} memberType={memberType}>
-      <div className="kx-page">{children}</div>
-    </Shell>
-  )
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
 }
