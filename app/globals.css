@@ -27,14 +27,7 @@
     --kx-inset: inset 0 1px 0 rgba(255, 255, 255, 0.72);
   }
 
-  html[data-theme='dark'] {
-    --kx-bg: 8 11 18;
-    --kx-shell: 10 14 24;
-    --kx-surface: 16 22 34;
-    --kx-surface-2: 20 28 44;
-    --kx-fg: 236 242 255;
-    --kx-muted: 148 163 184;
-    --kx-border: 148 163 184;
+  html[data-theme='dark'] {--kx-border: 82 99 125;
 
     --kx-shadow-soft: 0 14px 40px rgba(0, 0, 0, 0.45);
     --kx-shadow-tight: 0 10px 28px rgba(0, 0, 0, 0.55);
@@ -106,14 +99,14 @@
   /* Core surfaces */
   .kx-panel {
     background: rgba(var(--kx-surface), 0.86);
-    border: 1px solid rgba(var(--kx-border), 0.14);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     box-shadow: var(--kx-shadow-soft), var(--kx-inset);
     backdrop-filter: blur(12px);
-    border-radius: 18px;
+    border-radius: 22px;
   }
   html[data-theme='dark'] .kx-panel {
     background: rgba(var(--kx-surface), 0.62);
-    border-color: rgba(var(--kx-border), 0.18);
+    border-color: rgba(var(--kx-border), 0.14);
     box-shadow: var(--kx-shadow-tight), var(--kx-inset);
   }
 
@@ -123,9 +116,9 @@
 
   .kx-surface {
     background: rgba(var(--kx-surface), 0.60);
-    border: 1px solid rgba(var(--kx-border), 0.12);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     backdrop-filter: blur(14px);
-    border-radius: 18px;
+    border-radius: 22px;
   }
 
   .kx-overlay {
@@ -136,7 +129,7 @@
   .kx-button,
   .kx-btn {
     @apply inline-flex items-center justify-center gap-2 h-9 px-3 text-[13px] rounded-2xl transition;
-    border: 1px solid rgba(var(--kx-border), 0.14);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.70);
     color: rgba(var(--kx-fg), 0.92);
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
@@ -173,7 +166,7 @@
 
   .kx-btn-ghost {
     @apply inline-flex items-center justify-center gap-2 h-9 px-3 text-[13px] rounded-2xl transition;
-    border: 1px solid rgba(var(--kx-border), 0.12);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: transparent;
     color: rgba(var(--kx-fg), 0.88);
   }
@@ -183,7 +176,7 @@
 
   .kx-icon-btn {
     @apply grid place-items-center h-9 w-9 rounded-2xl transition;
-    border: 1px solid rgba(var(--kx-border), 0.14);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.70);
     color: rgba(var(--kx-fg), 0.92);
   }
@@ -196,7 +189,7 @@
   .kx-input,
   .kx-auth-input {
     @apply w-full h-11 px-3 rounded-2xl text-sm outline-none;
-    border: 1px solid rgba(var(--kx-border), 0.14);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.72);
     color: rgba(var(--kx-fg), 0.92);
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06), var(--kx-inset);
@@ -204,7 +197,7 @@
   html[data-theme='dark'] .kx-input,
   html[data-theme='dark'] .kx-auth-input {
     background: rgba(var(--kx-surface), 0.46);
-    border-color: rgba(var(--kx-border), 0.18);
+    border-color: rgba(var(--kx-border), 0.14);
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.30), var(--kx-inset);
   }
   .kx-input:focus,
@@ -218,14 +211,14 @@
 
   .kx-badge {
     @apply inline-flex items-center gap-2 rounded-full px-3 py-2;
-    border: 1px solid rgba(var(--kx-border), 0.12);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.60);
   }
 
   .kx-chip,
   .kx-pill {
     @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs;
-    border: 1px solid rgba(var(--kx-border), 0.12);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.55);
     color: rgba(var(--kx-fg), 0.86);
   }
@@ -233,7 +226,7 @@
   .kx-kbd {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     @apply text-xs px-1.5 py-0.5 rounded-lg;
-    border: 1px solid rgba(var(--kx-border), 0.14);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.60);
   }
 
@@ -286,7 +279,7 @@
     top: 0;
     z-index: 5;
     backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(var(--kx-border), 0.12);
+    border-bottom: 1px solid rgba(var(--kx-border), 0.07);
     background: rgba(var(--kx-shell), 0.65);
   }
   .kx-content {
@@ -385,7 +378,7 @@
     text-align: center;
     padding: 34px 28px 26px;
     border-radius: 22px;
-    border: 1px solid rgba(var(--kx-border), 0.16);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.12);
     backdrop-filter: blur(22px);
     box-shadow: 0 28px 90px rgba(0, 0, 0, 0.40);
@@ -454,7 +447,7 @@
   .kx-auth-brandCard,
   .kx-auth-card {
     border-radius: 22px;
-    border: 1px solid rgba(var(--kx-border), 0.16);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.12);
     backdrop-filter: blur(22px);
     box-shadow: 0 28px 90px rgba(0, 0, 0, 0.40);
@@ -499,7 +492,7 @@
   .kx-auth-bullet {
     padding: 10px 12px;
     border-radius: 16px;
-    border: 1px solid rgba(var(--kx-border), 0.12);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.08);
   }
   .kx-auth-muted {
@@ -554,7 +547,7 @@
   }
   .kx-auth-pwBtn {
     @apply h-11 px-3 rounded-2xl text-sm transition;
-    border: 1px solid rgba(var(--kx-border), 0.14);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.55);
     color: rgba(var(--kx-fg), 0.90);
   }
@@ -606,7 +599,7 @@
     overflow: auto;
     border-radius: 22px;
     background: rgba(var(--kx-shell), 0.92);
-    border: 1px solid rgba(var(--kx-border), 0.16);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
     backdrop-filter: blur(14px);
   }
@@ -616,7 +609,7 @@
     justify-content: space-between;
     gap: 12px;
     padding: 16px 18px;
-    border-bottom: 1px solid rgba(var(--kx-border), 0.14);
+    border-bottom: 1px solid rgba(var(--kx-border), 0.08);
   }
   .kx-modal-title {
     font-weight: 700;
@@ -640,7 +633,7 @@
     max-width: 280px;
     padding: 10px 12px;
     border-radius: 16px;
-    border: 1px solid rgba(var(--kx-border), 0.16);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-shell), 0.92);
     color: rgba(var(--kx-fg), 0.92);
     font-size: 12px;
@@ -701,7 +694,7 @@
     border-spacing: 0;
     overflow: hidden;
     border-radius: 16px;
-    border: 1px solid rgba(var(--kx-border), 0.16);
+    border: 1px solid rgba(var(--kx-border), 0.10);
     background: rgba(var(--kx-surface), 0.70);
   }
   .kx-table th {
@@ -712,11 +705,11 @@
     color: rgba(var(--kx-muted), 0.95);
     background: rgba(var(--kx-shell), 0.65);
     padding: 12px 14px;
-    border-bottom: 1px solid rgba(var(--kx-border), 0.14);
+    border-bottom: 1px solid rgba(var(--kx-border), 0.08);
   }
   .kx-table td {
     padding: 12px 14px;
-    border-bottom: 1px solid rgba(var(--kx-border), 0.12);
+    border-bottom: 1px solid rgba(var(--kx-border), 0.07);
     color: rgba(var(--kx-fg), 0.92);
   }
   .kx-table tr:hover td {
@@ -732,83 +725,18 @@
   }
 }
 
-/* =========================================================
-   Theme Bridge (forces hardcoded Tailwind colors to follow tokens)
-   Temporary compatibility layer until components are tokenized.
-   ========================================================= */
 
-html, body {
-  background: rgb(var(--kx-bg));
-  color: rgb(var(--kx-text));
-}
-
-/* Common “hardcoded light” Tailwind backgrounds */
-[class*="bg-white"] { background-color: rgb(var(--kx-surface)) !important; }
-[class*="bg-slate-50"], [class*="bg-gray-50"], [class*="bg-zinc-50"], [class*="bg-neutral-50"] { background-color: rgb(var(--kx-bg)) !important; }
-[class*="bg-slate-100"], [class*="bg-gray-100"], [class*="bg-zinc-100"], [class*="bg-neutral-100"] { background-color: rgb(var(--kx-surface-2)) !important; }
-
-/* Common text colors */
-[class*="text-slate-900"], [class*="text-gray-900"], [class*="text-zinc-900"], [class*="text-neutral-900"] { color: rgb(var(--kx-text)) !important; }
-[class*="text-slate-800"], [class*="text-gray-800"], [class*="text-zinc-800"], [class*="text-neutral-800"] { color: rgb(var(--kx-text)) !important; }
-[class*="text-slate-700"], [class*="text-gray-700"], [class*="text-zinc-700"], [class*="text-neutral-700"] { color: rgb(var(--kx-text-2)) !important; }
-[class*="text-slate-600"], [class*="text-gray-600"], [class*="text-zinc-600"], [class*="text-neutral-600"] { color: rgb(var(--kx-text-3)) !important; }
-
-/* Borders / rings */
-[class*="border-slate-200"], [class*="border-gray-200"], [class*="border-zinc-200"], [class*="border-neutral-200"] { border-color: rgb(var(--kx-border)) !important; }
-[class*="ring-slate-200"], [class*="ring-gray-200"], [class*="ring-zinc-200"], [class*="ring-neutral-200"] { --tw-ring-color: rgb(var(--kx-border)) !important; }
-
-/* Inputs */
-input, select, textarea {
-  background: rgb(var(--kx-surface));
-  color: rgb(var(--kx-text));
-  border-color: rgb(var(--kx-border));
-}
-input::placeholder, textarea::placeholder { color: rgba(var(--kx-text), 0.45); }
-
-/* Shadows feel premium in dark mode too */
-[class*="shadow"], [class*="shadow-"] {
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
-}
-[data-theme="dark"] [class*="shadow"], [data-theme="dark"] [class*="shadow-"] {
-  box-shadow: 0 14px 34px rgba(0,0,0,0.45) !important;
-}
-
-/* ===========================
-   Theme Bridge v2 (dark mode)
-   Fixes bg-white/*, text-black/*, border-black/*
-   =========================== */
-
+/* Theme Bridge FINAL */
 html[data-theme="dark"] body {
   background: rgb(var(--kx-bg)) !important;
   color: rgb(var(--kx-fg)) !important;
 }
-
-/* Backgrounds that force LIGHT look */
 html[data-theme="dark"] [class*="bg-white"] {
-  /* catches bg-white, bg-white/5, bg-white/25, bg-white/10 etc */
   background-color: rgba(var(--kx-surface), 0.55) !important;
 }
-html[data-theme="dark"] [class*="bg-white\/5"]  { background-color: rgba(var(--kx-surface), 0.28) !important; }
-html[data-theme="dark"] [class*="bg-white\/10"] { background-color: rgba(var(--kx-surface), 0.34) !important; }
-html[data-theme="dark"] [class*="bg-white\/25"] { background-color: rgba(var(--kx-surface), 0.48) !important; }
-
-/* Text that forces DARK-on-LIGHT */
 html[data-theme="dark"] [class*="text-black"] {
-  /* catches text-black, text-black/50 etc */
   color: rgba(var(--kx-fg), 0.92) !important;
 }
-html[data-theme="dark"] [class*="text-black\/50"] { color: rgba(var(--kx-fg), 0.60) !important; }
-html[data-theme="dark"] [class*="text-black\/60"] { color: rgba(var(--kx-fg), 0.68) !important; }
-html[data-theme="dark"] [class*="text-black\/70"] { color: rgba(var(--kx-fg), 0.76) !important; }
-html[data-theme="dark"] [class*="text-black\/80"] { color: rgba(var(--kx-fg), 0.84) !important; }
-
-/* Borders that look too harsh on dark */
 html[data-theme="dark"] [class*="border-black"] {
   border-color: rgba(var(--kx-border), 0.22) !important;
 }
-html[data-theme="dark"] [class*="border-black\/10"] { border-color: rgba(var(--kx-border), 0.16) !important; }
-
-/* Generic “white text” helpers: keep readable */
-html[data-theme="dark"] [class*="text-white\/45"] { color: rgba(var(--kx-fg), 0.55) !important; }
-html[data-theme="dark"] [class*="text-white\/55"] { color: rgba(var(--kx-fg), 0.68) !important; }
-html[data-theme="dark"] [class*="text-white\/85"] { color: rgba(var(--kx-fg), 0.90) !important; }
