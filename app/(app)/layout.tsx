@@ -1,21 +1,30 @@
-import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
 
-import Shell from '@/components/shell'
-import { createClient } from '@/lib/supabase/server'
+// Global styles live at app/globals.css (one level up from this route group)
+import "../globals.css";
 
-export const metadata: Metadata = {
-  title: 'Kryvexis OS',
-  description: 'Inventory & sales operating system',
-}
+const themeInitScript = `
+(() => {
+  try {
+    const storedTheme = localStorage.getItem("kx-theme");
+    const theme = storedTheme || "light";
 
-export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    const storedAccent = localStorage.getItem("kx-accent");
+    const accent = storedAccent || "34 211 238";
 
-  if (!user) redirect('/')
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.style.setProperty("--kx-accent", accent);
+  } catch (e) {}
+})();
+`;
 
-  return <Shell userEmail={user.email ?? 'user'}>{children}</Shell>
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
 }
