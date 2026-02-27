@@ -731,3 +731,44 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+
+/* =========================================================
+   Theme Bridge (forces hardcoded Tailwind colors to follow tokens)
+   Temporary compatibility layer until components are tokenized.
+   ========================================================= */
+
+html, body {
+  background: rgb(var(--kx-bg));
+  color: rgb(var(--kx-text));
+}
+
+/* Common “hardcoded light” Tailwind backgrounds */
+[class*="bg-white"] { background-color: rgb(var(--kx-surface)) !important; }
+[class*="bg-slate-50"], [class*="bg-gray-50"], [class*="bg-zinc-50"], [class*="bg-neutral-50"] { background-color: rgb(var(--kx-bg)) !important; }
+[class*="bg-slate-100"], [class*="bg-gray-100"], [class*="bg-zinc-100"], [class*="bg-neutral-100"] { background-color: rgb(var(--kx-surface-2)) !important; }
+
+/* Common text colors */
+[class*="text-slate-900"], [class*="text-gray-900"], [class*="text-zinc-900"], [class*="text-neutral-900"] { color: rgb(var(--kx-text)) !important; }
+[class*="text-slate-800"], [class*="text-gray-800"], [class*="text-zinc-800"], [class*="text-neutral-800"] { color: rgb(var(--kx-text)) !important; }
+[class*="text-slate-700"], [class*="text-gray-700"], [class*="text-zinc-700"], [class*="text-neutral-700"] { color: rgb(var(--kx-text-2)) !important; }
+[class*="text-slate-600"], [class*="text-gray-600"], [class*="text-zinc-600"], [class*="text-neutral-600"] { color: rgb(var(--kx-text-3)) !important; }
+
+/* Borders / rings */
+[class*="border-slate-200"], [class*="border-gray-200"], [class*="border-zinc-200"], [class*="border-neutral-200"] { border-color: rgb(var(--kx-border)) !important; }
+[class*="ring-slate-200"], [class*="ring-gray-200"], [class*="ring-zinc-200"], [class*="ring-neutral-200"] { --tw-ring-color: rgb(var(--kx-border)) !important; }
+
+/* Inputs */
+input, select, textarea {
+  background: rgb(var(--kx-surface));
+  color: rgb(var(--kx-text));
+  border-color: rgb(var(--kx-border));
+}
+input::placeholder, textarea::placeholder { color: rgba(var(--kx-text), 0.45); }
+
+/* Shadows feel premium in dark mode too */
+[class*="shadow"], [class*="shadow-"] {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
+}
+[data-theme="dark"] [class*="shadow"], [data-theme="dark"] [class*="shadow-"] {
+  box-shadow: 0 14px 34px rgba(0,0,0,0.45) !important;
+}
