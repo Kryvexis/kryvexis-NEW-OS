@@ -1,63 +1,92 @@
+'use client'
+
 import Image from 'next/image'
-import MobileNav from "@/components/nav/MobileNav";
-import { Sidebar } from '@/components/nav'
-import ThemeToggle from '@/components/theme/ThemeToggle'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Bell, Settings, UserRound } from 'lucide-react'
 
-export default function Shell({
-  children,
-  userEmail,
-  workspaceName,
-  memberType,
-}: {
-  children: React.ReactNode;
-  userEmail: string;
-  workspaceName?: string;
-  memberType?: string;
-}) {
+import CommandPalette from './command-palette'
+import LogoutButton from './logout-button'
+import MobileNav from './nav/MobileNav'
+import ThemeToggle from './ThemeToggle'
+import { navMainItems } from './nav'
+
+function TopTabs() {
+  const pathname = usePathname()
   return (
-    <div className="min-h-screen text-[rgba(var(--kx-fg),.92)]">
-      <div className="flex min-h-screen">
-        {/* Sidebar (desktop) */}
-        <Sidebar userEmail={userEmail} workspaceName={workspaceName} memberType={memberType} />
+    <nav className="kx-topTabs" aria-label="Primary">
+      {navMainItems.map((item) => {
+        const active = pathname === item.href || pathname.startsWith(item.href + '/')
+        return (
+          <Link key={item.href} href={item.href} className={active ? 'kx-topTab is-active' : 'kx-topTab'}>
+            <span className="kx-topTabIcon" aria-hidden="true">
+              <item.icon size={14} />
+            </span>
+            <span className="kx-topTabText">{item.label}</span>
+          </Link>
+        )
+      })}
+    </nav>
+  )
+}
 
-        {/* Main */}
-        <div className="flex-1 min-w-0">
-          {/* Top bar */}
-          <header className="sticky top-0 z-10 border-b border-[rgba(var(--kx-fg),.12)] backdrop-blur" style={{ background: 'rgba(var(--kx-shell), .72)' }}>
-            <div className="mx-auto max-w-7xl px-4 md:px-6 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <MobileNav />
-                <div className="flex items-center gap-2">
-                  <div className="md:hidden overflow-hidden" style={{ filter: 'drop-shadow(0 0 14px rgba(var(--kx-accent), .22))' }}>
-                    <Image src="/kryvexis-logo.png" alt="Kryvexis" width={52} height={52} className="h-[52px] w-[52px] object-contain" priority />
-                  </div>
-                  <div className="text-sm font-semibold tracking-tight text-[rgba(var(--kx-fg),.85)]">Kryvexis OS</div>
-                </div>
-              </div>
+export default function Shell({ userEmail, children }: { userEmail: string; children: React.ReactNode }) {
+  return (
+    <div className="kx-shellV2">
+      <CommandPalette />
 
-              {/* Top-right controls intentionally minimal. (Sign out is in Account Center.) */}
-              <div className="flex items-center gap-2">
-                <ThemeToggle />
-                <button
-                  type="button"
-                  disabled
-                  title="Notifications (coming soon)"
-                  className="h-10 w-10 rounded-xl border border-[rgba(var(--kx-fg),.12)] bg-[rgba(var(--kx-fg),.05)] text-[rgba(var(--kx-fg),.70)] transition hover:bg-[rgba(var(--kx-fg),.10)] hover:text-[rgba(var(--kx-fg),.90)] disabled:opacity-60 disabled:hover:bg-[rgba(var(--kx-fg),.05)]"
-                >
-                  <svg className="mx-auto h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 7h18s-3 0-3-7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9"/>
-                    <path d="M13.7 21a2 2 0 0 1-3.4 0" stroke="currentColor" strokeWidth="1.5" opacity="0.6" strokeLinecap="round"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </header>
-
-          <main className="mx-auto max-w-7xl px-4 md:px-6 py-6">
-            {children}
-          </main>
+      {/* Mobile */}
+      <div className="kx-mobileHeader md:hidden">
+        <MobileNav userEmail={userEmail} />
+        <div className="kx-mobileBrand">
+          <Image src="/kryvexis-logo.png" alt="Kryvexis" width={34} height={34} className="kx-brandLogo" />
+          <div className="kx-brandText">
+            <div className="kx-brandName">Kryvexis</div>
+            <div className="kx-brandSub">OS</div>
+          </div>
+        </div>
+        <div className="kx-mobileRight">
+          <ThemeToggle />
         </div>
       </div>
+
+      {/* Desktop */}
+      <header className="kx-headerV2 hidden md:block" role="banner">
+        <div className="kx-headerInner">
+          <div className="kx-brand">
+            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={42} height={42} className="kx-brandLogo" priority />
+            <div className="kx-brandText">
+              <div className="kx-brandName">Kryvexis</div>
+              <div className="kx-brandSub">OS</div>
+            </div>
+          </div>
+
+          <div className="kx-tabsWrap">
+            <TopTabs />
+          </div>
+
+          <div className="kx-headerRight">
+            <ThemeToggle />
+            <button className="kx-iconPill" type="button" aria-label="Settings">
+              <Settings size={16} />
+            </button>
+            <button className="kx-iconPill" type="button" aria-label="Notifications">
+              <Bell size={16} />
+            </button>
+            <button className="kx-userPill" type="button" aria-label="User">
+              <UserRound size={16} />
+              <span className="kx-userEmail" title={userEmail}>
+                {userEmail}
+              </span>
+            </button>
+            <LogoutButton />
+          </div>
+        </div>
+      </header>
+
+      <main className="kx-mainV2">
+        <div className="kx-pageWrap">{children}</div>
+      </main>
     </div>
-  );
+  )
 }

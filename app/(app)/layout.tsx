@@ -1,29 +1,21 @@
+import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 
-import "./globals.css";
+import Shell from '@/components/shell'
+import { createClient } from '@/lib/supabase/server'
 
-const themeInitScript = `
-(() => {
-  try {
-    const storedTheme = localStorage.getItem("kx-theme");
-    const theme = storedTheme || "light";
+export const metadata: Metadata = {
+  title: 'Kryvexis OS',
+  description: 'Inventory & sales operating system',
+}
 
-    const storedAccent = localStorage.getItem("kx-accent");
-    const accent = storedAccent || "34 211 238";
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-    const root = document.documentElement;
-    root.dataset.theme = theme;
-    root.style.setProperty("--kx-accent", accent);
-  } catch (e) {}
-})();
-`;
+  if (!user) redirect('/')
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
-      <body>{children}</body>
-    </html>
-  );
+  return <Shell userEmail={user.email ?? 'user'}>{children}</Shell>
 }
