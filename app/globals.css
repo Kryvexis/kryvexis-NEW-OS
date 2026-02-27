@@ -27,7 +27,14 @@
     --kx-inset: inset 0 1px 0 rgba(255, 255, 255, 0.72);
   }
 
-  html[data-theme='dark'] {--kx-border: 82 99 125;
+  html[data-theme='dark'] {
+    --kx-bg: 8 11 18;
+    --kx-shell: 10 14 24;
+    --kx-surface: 16 22 34;
+    --kx-surface-2: 20 28 44;
+    --kx-fg: 236 242 255;
+    --kx-muted: 148 163 184;
+    --kx-border: 148 163 184;
 
     --kx-shadow-soft: 0 14px 40px rgba(0, 0, 0, 0.45);
     --kx-shadow-tight: 0 10px 28px rgba(0, 0, 0, 0.55);
@@ -99,14 +106,14 @@
   /* Core surfaces */
   .kx-panel {
     background: rgba(var(--kx-surface), 0.86);
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.14);
     box-shadow: var(--kx-shadow-soft), var(--kx-inset);
     backdrop-filter: blur(12px);
-    border-radius: 22px;
+    border-radius: 18px;
   }
   html[data-theme='dark'] .kx-panel {
     background: rgba(var(--kx-surface), 0.62);
-    border-color: rgba(var(--kx-border), 0.14);
+    border-color: rgba(var(--kx-border), 0.18);
     box-shadow: var(--kx-shadow-tight), var(--kx-inset);
   }
 
@@ -116,9 +123,9 @@
 
   .kx-surface {
     background: rgba(var(--kx-surface), 0.60);
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.12);
     backdrop-filter: blur(14px);
-    border-radius: 22px;
+    border-radius: 18px;
   }
 
   .kx-overlay {
@@ -129,7 +136,7 @@
   .kx-button,
   .kx-btn {
     @apply inline-flex items-center justify-center gap-2 h-9 px-3 text-[13px] rounded-2xl transition;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.14);
     background: rgba(var(--kx-surface), 0.70);
     color: rgba(var(--kx-fg), 0.92);
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
@@ -166,7 +173,7 @@
 
   .kx-btn-ghost {
     @apply inline-flex items-center justify-center gap-2 h-9 px-3 text-[13px] rounded-2xl transition;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.12);
     background: transparent;
     color: rgba(var(--kx-fg), 0.88);
   }
@@ -176,7 +183,7 @@
 
   .kx-icon-btn {
     @apply grid place-items-center h-9 w-9 rounded-2xl transition;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.14);
     background: rgba(var(--kx-surface), 0.70);
     color: rgba(var(--kx-fg), 0.92);
   }
@@ -189,7 +196,7 @@
   .kx-input,
   .kx-auth-input {
     @apply w-full h-11 px-3 rounded-2xl text-sm outline-none;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.14);
     background: rgba(var(--kx-surface), 0.72);
     color: rgba(var(--kx-fg), 0.92);
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06), var(--kx-inset);
@@ -197,7 +204,7 @@
   html[data-theme='dark'] .kx-input,
   html[data-theme='dark'] .kx-auth-input {
     background: rgba(var(--kx-surface), 0.46);
-    border-color: rgba(var(--kx-border), 0.14);
+    border-color: rgba(var(--kx-border), 0.18);
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.30), var(--kx-inset);
   }
   .kx-input:focus,
@@ -211,14 +218,14 @@
 
   .kx-badge {
     @apply inline-flex items-center gap-2 rounded-full px-3 py-2;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.12);
     background: rgba(var(--kx-surface), 0.60);
   }
 
   .kx-chip,
   .kx-pill {
     @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.12);
     background: rgba(var(--kx-surface), 0.55);
     color: rgba(var(--kx-fg), 0.86);
   }
@@ -226,7 +233,7 @@
   .kx-kbd {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     @apply text-xs px-1.5 py-0.5 rounded-lg;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.14);
     background: rgba(var(--kx-surface), 0.60);
   }
 
@@ -264,7 +271,7 @@
   .kx-sidebar {
     width: 280px;
     flex: 0 0 auto;
-    border-right: 1px solid rgba(var(--kx-border), 0.12);
+    
     background: rgba(var(--kx-shell), 0.65);
     backdrop-filter: blur(14px);
   }
@@ -279,7 +286,7 @@
     top: 0;
     z-index: 5;
     backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(var(--kx-border), 0.07);
+    
     background: rgba(var(--kx-shell), 0.65);
   }
   .kx-content {
@@ -378,7 +385,7 @@
     text-align: center;
     padding: 34px 28px 26px;
     border-radius: 22px;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.16);
     background: rgba(var(--kx-surface), 0.12);
     backdrop-filter: blur(22px);
     box-shadow: 0 28px 90px rgba(0, 0, 0, 0.40);
@@ -447,7 +454,7 @@
   .kx-auth-brandCard,
   .kx-auth-card {
     border-radius: 22px;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.16);
     background: rgba(var(--kx-surface), 0.12);
     backdrop-filter: blur(22px);
     box-shadow: 0 28px 90px rgba(0, 0, 0, 0.40);
@@ -492,7 +499,7 @@
   .kx-auth-bullet {
     padding: 10px 12px;
     border-radius: 16px;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.12);
     background: rgba(var(--kx-surface), 0.08);
   }
   .kx-auth-muted {
@@ -547,7 +554,7 @@
   }
   .kx-auth-pwBtn {
     @apply h-11 px-3 rounded-2xl text-sm transition;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.14);
     background: rgba(var(--kx-surface), 0.55);
     color: rgba(var(--kx-fg), 0.90);
   }
@@ -599,7 +606,7 @@
     overflow: auto;
     border-radius: 22px;
     background: rgba(var(--kx-shell), 0.92);
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.16);
     box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
     backdrop-filter: blur(14px);
   }
@@ -609,7 +616,7 @@
     justify-content: space-between;
     gap: 12px;
     padding: 16px 18px;
-    border-bottom: 1px solid rgba(var(--kx-border), 0.08);
+    border-bottom: 1px solid rgba(var(--kx-border), 0.14);
   }
   .kx-modal-title {
     font-weight: 700;
@@ -633,7 +640,7 @@
     max-width: 280px;
     padding: 10px 12px;
     border-radius: 16px;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.16);
     background: rgba(var(--kx-shell), 0.92);
     color: rgba(var(--kx-fg), 0.92);
     font-size: 12px;
@@ -694,7 +701,7 @@
     border-spacing: 0;
     overflow: hidden;
     border-radius: 16px;
-    border: 1px solid rgba(var(--kx-border), 0.10);
+    border: 1px solid rgba(var(--kx-border), 0.16);
     background: rgba(var(--kx-surface), 0.70);
   }
   .kx-table th {
@@ -705,11 +712,11 @@
     color: rgba(var(--kx-muted), 0.95);
     background: rgba(var(--kx-shell), 0.65);
     padding: 12px 14px;
-    border-bottom: 1px solid rgba(var(--kx-border), 0.08);
+    border-bottom: 1px solid rgba(var(--kx-border), 0.14);
   }
   .kx-table td {
     padding: 12px 14px;
-    border-bottom: 1px solid rgba(var(--kx-border), 0.07);
+    border-bottom: 1px solid rgba(var(--kx-border), 0.12);
     color: rgba(var(--kx-fg), 0.92);
   }
   .kx-table tr:hover td {
@@ -723,20 +730,4 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-}
-
-
-/* Theme Bridge FINAL */
-html[data-theme="dark"] body {
-  background: rgb(var(--kx-bg)) !important;
-  color: rgb(var(--kx-fg)) !important;
-}
-html[data-theme="dark"] [class*="bg-white"] {
-  background-color: rgba(var(--kx-surface), 0.55) !important;
-}
-html[data-theme="dark"] [class*="text-black"] {
-  color: rgba(var(--kx-fg), 0.92) !important;
-}
-html[data-theme="dark"] [class*="border-black"] {
-  border-color: rgba(var(--kx-border), 0.22) !important;
 }

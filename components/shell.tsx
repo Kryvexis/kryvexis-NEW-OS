@@ -23,7 +23,7 @@ export default function Shell({
         {/* Main */}
         <div className="flex-1 min-w-0">
           {/* Top bar */}
-          <header className="sticky top-0 z-10 border-b border-[rgba(var(--kx-fg),.12)] backdrop-blur" style={{ background: 'rgba(var(--kx-shell), .72)' }}>
+          <header className="sticky top-0 z-10 backdrop-blur" style={{ background: 'rgba(var(--kx-shell), .72)' }}>
             <div className="mx-auto max-w-7xl px-4 md:px-6 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <MobileNav />
