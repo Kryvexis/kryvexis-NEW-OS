@@ -1,29 +1,13 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import Shell from "@/components/shell";
 
-import "./globals.css";
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
 
-const themeInitScript = `
-(() => {
-  try {
-    const storedTheme = localStorage.getItem("kx-theme");
-    const theme = storedTheme || "light";
+  const user = data?.user;
+  if (!user) redirect("/login");
 
-    const storedAccent = localStorage.getItem("kx-accent");
-    const accent = storedAccent || "34 211 238";
-
-    const root = document.documentElement;
-    root.dataset.theme = theme;
-    root.style.setProperty("--kx-accent", accent);
-  } catch (e) {}
-})();
-`;
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
-      <body>{children}</body>
-    </html>
-  );
+  return <Shell userEmail={user.email ?? ""}>{children}</Shell>;
 }
