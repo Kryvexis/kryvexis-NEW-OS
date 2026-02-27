@@ -145,7 +145,7 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
   return (
     <aside
       className={
-        'hidden md:flex md:flex-col transition-[width] duration-300 ' +
+        'hidden md:flex md:flex-col border-r kx-hairline transition-[width] duration-300 ' +
         widthCls
       }
       style={{ background: 'rgba(var(--kx-shell), .78)' }}

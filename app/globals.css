@@ -269,12 +269,14 @@
     min-height: 100vh;
   }
   .kx-sidebar {
-    width: 280px;
-    flex: 0 0 auto;
-    
-    background: rgba(var(--kx-shell), 0.65);
-    backdrop-filter: blur(14px);
-  }
+  width: 280px;
+  flex: 0 0 auto;
+  border-right: 0;
+  background: linear-gradient(180deg, rgba(var(--kx-shell),0.78), rgba(var(--kx-shell),0.62));
+  backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 18px 0 50px rgba(0,0,0,0.18);
+}
+
   .kx-main {
     flex: 1 1 auto;
     min-width: 0;
@@ -282,13 +284,15 @@
     flex-direction: column;
   }
   .kx-topbar {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    backdrop-filter: blur(14px);
-    
-    background: rgba(var(--kx-shell), 0.65);
-  }
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(18px);
+  border-bottom: 0;
+  background: linear-gradient(180deg, rgba(var(--kx-shell),0.78), rgba(var(--kx-shell),0.62));
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 12px 40px rgba(0,0,0,0.16);
+}
+
   .kx-content {
     flex: 1 1 auto;
     min-width: 0;
@@ -731,3 +735,17 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+
+
+/* Dark-mode bridge: neutralize common Tailwind hardcoded light classes */
+html[data-theme=dark] .bg-white { background-color: rgba(var(--kx-surface),0.55) !important; }
+html[data-theme=dark] .bg-white\/25 { background-color: rgba(255,255,255,0.10) !important; }
+html[data-theme=dark] .bg-black { background-color: rgba(0,0,0,0.55) !important; }
+html[data-theme=dark] .text-black { color: rgba(var(--kx-fg),0.92) !important; }
+html[data-theme=dark] .text-black\/50 { color: rgba(var(--kx-fg),0.62) !important; }
+html[data-theme=dark] .text-black\/60 { color: rgba(var(--kx-fg),0.70) !important; }
+html[data-theme=dark] .text-black\/70 { color: rgba(var(--kx-fg),0.78) !important; }
+html[data-theme=dark] .text-black\/80 { color: rgba(var(--kx-fg),0.86) !important; }
+html[data-theme=dark] .border-black\/10 { border-color: rgba(var(--kx-border),0.14) !important; }
+html[data-theme=dark] .shadow-2xl { box-shadow: 0 30px 120px rgba(0,0,0,0.55) !important; }
+
