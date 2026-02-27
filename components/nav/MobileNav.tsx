@@ -21,7 +21,11 @@ const NAV = [
   ["Account Center", "/account-center"],
 ] as const;
 
-export default function MobileNav() {
+type MobileNavProps = {
+  userEmail?: string
+}
+
+export default function MobileNav(_props: MobileNavProps) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
 
