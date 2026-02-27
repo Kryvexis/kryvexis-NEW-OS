@@ -78,6 +78,69 @@
   }
 }
 
+/*
+  Theme bridge (dark mode)
+  Many pages still use Tailwind's hard-coded light utilities (bg-white, text-black, gray borders, etc).
+  These overrides map those utilities to the Kryvexis tokens when data-theme='dark',
+  so the whole app keeps a consistent “dark glass” look without rewriting every page.
+*/
+@layer utilities {
+  html[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  /* Backgrounds */
+  html[data-theme='dark'] .bg-white {
+    background-color: rgba(var(--kx-surface), 0.62) !important;
+  }
+  html[data-theme='dark'] .bg-slate-50,
+  html[data-theme='dark'] .bg-gray-50,
+  html[data-theme='dark'] .bg-zinc-50 {
+    background-color: rgba(var(--kx-shell), 0.70) !important;
+  }
+  html[data-theme='dark'] .bg-black\/5,
+  html[data-theme='dark'] .bg-black\/10 {
+    background-color: rgba(var(--kx-border), 0.10) !important;
+  }
+
+  /* Text */
+  html[data-theme='dark'] .text-black,
+  html[data-theme='dark'] .text-gray-900,
+  html[data-theme='dark'] .text-slate-900,
+  html[data-theme='dark'] .text-zinc-900 {
+    color: rgba(var(--kx-fg), 0.92) !important;
+  }
+  html[data-theme='dark'] .text-black\/60,
+  html[data-theme='dark'] .text-black\/70,
+  html[data-theme='dark'] .text-black\/80,
+  html[data-theme='dark'] .text-gray-600,
+  html[data-theme='dark'] .text-slate-600,
+  html[data-theme='dark'] .text-zinc-600 {
+    color: rgba(var(--kx-muted), 0.86) !important;
+  }
+  html[data-theme='dark'] .text-gray-500,
+  html[data-theme='dark'] .text-slate-500,
+  html[data-theme='dark'] .text-zinc-500 {
+    color: rgba(var(--kx-muted), 0.72) !important;
+  }
+
+  /* Borders */
+  html[data-theme='dark'] .border-gray-200,
+  html[data-theme='dark'] .border-slate-200,
+  html[data-theme='dark'] .border-zinc-200,
+  html[data-theme='dark'] .border-black\/10 {
+    border-color: rgba(var(--kx-border), 0.18) !important;
+  }
+
+  /* Shadows */
+  html[data-theme='dark'] .shadow,
+  html[data-theme='dark'] .shadow-md,
+  html[data-theme='dark'] .shadow-lg,
+  html[data-theme='dark'] .shadow-xl {
+    box-shadow: var(--kx-shadow-tight), var(--kx-inset) !important;
+  }
+}
+
 @layer components {
   /* Typography helpers */
   .kx-h1 {
