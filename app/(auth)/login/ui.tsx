@@ -38,12 +38,9 @@ export default function LoginUI() {
 
   return (
     <div className="min-h-[calc(100vh-2rem)] flex items-center justify-center py-10">
-      <div
-        className="w-full max-w-md rounded-3xl border bg-kx-surface p-6 shadow-kx2"
-        style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
-      >
+      <div className="w-full max-w-md kx-surface rounded-3xl border kx-hairline p-6 shadow-[0_30px_120px_rgba(0,0,0,0.55)]">
         <div className="flex items-center gap-3 mb-4">
-          <div className="h-10 w-10 rounded-2xl overflow-hidden bg-kx-surface2 flex items-center justify-center" style={{ border: '1px solid rgb(var(--kx-border) / 0.08)' }}>
+          <div className="h-10 w-10 rounded-2xl overflow-hidden kx-surface flex items-center justify-center">
             <Image src="/kryvexis-logo.png" alt="Kryvexis" width={56} height={56} className="h-10 w-10 object-contain" priority />
           </div>
           <div>
