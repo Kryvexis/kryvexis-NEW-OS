@@ -10,9 +10,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    const theme = localStorage.getItem('kx_theme') || 'dark';
+    // v2 keys: forces a clean reset for anyone who previously saved light mode
+    const theme = localStorage.getItem('kx_theme_v2') || 'dark';
     document.documentElement.dataset.theme = (theme === 'light') ? 'light' : 'dark';
-    const accent = localStorage.getItem('kx_accent') || 'cyan';
+    const accent = localStorage.getItem('kx_accent_v2') || 'cyan';
     const map = {
       cyan: '34 211 238',
       blue: '59 130 246',
