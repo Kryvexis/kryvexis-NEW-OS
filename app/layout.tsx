@@ -4,14 +4,13 @@ import "./globals.css";
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" className="dark" suppressHydrationWarning>
+    <html lang="en" className="dark" data-theme="dark" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    // Single source of truth is the "dark" class (Tailwind). We also set data-theme for debugging.
-    const themeRaw = localStorage.getItem('kx_theme') || 'dark';
+    const themeRaw = localStorage.getItem('kx_theme_v2') || 'dark';
     const theme = (themeRaw === 'light') ? 'light' : 'dark';
 
     const root = document.documentElement;
@@ -19,7 +18,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     root.classList.toggle('dark', theme === 'dark');
     root.classList.toggle('kx-light', theme === 'light');
 
-    const accent = localStorage.getItem('kx_accent') || 'cyan';
+    // Native form controls match theme
+    root.style.colorScheme = theme;
+
+    const accent = localStorage.getItem('kx_accent_v2') || 'cyan';
     const map = {
       cyan: '34 211 238',
       blue: '59 130 246',

@@ -4,7 +4,8 @@ import * as React from "react";
 
 function getTheme(): "dark" | "light" {
   try {
-    const v = localStorage.getItem("kx_theme");
+    // v2 key resets any previously saved light theme
+    const v = localStorage.getItem("kx_theme_v2");
     if (v === "light" || v === "dark") return v;
   } catch {}
   return "dark";
@@ -12,11 +13,11 @@ function getTheme(): "dark" | "light" {
 
 function applyTheme(theme: "dark" | "light") {
   try {
-    const root = document.documentElement;
-    root.dataset.theme = theme;
-    root.classList.toggle("dark", theme === "dark");
-    root.classList.toggle("kx-light", theme === "light");
-    localStorage.setItem("kx_theme", theme);
+    document.documentElement.dataset.theme = theme;
+    // Tailwind-style toggle (if used)
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.classList.toggle("kx-light", theme === "light");
+    localStorage.setItem("kx_theme_v2", theme);
   } catch {}
 }
 
