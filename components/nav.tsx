@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
 export function NavIcon({ name }: { name: 'dashboard' | 'clients' | 'products' | 'suppliers' | 'upload' | 'quotes' | 'invoices' | 'payments' | 'accounts' | 'reports' | 'settings' | 'help' | 'accountCenter' }) {
@@ -121,91 +120,43 @@ export const navBottomItems = [
 
 export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: string; workspaceName?: string; memberType?: string }) {
   const pathname = usePathname() || ''
-  const [collapsed, setCollapsed] = useState(false)
 
-  useEffect(() => {
-    try {
-      const v = localStorage.getItem('kx_sidebar_collapsed')
-      setCollapsed(v === '1')
-    } catch {}
-  }, [])
-
-  const toggleCollapsed = () => {
-    setCollapsed((v) => {
-      const next = !v
-      try {
-        localStorage.setItem('kx_sidebar_collapsed', next ? '1' : '0')
-      } catch {}
-      return next
-    })
-  }
-
-  const widthCls = collapsed ? 'md:w-[92px]' : 'md:w-[280px]'
+  // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
+  // We intentionally remove the collapsed mode to keep the layout clean and predictable.
+  const widthCls = 'md:w-[268px]'
 
   return (
     <aside
-      className={
-        'hidden md:flex md:flex-col border-r kx-hairline transition-[width] duration-300 kx-sidebar ' +
-        widthCls
-      }
+      className={'hidden md:flex md:flex-col border-r ' + widthCls}
+      style={{ background: 'rgb(var(--kx-shell) / 0.90)', borderColor: 'rgb(var(--kx-border) / 0.10)' }}
     >
-      <div className={collapsed ? 'px-3 pt-5 pb-4' : 'px-5 pt-5 pb-4'}>
-        <div className={collapsed ? 'flex flex-col items-center gap-3' : 'flex items-start justify-between gap-3'}>
-          <div className={collapsed ? 'flex flex-col items-center' : 'flex flex-col'}>
-            {/* Logo plate (anchored + premium) */}
-            <div
-              className={
-                (collapsed ? 'h-[128px] w-[128px]' : 'h-[264px] w-[264px]') +
-                ' grid place-items-center rounded-2xl border border-kx-border/40 bg-kx-surface/60 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_18px_54px_rgba(0,0,0,0.35)]'
-              }
-              style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 54px rgba(0,0,0,0.35), 0 0 0 1px rgb(var(--kx-glow) / 0.08)' }}
-            >
-              <Image
-                src="/kryvexis-logo.png"
-                alt="Kryvexis"
-                width={collapsed ? 120 : 240}
-                height={collapsed ? 120 : 240}
-                className={collapsed ? 'h-[120px] w-[120px] object-contain' : 'h-[240px] w-[240px] object-contain'}
-                style={{
-                  filter:
-                    'drop-shadow(0 0 18px rgba(var(--kx-accent), .22)) drop-shadow(0 10px 28px rgba(0,0,0,.35))',
-                }}
-                priority
-              />
-            </div>
+      <div className={'px-5 pt-5 pb-4'}>
+        <div className={'flex items-start justify-between gap-3'}>
+          <div className={'flex flex-col'}>
+            {/* Logo (no "block" container). Double-size with soft glow. */}
+            <Image
+              src="/kryvexis-logo.png"
+              alt="Kryvexis"
+              width={120}
+              height={120}
+              className={'h-[120px] w-[120px] object-contain'}
+              style={{
+                filter:
+                  'drop-shadow(0 0 18px rgba(var(--kx-accent), .22)) drop-shadow(0 10px 28px rgba(0,0,0,.35))',
+              }}
+              priority
+            />
 
-            <div className={collapsed ? 'mt-2 text-center' : 'mt-2'}>
-              <div className={collapsed ? 'text-[12px] font-semibold tracking-tight' : 'text-[15px] font-semibold tracking-tight'}>Kryvexis OS</div>
-              {!collapsed && <div className="text-xs kx-muted">{workspaceName ?? 'Workspace'}</div>}
+            <div className={'mt-2'}>
+              <div className={'text-[15px] font-semibold tracking-tight'}>Kryvexis OS</div>
+              <div className="text-xs kx-muted">{workspaceName ?? 'Workspace'}</div>
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={toggleCollapsed}
-            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className={
-              'h-10 w-10 rounded-xl border border-[rgba(var(--kx-fg),.12)] bg-[rgba(var(--kx-fg),.05)] text-[rgba(var(--kx-fg),.70)] transition hover:bg-[rgba(var(--kx-fg),.10)] hover:text-[rgba(var(--kx-fg),.90)] ' +
-              (collapsed ? '' : '')
-            }
-          >
-            <svg
-              className={
-                'mx-auto h-5 w-5 transition-transform duration-300 ' +
-                (collapsed ? 'rotate-180' : '')
-              }
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path d="M14 6 8 12l6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
         </div>
       </div>
 
       {/* Main navigation */}
-      <nav className={(collapsed ? 'px-2' : 'px-3') + ' pb-2 space-y-1'}>
+      <nav className={'px-3 pb-2 space-y-1'}>
         {navMainItems.map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
@@ -213,13 +164,13 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
               key={it.href}
               href={it.href}
               data-tour={`nav-${it.icon}`}
-              title={collapsed ? it.label : undefined}
+              title={it.label}
               className={'kx-navlink group flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'is-active' : '')}
             >
-              <span className={(collapsed ? 'mx-auto' : 'ml-3') + ' ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
+              <span className={'ml-3 ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
                 <NavIcon name={it.icon} />
               </span>
-              {!collapsed && <span className="ml-2 tracking-tight">{it.label}</span>}
+              <span className="ml-2 tracking-tight">{it.label}</span>
               {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(var(--kx-accent), 0.95)' }} />}
             </Link>
           )
@@ -228,27 +179,27 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
 
       {/* Bottom navigation */}
       <div className="mt-auto" />
-      <nav className={(collapsed ? 'px-2' : 'px-3') + ' pt-2 pb-3 space-y-1'}>
+      <nav className={'px-3 pt-2 pb-3 space-y-1'}>
         {navBottomItems.map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
             <Link
               key={it.href}
               href={it.href}
-              title={collapsed ? it.label : undefined}
+              title={it.label}
               className={'kx-navlink group flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'is-active' : '')}
             >
-              <span className={(collapsed ? 'mx-auto' : 'ml-3') + ' ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
+              <span className={'ml-3 ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
                 <NavIcon name={it.icon} />
               </span>
-              {!collapsed && <span className="ml-2 tracking-tight">{it.label}</span>}
+              <span className="ml-2 tracking-tight">{it.label}</span>
               {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(var(--kx-accent), 0.95)' }} />}
             </Link>
           )
         })}
       </nav>
 
-      {userEmail && !collapsed && (
+      {userEmail && (
         <div className="mt-auto px-5 py-4 border-t" style={{ borderColor: 'rgba(var(--kx-border), .12)' }}>
           <div className="flex items-center justify-between gap-3">
             <div>
