@@ -91,19 +91,19 @@ export default async function Page() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         <Card>
           <div className="text-xs kx-muted2">Revenue Invoiced</div>
-          <div className="mt-1 text-2xl font-semibold">{fmtZar(totalInvoiced)}</div>
+          <div className="mt-1 text-3xl font-semibold tracking-tight">{fmtZar(totalInvoiced)}</div>
         </Card>
         <Card>
           <div className="text-xs kx-muted2">Collected</div>
-          <div className="mt-1 text-2xl font-semibold">{fmtZar(collected)}</div>
+          <div className="mt-1 text-3xl font-semibold tracking-tight">{fmtZar(collected)}</div>
         </Card>
         <Card>
           <div className="text-xs kx-muted2">Outstanding</div>
-          <div className="mt-1 text-2xl font-semibold">{fmtZar(outstanding)}</div>
+          <div className="mt-1 text-3xl font-semibold tracking-tight">{fmtZar(outstanding)}</div>
         </Card>
         <Card>
           <div className="text-xs kx-muted2">Open Quotes / Paid Invoices</div>
-          <div className="mt-1 text-2xl font-semibold">{openQuotes} / {paidInvoices}</div>
+          <div className="mt-1 text-3xl font-semibold tracking-tight">{openQuotes} / {paidInvoices}</div>
         </Card>
       </div>
 
@@ -118,8 +118,11 @@ export default async function Page() {
           <div className="mt-4 flex items-end gap-3 h-40">
             {revenueByMonth.map((m) => (
               <div key={m.key} className="flex-1 flex flex-col items-center gap-2">
-                <div className="w-full rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
-                  <div className="w-full kx-card/25" style={{ height: `${Math.max(6, Math.round((m.value / maxRev) * 140))}px` }} />
+                <div className="w-full rounded-xl bg-kx-fg/5 ring-1 ring-white/5 overflow-hidden shadow-[0_12px_35px_rgba(0,0,0,0.25)]">
+                  <div
+                    className="w-full bg-kx-accent/25"
+                    style={{ height: `${Math.max(6, Math.round((m.value / maxRev) * 140))}px` }}
+                  />
                 </div>
                 <div className="text-[11px] kx-muted2">{m.label}</div>
               </div>
@@ -146,7 +149,11 @@ export default async function Page() {
           <div className="text-sm font-semibold">Top clients</div>
           <div className="mt-3 space-y-2">
             {topClients.map((c) => (
-              <Link key={c.id} href={`/clients/${c.id}`} className="flex items-center justify-between rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] px-3 py-2 hover:bg-[rgba(var(--kx-border),.10)]">
+              <Link
+                key={c.id}
+                href={`/clients/${c.id}`}
+                className="flex items-center justify-between rounded-xl bg-kx-fg/5 px-3 py-2 shadow-[0_10px_25px_rgba(0,0,0,0.20)] hover:bg-kx-fg/7 transition"
+              >
                 <span className="text-sm text-[rgba(var(--kx-fg),.82)]">{c.name}</span>
                 <span className="text-sm font-semibold">{fmtZar(c.total)}</span>
               </Link>
@@ -163,9 +170,9 @@ export default async function Page() {
             </div>
             <Link href="/invoices" className="kx-button">View all</Link>
           </div>
-          <div className="mt-3 overflow-hidden rounded-2xl border border-[rgba(var(--kx-border),.12)]">
+          <div className="mt-3 overflow-hidden rounded-2xl bg-kx-fg/4 ring-1 ring-white/6 shadow-[0_18px_55px_rgba(0,0,0,0.35)]">
             <table className="w-full text-sm">
-              <thead className="bg-[rgba(var(--kx-border),.06)] kx-muted">
+              <thead className="bg-kx-fg/6 kx-muted">
                 <tr>
                   <th className="px-3 py-2 text-left font-semibold">Invoice</th>
                   <th className="px-3 py-2 text-left font-semibold">Client</th>
@@ -174,7 +181,7 @@ export default async function Page() {
               </thead>
               <tbody>
                 {outstandingList.map((i:any) => (
-                  <tr key={i.id} className="border-t border-[rgba(var(--kx-border),.12)] hover:bg-[rgba(var(--kx-border),.06)]">
+                  <tr key={i.id} className="hover:bg-kx-fg/5 transition">
                     <td className="px-3 py-2">
                       <Link className="underline-offset-2 hover:underline" href={`/invoices/${i.id}`}>{i.number || 'Invoice'}</Link>
                     </td>
@@ -195,7 +202,7 @@ export default async function Page() {
         <div className="text-sm font-semibold">Recent activity</div>
         <div className="mt-3 space-y-2">
           {(activity || []).map((a:any) => (
-            <div key={a.id} className="flex items-center justify-between rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] px-3 py-2">
+            <div key={a.id} className="flex items-center justify-between rounded-xl bg-kx-fg/5 px-3 py-2 shadow-[0_10px_25px_rgba(0,0,0,0.20)]">
               <div className="text-sm text-[rgba(var(--kx-fg),.82)]">{a.action} · <span className="kx-muted2">{a.entity_type}</span></div>
               <div className="text-xs kx-muted2">{String(a.created_at || '').slice(0, 19).replace('T', ' ')}</div>
             </div>

@@ -4,14 +4,15 @@ import "./globals.css";
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" className="dark" suppressHydrationWarning>
+    // IMPORTANT: do not hardcode dark/light on the server.
+    // We set the theme synchronously in a head script to avoid flashes and to keep light mode correct.
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    // Single source of truth is the "dark" class (Tailwind). We also set data-theme for debugging.
-    const themeRaw = localStorage.getItem('kx_theme') || 'dark';
+    const themeRaw = localStorage.getItem('kx_theme_v2') || 'dark';
     const theme = (themeRaw === 'light') ? 'light' : 'dark';
 
     const root = document.documentElement;
@@ -19,25 +20,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     root.classList.toggle('dark', theme === 'dark');
     root.classList.toggle('kx-light', theme === 'light');
 
-    // Accent pairs power the subtle premium depth gradients.
-    const accent = localStorage.getItem('kx_accent') || 'indigo';
+    // Native form controls match theme
+    root.style.colorScheme = theme;
+
+    const accent = localStorage.getItem('kx_accent_v2') || 'cyan';
     const map = {
-      indigo: { a: '99 102 241', b: '56 189 248' },
-      purple: { a: '168 85 247', b: '59 130 246' },
-      blue: { a: '59 130 246', b: '34 211 238' },
-      cyan: { a: '34 211 238', b: '99 102 241' },
-      green: { a: '34 197 94', b: '34 211 238' },
-      orange: { a: '249 115 22', b: '59 130 246' },
+      cyan: '34 211 238',
+      blue: '59 130 246',
+      purple: '168 85 247',
+      green: '34 197 94',
+      orange: '249 115 22',
     };
-    const pair = map[accent] || map.indigo;
-    root.style.setProperty('--kx-accent', pair.a);
-    root.style.setProperty('--kx-accent-2', pair.b);
+    const rgb = map[accent] || map.cyan;
+    root.style.setProperty('--kx-accent', rgb);
   } catch {}
 })();`,
           }}
         />
       </head>
-      <body className="kx-no-lines">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

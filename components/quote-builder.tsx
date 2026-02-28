@@ -119,9 +119,9 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
 
           <div className="mt-5">
             <div className="text-sm font-semibold">Line items</div>
-            <div className="mt-3 overflow-x-auto rounded-2xl border border-[rgba(var(--kx-border),.12)]">
-              <table className="w-full text-sm min-w-[860px]">
-                <thead className="bg-[rgba(var(--kx-border),.06)] kx-muted">
+            <div className="mt-3 overflow-x-auto kx-tableWrap">
+              <table className="kx-table text-sm min-w-[860px]">
+                <thead className="">
                   <tr>
                     <th className="px-3 py-2 text-left font-medium">Item</th>
                     <th className="px-3 py-2 text-right font-medium">Qty</th>
@@ -140,7 +140,7 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
                     const tax = after * (it.tax_rate || 0)
                     const line = after + tax
                     return (
-                      <tr key={idx} className="border-t border-[rgba(var(--kx-border),.12)]">
+                      <tr key={idx} className="">
                         <td className="px-3 py-2">
                           <div className="space-y-2">
                             <select className="kx-input" value={it.product_id || ''} onChange={(e) => onPickProduct(idx, e.target.value)}>
@@ -238,7 +238,7 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
             <div className="flex items-center justify-between kx-muted"><span>Subtotal</span><span>{fmtZar(totals.subtotal)}</span></div>
             <div className="flex items-center justify-between kx-muted"><span>Discount</span><span>- {fmtZar(totals.discount_total)}</span></div>
             <div className="flex items-center justify-between kx-muted"><span>Tax</span><span>{fmtZar(totals.tax_total)}</span></div>
-            <div className="pt-2 mt-2 border-t border-[rgba(var(--kx-border),.12)] flex items-center justify-between font-semibold"><span>Total</span><span>{fmtZar(totals.total)}</span></div>
+            <div className="pt-3 mt-3 flex items-center justify-between font-semibold"><span>Total</span><span>{fmtZar(totals.total)}</span></div>
           </div>
           <div className="mt-4 text-xs kx-muted2">
             Tip: Once saved, open the quote and use <span className="font-medium">Convert → Invoice</span>.

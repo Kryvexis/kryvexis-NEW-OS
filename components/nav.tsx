@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
 export function NavIcon({ name }: { name: 'dashboard' | 'clients' | 'products' | 'suppliers' | 'upload' | 'quotes' | 'invoices' | 'payments' | 'accounts' | 'reports' | 'settings' | 'help' | 'accountCenter' }) {
@@ -120,44 +121,85 @@ export const navBottomItems = [
 
 export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: string; workspaceName?: string; memberType?: string }) {
   const pathname = usePathname() || ''
+  const [collapsed, setCollapsed] = useState(false)
 
-  // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
-  // We intentionally remove the collapsed mode to keep the layout clean and predictable.
-  // Slightly wider so the brand area + nav labels breathe.
-  const widthCls = 'md:w-[276px]'
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem('kx_sidebar_collapsed')
+      setCollapsed(v === '1')
+    } catch {}
+  }, [])
+
+  const toggleCollapsed = () => {
+    setCollapsed((v) => {
+      const next = !v
+      try {
+        localStorage.setItem('kx_sidebar_collapsed', next ? '1' : '0')
+      } catch {}
+      return next
+    })
+  }
+
+  const widthCls = collapsed ? 'md:w-[92px]' : 'md:w-[280px]'
 
   return (
     <aside
-      className={'hidden md:flex md:flex-col ' + widthCls}
-      style={{ background: 'linear-gradient(180deg, rgb(var(--kx-shell) / 0.92), rgb(var(--kx-shell) / 0.88))', boxShadow: '12px 0 50px rgb(0 0 0 / 0.45)' }}
+      className={
+        'hidden md:flex md:flex-col transition-[width] duration-300 kx-sidebar ' +
+        widthCls
+      }
     >
-      <div className={'px-5 pt-4 pb-3'}>
-        <div className={'flex items-start justify-between gap-3'}>
-          <div className={'flex flex-col'}>
-            {/* Logo (no "block" container). Double-size with soft glow. */}
-            <Image
+      <div className={collapsed ? 'px-3 pt-5 pb-4' : 'px-5 pt-5 pb-4'}>
+        <div className={collapsed ? 'flex flex-col items-center gap-3' : 'flex items-start justify-between gap-3'}>
+          <div className={collapsed ? 'flex flex-col items-center' : 'flex flex-col'}>
+            {/* Logo */}            <Image
               src="/kryvexis-logo.png"
               alt="Kryvexis"
-              width={160}
-              height={160}
-              className={'h-[150px] w-[150px] object-contain'}
+              width={collapsed ? 120 : 260}
+              height={collapsed ? 120 : 260}
+              className={
+                (collapsed ? 'h-[120px] w-[120px]' : 'h-[260px] w-[260px]') +
+                ' object-contain select-none pointer-events-none'
+              }
               style={{
                 filter:
-                  'drop-shadow(0 0 18px rgba(var(--kx-accent), .22)) drop-shadow(0 10px 28px rgba(0,0,0,.35))',
+                  'drop-shadow(0 0 18px rgba(var(--kx-accent), .18)) drop-shadow(0 18px 46px rgba(0,0,0,.55))',
               }}
               priority
             />
 
-            <div className={'mt-1'}>
-              <div className={'text-[14px] font-semibold tracking-tight leading-tight'}>Kryvexis OS</div>
-              <div className="text-[11px] kx-muted leading-tight">{workspaceName ?? 'Workspace'}</div>
+            <div className={collapsed ? 'mt-2 text-center' : 'mt-2'}>
+              <div className={collapsed ? 'text-[12px] font-semibold tracking-tight' : 'text-[15px] font-semibold tracking-tight'}>Kryvexis OS</div>
+              {!collapsed && <div className="text-xs kx-muted">{workspaceName ?? 'Workspace'}</div>}
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className={
+              'h-10 w-10 rounded-xl bg-[rgba(var(--kx-fg),.05)] text-[rgba(var(--kx-fg),.70)] shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-white/5 transition hover:bg-[rgba(var(--kx-fg),.10)] hover:text-[rgba(var(--kx-fg),.90)] ' +
+              (collapsed ? '' : '')
+            }
+          >
+            <svg
+              className={
+                'mx-auto h-5 w-5 transition-transform duration-300 ' +
+                (collapsed ? 'rotate-180' : '')
+              }
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M14 6 8 12l6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
       </div>
 
       {/* Main navigation */}
-      <nav className={'px-3 pb-2 space-y-1'}>
+      <nav className={(collapsed ? 'px-2' : 'px-3') + ' pb-2 space-y-1'}>
         {navMainItems.map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
@@ -165,13 +207,13 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
               key={it.href}
               href={it.href}
               data-tour={`nav-${it.icon}`}
-              title={it.label}
+              title={collapsed ? it.label : undefined}
               className={'kx-navlink group flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'is-active' : '')}
             >
-              <span className={'ml-3 ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
+              <span className={(collapsed ? 'mx-auto' : 'ml-3') + ' ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
                 <NavIcon name={it.icon} />
               </span>
-              <span className="ml-2 tracking-tight">{it.label}</span>
+              {!collapsed && <span className="ml-2 tracking-tight">{it.label}</span>}
               {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(var(--kx-accent), 0.95)' }} />}
             </Link>
           )
@@ -180,28 +222,28 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
 
       {/* Bottom navigation */}
       <div className="mt-auto" />
-      <nav className={'px-3 pt-2 pb-3 space-y-1'}>
+      <nav className={(collapsed ? 'px-2' : 'px-3') + ' pt-2 pb-3 space-y-1'}>
         {navBottomItems.map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
             <Link
               key={it.href}
               href={it.href}
-              title={it.label}
+              title={collapsed ? it.label : undefined}
               className={'kx-navlink group flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'is-active' : '')}
             >
-              <span className={'ml-3 ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
+              <span className={(collapsed ? 'mx-auto' : 'ml-3') + ' ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
                 <NavIcon name={it.icon} />
               </span>
-              <span className="ml-2 tracking-tight">{it.label}</span>
+              {!collapsed && <span className="ml-2 tracking-tight">{it.label}</span>}
               {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(var(--kx-accent), 0.95)' }} />}
             </Link>
           )
         })}
       </nav>
 
-      {userEmail && (
-        <div className="mt-auto px-5 py-4 " style={{ borderColor: 'rgba(var(--kx-border), .12)' }}>
+      {userEmail && !collapsed && (
+        <div className="mt-auto px-5 py-4">
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="text-[11px] uppercase tracking-wider kx-muted3">Signed in as</div>

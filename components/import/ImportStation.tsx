@@ -99,8 +99,8 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
   }
 
   return (
-    <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
-      <div className="p-4 border-b border-[rgba(var(--kx-border),.12)] flex flex-wrap items-center justify-between gap-3">
+    <div className="rounded-2xl kx-panel overflow-hidden">
+      <div className="p-4  flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="text-sm font-semibold">{title}</div>
           <div className="text-xs kx-muted2 mt-1">CSV upload → preview → import</div>
@@ -151,7 +151,7 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
           </div>
 
           {details?.errors?.length ? (
-            <div className="mt-2 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-black/20 p-3">
+            <div className="mt-2 rounded-2xl bg-black/20 p-3 ring-1 ring-white/10">
               <div className="text-xs kx-muted mb-2">First {details.errors.length} issue(s)</div>
               <ul className="list-disc pl-5 text-xs kx-muted space-y-1">
                 {details.errors.map((e, i) => (
@@ -164,12 +164,12 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
 
         <div className="grid gap-2">
           <div className="text-xs kx-muted2 uppercase tracking-wider">Preview (first 5 rows)</div>
-          <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-auto">
+          <div className="rounded-2xl bg-[rgba(var(--kx-border),.06)] overflow-auto ring-1 ring-white/10">
             <table className="min-w-full text-xs">
               <thead className="sticky top-0 bg-black/30 backdrop-blur">
                 <tr>
                   {parsed.headers.map((h) => (
-                    <th key={h} className="px-3 py-2 text-left kx-muted font-medium border-b border-[rgba(var(--kx-border),.12)]">
+                    <th key={h} className="px-3 py-2 text-left kx-muted font-medium ">
                       {h}
                     </th>
                   ))}
@@ -177,7 +177,7 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
               </thead>
               <tbody>
                 {preview.map((r, idx) => (
-                  <tr key={idx} className="border-b border-white/5">
+                  <tr key={idx} className="">
                     {parsed.headers.map((h) => (
                       <td key={h} className="px-3 py-2 text-[rgba(var(--kx-fg),.82)] whitespace-nowrap">
                         {r[h]}

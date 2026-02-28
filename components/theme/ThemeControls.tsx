@@ -15,13 +15,13 @@ const ACCENTS: Accent[] = [
 function applyAccent(rgb: string, value: string) {
   try {
     document.documentElement.style.setProperty("--kx-accent", rgb);
-    localStorage.setItem("kx_accent", value);
+    localStorage.setItem("kx_accent_v2", value);
   } catch {}
 }
 
 function getAccent(): Accent {
   try {
-    const v = localStorage.getItem("kx_accent");
+    const v = localStorage.getItem("kx_accent_v2");
     const found = ACCENTS.find((a) => a.value === v);
     if (found) return found;
   } catch {}
@@ -54,10 +54,10 @@ export default function ThemeControls() {
               applyAccent(a.rgb, a.value);
             }}
             className={
-              "rounded-xl border px-3 py-2 text-sm transition " +
+              "rounded-xl ring-1 ring-white/10 px-3 py-2 text-sm transition " +
               (accent.value === a.value
-                ? "border-[rgba(var(--kx-border),.18)] bg-[rgba(var(--kx-border),.10)] text-[rgba(var(--kx-fg),.92)]"
-                : "border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] text-[rgba(var(--kx-fg),.78)] hover:bg-[rgba(var(--kx-border),.10)] hover:text-[rgba(var(--kx-fg),.92)]")
+                ? " bg-[rgba(var(--kx-border),.10)] text-[rgba(var(--kx-fg),.92)]"
+                : " bg-[rgba(var(--kx-border),.06)] text-[rgba(var(--kx-fg),.78)] hover:bg-[rgba(var(--kx-border),.10)] hover:text-[rgba(var(--kx-fg),.92)]")
             }
           >
             <span
