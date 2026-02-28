@@ -18,7 +18,7 @@ export default async function Page({ params }: PageProps) {
   ])
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen kx-card text-[rgba(var(--kx-fg),0.92)]">
       <div className="mx-auto max-w-4xl px-6 py-10">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -27,33 +27,33 @@ export default async function Page({ params }: PageProps) {
             </div>
             <div>
               <div className="text-lg font-semibold tracking-tight">{company?.name || 'Kryvexis'}</div>
-              <div className="text-xs text-black/60">Invoice</div>
+              <div className="text-xs text-[rgba(var(--kx-fg),0.92)]/60">Invoice</div>
             </div>
           </div>
 
           <div className="text-right">
             <div className="text-2xl font-semibold">{invoice?.number || ''}</div>
-            <div className="text-sm text-black/60">Issue: {invoice?.issue_date || '—'}</div>
-            <div className="text-sm text-black/60">Due: {invoice?.due_date || '—'}</div>
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/60">Issue: {invoice?.issue_date || '—'}</div>
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/60">Due: {invoice?.due_date || '—'}</div>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-6">
           <div className="rounded-2xl border border-black/10 p-4">
-            <div className="text-xs font-semibold text-black/60">From</div>
+            <div className="text-xs font-semibold text-[rgba(var(--kx-fg),0.92)]/60">From</div>
             <div className="mt-1 font-medium">{company?.name || 'Kryvexis'}</div>
-            {company?.address && <div className="text-sm text-black/70 mt-1">{company.address}</div>}
-            <div className="text-sm text-black/70 mt-1">{company?.email || ''}</div>
-            <div className="text-sm text-black/70">{company?.phone || ''}</div>
-            {company?.tax_id && <div className="text-sm text-black/70 mt-1">Tax: {company.tax_id}</div>}
+            {company?.address && <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70 mt-1">{company.address}</div>}
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70 mt-1">{company?.email || ''}</div>
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70">{company?.phone || ''}</div>
+            {company?.tax_id && <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70 mt-1">Tax: {company.tax_id}</div>}
           </div>
 
           <div className="rounded-2xl border border-black/10 p-4">
-            <div className="text-xs font-semibold text-black/60">Bill To</div>
+            <div className="text-xs font-semibold text-[rgba(var(--kx-fg),0.92)]/60">Bill To</div>
             <div className="mt-1 font-medium">{(invoice as any)?.clients?.name || '—'}</div>
-            {(invoice as any)?.clients?.billing_address && <div className="text-sm text-black/70 mt-1">{(invoice as any).clients.billing_address}</div>}
-            <div className="text-sm text-black/70 mt-1">{(invoice as any)?.clients?.email || ''}</div>
-            <div className="text-sm text-black/70">{(invoice as any)?.clients?.phone || ''}</div>
+            {(invoice as any)?.clients?.billing_address && <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70 mt-1">{(invoice as any).clients.billing_address}</div>}
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70 mt-1">{(invoice as any)?.clients?.email || ''}</div>
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70">{(invoice as any)?.clients?.phone || ''}</div>
           </div>
         </div>
 
@@ -84,27 +84,27 @@ export default async function Page({ params }: PageProps) {
           <div className="space-y-3">
             {invoice?.notes && (
               <div className="rounded-2xl border border-black/10 p-4">
-                <div className="text-xs font-semibold text-black/60">Notes</div>
-                <div className="text-sm text-black/80 mt-1 whitespace-pre-wrap">{invoice.notes}</div>
+                <div className="text-xs font-semibold text-[rgba(var(--kx-fg),0.92)]/60">Notes</div>
+                <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/80 mt-1 whitespace-pre-wrap">{invoice.notes}</div>
               </div>
             )}
             {invoice?.terms && (
               <div className="rounded-2xl border border-black/10 p-4">
-                <div className="text-xs font-semibold text-black/60">Terms</div>
-                <div className="text-sm text-black/80 mt-1 whitespace-pre-wrap">{invoice.terms}</div>
+                <div className="text-xs font-semibold text-[rgba(var(--kx-fg),0.92)]/60">Terms</div>
+                <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/80 mt-1 whitespace-pre-wrap">{invoice.terms}</div>
               </div>
             )}
             <div className="rounded-2xl border border-black/10 p-4">
-              <div className="text-xs font-semibold text-black/60">Status</div>
+              <div className="text-xs font-semibold text-[rgba(var(--kx-fg),0.92)]/60">Status</div>
               <div className="mt-1 text-sm">{invoice?.status || '—'}</div>
-              <div className="mt-1 text-sm text-black/70">Balance due: <span className="font-medium">{fmtZar(Number(invoice?.balance_due || 0))}</span></div>
+              <div className="mt-1 text-sm text-[rgba(var(--kx-fg),0.92)]/70">Balance due: <span className="font-medium">{fmtZar(Number(invoice?.balance_due || 0))}</span></div>
             </div>
           </div>
 
           <div className="rounded-2xl border border-black/10 p-4 h-fit">
-            <div className="flex items-center justify-between text-sm"><span className="text-black/60">Subtotal</span><span>{fmtZar(Number(invoice?.subtotal || 0))}</span></div>
-            <div className="flex items-center justify-between text-sm mt-2"><span className="text-black/60">Discount</span><span>- {fmtZar(Number(invoice?.discount_total || 0))}</span></div>
-            <div className="flex items-center justify-between text-sm mt-2"><span className="text-black/60">Tax</span><span>{fmtZar(Number(invoice?.tax_total || 0))}</span></div>
+            <div className="flex items-center justify-between text-sm"><span className="text-[rgba(var(--kx-fg),0.92)]/60">Subtotal</span><span>{fmtZar(Number(invoice?.subtotal || 0))}</span></div>
+            <div className="flex items-center justify-between text-sm mt-2"><span className="text-[rgba(var(--kx-fg),0.92)]/60">Discount</span><span>- {fmtZar(Number(invoice?.discount_total || 0))}</span></div>
+            <div className="flex items-center justify-between text-sm mt-2"><span className="text-[rgba(var(--kx-fg),0.92)]/60">Tax</span><span>{fmtZar(Number(invoice?.tax_total || 0))}</span></div>
             <div className="mt-3 pt-3 border-t border-black/10 flex items-center justify-between">
               <span className="font-semibold">Total</span>
               <span className="text-lg font-semibold">{fmtZar(Number(invoice?.total || 0))}</span>
@@ -112,7 +112,7 @@ export default async function Page({ params }: PageProps) {
           </div>
         </div>
 
-        <div className="mt-8 text-xs text-black/50">
+        <div className="mt-8 text-xs text-[rgba(var(--kx-fg),0.92)]/50">
           Tip: Use your browser print dialog to <span className="font-medium">Save as PDF</span>.
         </div>
       </div>

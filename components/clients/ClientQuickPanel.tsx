@@ -128,7 +128,7 @@ export default function ClientQuickPanel({ clients }: Props) {
           <Link
             key={c.id}
             href={`/clients/${c.id}`}
-            className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-3 py-2 hover:bg-white/10"
+            className="flex items-center justify-between rounded-2xl border border-white/10 kx-card/5 px-3 py-2 hover:kx-card/10"
           >
             <span className="text-sm text-white/85">{c.name}</span>
             <span className="text-xs text-white/55">Open</span>

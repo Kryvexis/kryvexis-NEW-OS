@@ -18,7 +18,7 @@ export default async function Page({ params }: PageProps) {
   ])
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen kx-card text-[rgba(var(--kx-fg),0.92)]">
       <div className="mx-auto max-w-4xl px-6 py-10">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -27,33 +27,33 @@ export default async function Page({ params }: PageProps) {
             </div>
             <div>
               <div className="text-lg font-semibold tracking-tight">{company?.name || 'Kryvexis'}</div>
-              <div className="text-xs text-black/60">Quote</div>
+              <div className="text-xs text-[rgba(var(--kx-fg),0.92)]/60">Quote</div>
             </div>
           </div>
 
           <div className="text-right">
             <div className="text-2xl font-semibold">{quote?.number || ''}</div>
-            <div className="text-sm text-black/60">Issue: {quote?.issue_date || '—'}</div>
-            <div className="text-sm text-black/60">Expiry: {quote?.expiry_date || '—'}</div>
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/60">Issue: {quote?.issue_date || '—'}</div>
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/60">Expiry: {quote?.expiry_date || '—'}</div>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-6">
           <div className="rounded-2xl border border-black/10 p-4">
-            <div className="text-xs font-semibold text-black/60">From</div>
+            <div className="text-xs font-semibold text-[rgba(var(--kx-fg),0.92)]/60">From</div>
             <div className="mt-1 font-medium">{company?.name || 'Kryvexis'}</div>
-            {company?.address && <div className="text-sm text-black/70 mt-1">{company.address}</div>}
-            <div className="text-sm text-black/70 mt-1">{company?.email || ''}</div>
-            <div className="text-sm text-black/70">{company?.phone || ''}</div>
-            {company?.tax_id && <div className="text-sm text-black/70 mt-1">Tax: {company.tax_id}</div>}
+            {company?.address && <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70 mt-1">{company.address}</div>}
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70 mt-1">{company?.email || ''}</div>
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70">{company?.phone || ''}</div>
+            {company?.tax_id && <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70 mt-1">Tax: {company.tax_id}</div>}
           </div>
 
           <div className="rounded-2xl border border-black/10 p-4">
-            <div className="text-xs font-semibold text-black/60">Bill To</div>
+            <div className="text-xs font-semibold text-[rgba(var(--kx-fg),0.92)]/60">Bill To</div>
             <div className="mt-1 font-medium">{(quote as any)?.clients?.name || '—'}</div>
-            {(quote as any)?.clients?.billing_address && <div className="text-sm text-black/70 mt-1">{(quote as any).clients.billing_address}</div>}
-            <div className="text-sm text-black/70 mt-1">{(quote as any)?.clients?.email || ''}</div>
-            <div className="text-sm text-black/70">{(quote as any)?.clients?.phone || ''}</div>
+            {(quote as any)?.clients?.billing_address && <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70 mt-1">{(quote as any).clients.billing_address}</div>}
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70 mt-1">{(quote as any)?.clients?.email || ''}</div>
+            <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/70">{(quote as any)?.clients?.phone || ''}</div>
           </div>
         </div>
 
@@ -84,22 +84,22 @@ export default async function Page({ params }: PageProps) {
           <div className="space-y-3">
             {quote?.notes && (
               <div className="rounded-2xl border border-black/10 p-4">
-                <div className="text-xs font-semibold text-black/60">Notes</div>
-                <div className="text-sm text-black/80 mt-1 whitespace-pre-wrap">{quote.notes}</div>
+                <div className="text-xs font-semibold text-[rgba(var(--kx-fg),0.92)]/60">Notes</div>
+                <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/80 mt-1 whitespace-pre-wrap">{quote.notes}</div>
               </div>
             )}
             {quote?.terms && (
               <div className="rounded-2xl border border-black/10 p-4">
-                <div className="text-xs font-semibold text-black/60">Terms</div>
-                <div className="text-sm text-black/80 mt-1 whitespace-pre-wrap">{quote.terms}</div>
+                <div className="text-xs font-semibold text-[rgba(var(--kx-fg),0.92)]/60">Terms</div>
+                <div className="text-sm text-[rgba(var(--kx-fg),0.92)]/80 mt-1 whitespace-pre-wrap">{quote.terms}</div>
               </div>
             )}
           </div>
 
           <div className="rounded-2xl border border-black/10 p-4 h-fit">
-            <div className="flex items-center justify-between text-sm"><span className="text-black/60">Subtotal</span><span>{fmtZar(Number(quote?.subtotal || 0))}</span></div>
-            <div className="flex items-center justify-between text-sm mt-2"><span className="text-black/60">Discount</span><span>- {fmtZar(Number(quote?.discount_total || 0))}</span></div>
-            <div className="flex items-center justify-between text-sm mt-2"><span className="text-black/60">Tax</span><span>{fmtZar(Number(quote?.tax_total || 0))}</span></div>
+            <div className="flex items-center justify-between text-sm"><span className="text-[rgba(var(--kx-fg),0.92)]/60">Subtotal</span><span>{fmtZar(Number(quote?.subtotal || 0))}</span></div>
+            <div className="flex items-center justify-between text-sm mt-2"><span className="text-[rgba(var(--kx-fg),0.92)]/60">Discount</span><span>- {fmtZar(Number(quote?.discount_total || 0))}</span></div>
+            <div className="flex items-center justify-between text-sm mt-2"><span className="text-[rgba(var(--kx-fg),0.92)]/60">Tax</span><span>{fmtZar(Number(quote?.tax_total || 0))}</span></div>
             <div className="mt-3 pt-3 border-t border-black/10 flex items-center justify-between">
               <span className="font-semibold">Total</span>
               <span className="text-lg font-semibold">{fmtZar(Number(quote?.total || 0))}</span>
@@ -107,7 +107,7 @@ export default async function Page({ params }: PageProps) {
           </div>
         </div>
 
-        <div className="mt-8 text-xs text-black/50">
+        <div className="mt-8 text-xs text-[rgba(var(--kx-fg),0.92)]/50">
           Tip: Use your browser print dialog to <span className="font-medium">Save as PDF</span>.
         </div>
       </div>

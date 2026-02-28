@@ -5,9 +5,7 @@ import * as React from "react";
 function getTheme(): "dark" | "light" {
   try {
     const v = localStorage.getItem("kx_theme");
-    // Force a premium dark-first experience (prevents old "light" localStorage from turning the UI white)
-    if (v === "dark") return "dark";
-    if (v === "light") return "dark";
+    if (v === "light" || v === "dark") return v;
   } catch {}
   return "dark";
 }

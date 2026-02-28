@@ -77,10 +77,10 @@ export default async function Page() {
             <div key={s.key} className="flex flex-col items-center justify-end gap-2">
               <div className="w-full flex items-end gap-2">
                 <div className="flex-1 rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
-                  <div className="bg-white/25" style={{ height: `${Math.max(6, Math.round((s.income / maxV) * 140))}px` }} />
+                  <div className="kx-card/25" style={{ height: `${Math.max(6, Math.round((s.income / maxV) * 140))}px` }} />
                 </div>
                 <div className="flex-1 rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
-                  <div className="bg-white/25" style={{ height: `${Math.max(6, Math.round((s.expense / maxV) * 140))}px` }} />
+                  <div className="kx-card/25" style={{ height: `${Math.max(6, Math.round((s.expense / maxV) * 140))}px` }} />
                 </div>
               </div>
               <div className="text-[11px] kx-muted2">{s.label}</div>

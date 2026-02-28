@@ -119,7 +119,7 @@ export default async function Page() {
             {revenueByMonth.map((m) => (
               <div key={m.key} className="flex-1 flex flex-col items-center gap-2">
                 <div className="w-full rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
-                  <div className="w-full bg-white/25" style={{ height: `${Math.max(6, Math.round((m.value / maxRev) * 140))}px` }} />
+                  <div className="w-full kx-card/25" style={{ height: `${Math.max(6, Math.round((m.value / maxRev) * 140))}px` }} />
                 </div>
                 <div className="text-[11px] kx-muted2">{m.label}</div>
               </div>

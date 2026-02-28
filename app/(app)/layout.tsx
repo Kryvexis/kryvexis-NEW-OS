@@ -1,5 +1,30 @@
-export default function AppLayout({ children }: { children: React.ReactNode }) {
-  // Root app/layout.tsx owns <html>, theme bootstrapping, and globals.
-  // Keep this layout minimal so it doesn't override the dark-first theme.
-  return children
+
+// Global styles live at app/globals.css (one level up from this route group)
+import "../globals.css";
+
+const themeInitScript = `
+(() => {
+  try {
+    const storedTheme = localStorage.getItem("kx-theme");
+    const theme = storedTheme || "light";
+
+    const storedAccent = localStorage.getItem("kx-accent");
+    const accent = storedAccent || "34 211 238";
+
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.style.setProperty("--kx-accent", accent);
+  } catch (e) {}
+})();
+`;
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
 }
