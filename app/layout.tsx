@@ -1,4 +1,4 @@
-import './globals.css'
+import "./globals.css";
 
 // Root layout must NOT enforce auth redirects.
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
@@ -10,9 +10,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    // v2 keys: forces a clean reset for anyone who previously saved light mode
-    const theme = localStorage.getItem('kx_theme_v2') || 'dark';
-    document.documentElement.dataset.theme = (theme === 'light') ? 'light' : 'dark';
+    const themeRaw = localStorage.getItem('kx_theme_v2') || 'dark';
+    const theme = (themeRaw === 'light') ? 'light' : 'dark';
+
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.classList.toggle('dark', theme === 'dark');
+    root.classList.toggle('kx-light', theme === 'light');
+
     const accent = localStorage.getItem('kx_accent_v2') || 'cyan';
     const map = {
       cyan: '34 211 238',
@@ -22,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       orange: '249 115 22',
     };
     const rgb = map[accent] || map.cyan;
-    document.documentElement.style.setProperty('--kx-accent', rgb);
+    root.style.setProperty('--kx-accent', rgb);
   } catch {}
 })();`,
           }}
@@ -30,5 +35,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>{children}</body>
     </html>
-  )
+  );
 }

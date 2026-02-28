@@ -1,30 +1,23 @@
+import Shell from "@/components/shell";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
 
-// Global styles live at app/globals.css (one level up from this route group)
-import "../globals.css";
+// Auth-gated layout for the main app.
+// Root HTML/body and global theme init live in app/layout.tsx.
 
-const themeInitScript = `
-(() => {
-  try {
-    const storedTheme = localStorage.getItem("kx-theme");
-    const theme = storedTheme || "light";
+export const dynamic = "force-dynamic";
 
-    const storedAccent = localStorage.getItem("kx-accent");
-    const accent = storedAccent || "34 211 238";
+export default async function AppLayout({ children }: { children: ReactNode }) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    const root = document.documentElement;
-    root.dataset.theme = theme;
-    root.style.setProperty("--kx-accent", accent);
-  } catch (e) {}
-})();
-`;
+  if (!user) {
+    // Home page is the login screen.
+    redirect("/");
+  }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
-      <body>{children}</body>
-    </html>
-  );
+  return <Shell userEmail={user.email ?? ""}>{children}</Shell>;
 }
