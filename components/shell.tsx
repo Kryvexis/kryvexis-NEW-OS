@@ -1,74 +1,113 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
 import CommandPalette from './command-palette'
 import LogoutButton from './logout-button'
 import MobileNav from './nav/MobileNav'
 import ThemeToggle from './theme/ThemeToggle'
-import { Sidebar } from './nav'
+import { navMainItems, NavIcon } from './nav'
 
-function UserIcon({ size = 16 }: { size?: number }) {
+function TopTabs() {
+  const pathname = usePathname()
+
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 12a4.2 4.2 0 1 0 0-8.4A4.2 4.2 0 0 0 12 12Z" stroke="currentColor" strokeWidth="1.6" />
-      <path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
+    <nav
+      aria-label="Primary"
+      className="flex items-center gap-1 overflow-x-auto rounded-full border bg-kx-surface/20 px-1 py-1 backdrop-blur-md"
+      style={{ borderColor: 'rgb(var(--kx-border) / 0.10)', boxShadow: 'inset 0 1px 0 rgb(255 255 255 / 0.06)' }}
+    >
+      {navMainItems.map((item) => {
+        const active = pathname === item.href || pathname.startsWith(item.href + '/')
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={
+              'group inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-sm transition ' +
+              (active
+                ? 'bg-kx-surface/35 text-kx-fg'
+                : 'text-kx-fg/70 hover:bg-kx-surface/25 hover:text-kx-fg')
+            }
+            style={active ? { boxShadow: '0 10px 26px rgb(0 0 0 / 0.22), 0 0 0 1px rgb(var(--kx-border) / 0.08)' } : undefined}
+          >
+            <span className={active ? 'text-kx-fg' : 'text-kx-fg/60 group-hover:text-kx-fg/90'} aria-hidden>
+              <NavIcon name={item.icon} />
+            </span>
+            <span className="whitespace-nowrap tracking-tight">{item.label}</span>
+          </Link>
+        )
+      })}
+    </nav>
   )
 }
 
 export default function Shell({ userEmail, children }: { userEmail: string; children: React.ReactNode }) {
-  const [q, setQ] = useState('')
-  const placeholder = useMemo(() => 'Search… (Ctrl K)', [])
-
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen">
       <CommandPalette />
 
-      {/* Desktop sidebar (fixed + collapsible) */}
-      <Sidebar userEmail={userEmail} workspaceName="Workspace" memberType="" />
+      {/* Mobile header */}
+      <div
+        className="sticky top-0 z-40 flex h-14 items-center justify-between gap-3 border-b bg-kx-shell px-3 md:hidden"
+        style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+      >
+        <MobileNav userEmail={userEmail} />
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top header (minimal) */}
-        <header className="sticky top-0 z-40 border-b border-[rgba(var(--kx-border),.10)] bg-[rgba(var(--kx-shell),.72)] backdrop-blur-xl">
-          <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6 py-3 flex items-center gap-3">
-            {/* Mobile hamburger + drawer */}
-            <MobileNav userEmail={userEmail} />
-
-            {/* Search */}
-            <div className="flex-1 min-w-0">
-              <div className="relative max-w-[520px]">
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder={placeholder}
-                  className="kx-input w-full pr-16"
-                />
-                <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] text-[rgba(var(--kx-fg),.50)]">
-                  <span className="kx-badge px-1.5 py-0.5">Ctrl</span>
-                  <span className="kx-badge px-1.5 py-0.5">K</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <div className="hidden md:flex items-center gap-2 rounded-2xl border border-[rgba(var(--kx-fg),.12)] bg-[rgba(var(--kx-fg),.05)] px-3 py-2 text-[12px] text-[rgba(var(--kx-fg),.82)]">
-                <UserIcon />
-                <span className="max-w-[220px] truncate" title={userEmail}>{userEmail}</span>
-              </div>
-              <LogoutButton />
-            </div>
+        <div className="flex items-center gap-2">
+          <Image src="/kryvexis-logo.png" alt="Kryvexis" width={32} height={32} className="h-8 w-8" priority />
+          <div className="leading-tight">
+            <div className="text-sm font-semibold tracking-tight">Kryvexis</div>
+            <div className="text-[11px] kx-muted">OS</div>
           </div>
-        </header>
+        </div>
 
-        <main className="flex-1">
-          <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6 py-6">
-            {children}
-          </div>
-        </main>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <LogoutButton />
+        </div>
       </div>
+
+      {/* Desktop header */}
+      <header
+        className="sticky top-0 z-40 hidden border-b bg-kx-shell/65 backdrop-blur-md md:block"
+        style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+      >
+        <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
+          {/* Brand */}
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={38} height={38} className="h-9 w-9" priority />
+            <div className="leading-tight">
+              <div className="text-sm font-semibold tracking-tight">Kryvexis</div>
+              <div className="text-[11px] kx-muted">OS</div>
+            </div>
+          </Link>
+
+          {/* Tabs */}
+          <div className="flex-1 px-2">
+            <TopTabs />
+          </div>
+
+          {/* Right */}
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <div
+              className="hidden max-w-[260px] truncate rounded-full border bg-kx-surface/25 px-3 py-2 text-xs text-kx-fg/75 backdrop-blur lg:block"
+              style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+              title={userEmail}
+            >
+              {userEmail}
+            </div>
+            <LogoutButton />
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-7xl px-4 py-6">
+        {children}
+      </main>
     </div>
   )
 }

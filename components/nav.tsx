@@ -145,9 +145,10 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
   return (
     <aside
       className={
-        'hidden md:flex md:flex-col border-r kx-hairline transition-[width] duration-300 kx-sidebar ' +
+        'hidden md:flex md:flex-col border-r transition-[width] duration-300 ' +
         widthCls
       }
+      style={{ background: 'rgb(var(--kx-shell) / 0.85)', borderColor: 'rgb(var(--kx-border) / 0.10)' }}
     >
       <div className={collapsed ? 'px-3 pt-5 pb-4' : 'px-5 pt-5 pb-4'}>
         <div className={collapsed ? 'flex flex-col items-center gap-3' : 'flex items-start justify-between gap-3'}>
@@ -156,9 +157,9 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
             <Image
               src="/kryvexis-logo.png"
               alt="Kryvexis"
-              width={collapsed ? 120 : 240}
-              height={collapsed ? 120 : 240}
-              className={collapsed ? 'h-[120px] w-[120px] object-contain' : 'h-[240px] w-[240px] object-contain'}
+              width={collapsed ? 92 : 132}
+              height={collapsed ? 92 : 132}
+              className={collapsed ? 'h-[92px] w-[92px] object-contain' : 'h-[132px] w-[132px] object-contain'}
               style={{
                 filter:
                   'drop-shadow(0 0 18px rgba(var(--kx-accent), .22)) drop-shadow(0 10px 28px rgba(0,0,0,.35))',
