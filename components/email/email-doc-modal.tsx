@@ -65,8 +65,8 @@ export function EmailDocModal(props: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-[92vw] max-w-xl rounded-3xl bg-black/60 backdrop-blur-xl shadow-2xl ring-1 ring-white/10">
-        <div className="p-5">
+      <div className="relative w-[92vw] max-w-xl rounded-3xl border border-[rgba(var(--kx-border),.12)] bg-black/60 backdrop-blur-xl shadow-2xl">
+        <div className="p-5 border-b border-[rgba(var(--kx-border),.12)]">
           <div className="text-base font-semibold">Send email</div>
           <div className="text-xs kx-muted mt-1">Uses your SMTP settings (no third‑party credits).</div>
         </div>

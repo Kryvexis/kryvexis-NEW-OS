@@ -1,78 +1,97 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+
 import CommandPalette from './command-palette'
 import LogoutButton from './logout-button'
 import MobileNav from './nav/MobileNav'
-import ThemeToggle from './theme/ThemeToggle'
 import { Sidebar } from './nav'
+import ThemeToggle from './theme/ThemeToggle'
 
-function UserIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 12a4.2 4.2 0 1 0 0-8.4A4.2 4.2 0 0 0 12 12Z" stroke="currentColor" strokeWidth="1.6" />
-      <path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  )
+function pageTitleFromPath(pathname: string) {
+  const p = (pathname || '/dashboard').split('?')[0]
+  if (p === '/' || p === '/dashboard') return 'Dashboard'
+  if (p.startsWith('/clients')) return 'Clients'
+  if (p.startsWith('/products')) return 'Products'
+  if (p.startsWith('/suppliers')) return 'Suppliers'
+  if (p.startsWith('/quotes')) return 'Quotes'
+  if (p.startsWith('/invoices')) return 'Invoices'
+  if (p.startsWith('/payments')) return 'Payments'
+  if (p.startsWith('/accounts')) return 'Accounts'
+  if (p.startsWith('/reports')) return 'Reports'
+  if (p.startsWith('/settings')) return 'Settings'
+  if (p.startsWith('/help')) return 'Help'
+  if (p.startsWith('/import-station')) return 'Import Center'
+  if (p.startsWith('/account-center')) return 'Account Center'
+  return 'Kryvexis OS'
 }
 
 export default function Shell({ userEmail, children }: { userEmail: string; children: React.ReactNode }) {
-  const [q, setQ] = useState('')
-  const placeholder = useMemo(() => 'Search… (Ctrl K)', [])
+  const pathname = usePathname() || '/dashboard'
+  const title = pageTitleFromPath(pathname)
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen">
       <CommandPalette />
 
-      {/* Desktop sidebar (fixed + collapsible) */}
-      <Sidebar userEmail={userEmail} workspaceName="Workspace" memberType="" />
+      <div className="flex min-h-screen">
+        {/* Desktop sidebar (A) + hidden on small screens (C) */}
+        <Sidebar userEmail={userEmail} workspaceName="Kryvexis" />
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top header (premium glass) */}
-        <header className="sticky top-0 z-40 bg-kx-shell/30 backdrop-blur-xl shadow-[0_14px_60px_rgba(0,0,0,0.55)]">
-          <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6">
-            <div className="grid h-14 w-full grid-cols-[auto,1fr,auto] items-center gap-3">
-              {/* Left */}
-              <div className="flex items-center gap-2">
-                {/* Mobile hamburger + drawer */}
+        {/* Main area */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* Slim topbar (desktop + mobile) */}
+          <header
+            className="sticky top-0 z-40 border-b bg-kx-shell/70 backdrop-blur-md"
+            style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+          >
+            {/* Align header content with page content (left-aligned, not centered). */}
+            <div className="px-5">
+              <div className="flex h-14 w-full max-w-[1280px] items-center gap-3">
+              {/* Mobile menu */}
+              <div className="md:hidden">
                 <MobileNav userEmail={userEmail} />
               </div>
 
-              {/* Center */}
-              <div className="flex justify-center">
-                <div className="relative w-full max-w-xl">
-                  <input
-                    value={q}
-                    onChange={(e) => setQ(e.target.value)}
-                    placeholder={placeholder}
-                    className="kx-input w-full pr-16"
-                  />
-                  <div className="pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 items-center gap-1 text-[11px] text-kx-fg/55 md:flex">
-                    <span className="kx-badge px-1.5 py-0.5">Ctrl</span>
-                    <span className="kx-badge px-1.5 py-0.5">K</span>
-                  </div>
+              {/* Title */}
+              <div className="flex items-center gap-3 min-w-0">
+                {/* On mobile, show small brand mark */}
+                <div className="flex items-center gap-2 md:hidden">
+                  <Image src="/kryvexis-logo.png" alt="Kryvexis" width={26} height={26} className="h-6 w-6" priority />
+                  <div className="text-sm font-semibold tracking-tight">Kryvexis</div>
                 </div>
+                <div className="hidden md:block">
+                  <div className="text-sm font-semibold tracking-tight text-kx-fg">{title}</div>
+                  <div className="text-[11px] kx-muted">{pathname}</div>
+                </div>
+                <div className="md:hidden text-sm font-semibold tracking-tight text-kx-fg truncate">{title}</div>
               </div>
 
-              {/* Right */}
-              <div className="flex items-center justify-end gap-2">
+              <div className="flex-1" />
+
+              {/* Right controls */}
+              <div className="flex items-center gap-2">
                 <ThemeToggle />
-                <div className="hidden md:flex items-center gap-2 rounded-2xl bg-kx-fg/5 px-3 py-2 text-[12px] text-kx-fg/85 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-white/5">
-                  <UserIcon />
-                  <span className="max-w-[220px] truncate" title={userEmail}>{userEmail}</span>
+                <div
+                  className="hidden max-w-[260px] truncate rounded-full border bg-kx-surface/30 px-3 py-2 text-xs text-kx-fg/75 lg:block"
+                  style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+                  title={userEmail}
+                >
+                  {userEmail}
                 </div>
                 <LogoutButton />
               </div>
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        <main className="flex-1">
-          <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6 py-6">
-            {children}
-          </div>
-        </main>
+          {/* Page content */}
+          {/* Left-aligned content to match the premium dashboard reference style */}
+          <main className="w-full flex-1 px-5 py-6">
+            <div className="w-full max-w-[1280px]">{children}</div>
+          </main>
+        </div>
       </div>
     </div>
   )

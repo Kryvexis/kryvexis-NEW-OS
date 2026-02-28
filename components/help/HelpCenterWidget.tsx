@@ -186,7 +186,7 @@ export default function HelpCenterWidget() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 z-[60] h-12 w-12 rounded-2xl bg-[rgba(var(--kx-border),.10)] backdrop-blur shadow-[0_18px_60px_rgba(0,0,0,.55)] ring-1 ring-white/10 hover:kx-card/12 active:translate-y-[1px]"
+        className="fixed bottom-5 right-5 z-[60] h-12 w-12 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.10)] backdrop-blur shadow-[0_14px_40px_rgba(0,0,0,.45)] hover:kx-card/12 active:translate-y-[1px]"
         aria-label="Help center"
         data-tour="help-fab"
       >

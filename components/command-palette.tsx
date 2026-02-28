@@ -76,7 +76,7 @@ export default function CommandPalette() {
   return (
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-      <div className="absolute left-1/2 top-20 w-[92vw] max-w-2xl -translate-x-1/2 rounded-3xl bg-black/70 backdrop-blur-xl shadow-2xl overflow-hidden ring-1 ring-white/10">
+      <div className="absolute left-1/2 top-20 w-[92vw] max-w-2xl -translate-x-1/2 rounded-3xl border border-[rgba(var(--kx-border),.12)] bg-black/70 backdrop-blur-xl shadow-2xl overflow-hidden">
         <Command
           className="p-2"
           value={search}
@@ -92,7 +92,7 @@ export default function CommandPalette() {
             <Command.Input
               autoFocus
               placeholder="Search or type a command…"
-              className="w-full rounded-2xl bg-[rgba(var(--kx-border),.06)] ring-1 ring-white/10 px-3 py-2 text-sm outline-none"
+              className="w-full rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] px-3 py-2 text-sm outline-none"
             />
             <div className="mt-2 text-[11px] text-[rgba(var(--kx-fg),.92)]/50">Tip: Ctrl/⌘ K to open · Enter to run</div>
           </div>
