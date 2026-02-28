@@ -15,13 +15,13 @@ const ACCENTS: Accent[] = [
 function applyAccent(rgb: string, value: string) {
   try {
     document.documentElement.style.setProperty("--kx-accent", rgb);
-    localStorage.setItem("kx_accent_v2", value);
+    localStorage.setItem("kx_accent", value);
   } catch {}
 }
 
 function getAccent(): Accent {
   try {
-    const v = localStorage.getItem("kx_accent_v2");
+    const v = localStorage.getItem("kx_accent");
     const found = ACCENTS.find((a) => a.value === v);
     if (found) return found;
   } catch {}
