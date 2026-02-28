@@ -7,55 +7,26 @@ import { createClient } from "@/lib/supabase/client";
 
 function BootUI() {
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center">
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background:
-            `radial-gradient(42% 36% at 15% 20%, rgb(var(--kx-accent) / 0.28), transparent 60%),
-             radial-gradient(42% 36% at 85% 30%, rgb(255 255 255 / 0.10), transparent 60%),
-             radial-gradient(55% 45% at 55% 85%, rgb(var(--kx-accent) / 0.14), transparent 60%),
-             linear-gradient(180deg, rgb(0 0 0 / 0.18), rgb(0 0 0 / 0.45))`,
-        }}
-      />
-
-      <div
-        className="relative w-[min(520px,92vw)] rounded-kxlg border bg-kx-surface/70 px-7 py-8 text-center shadow-kx2"
-        style={{ borderColor: "rgb(var(--kx-border) / 0.12)" }}
-      >
-        <div className="mx-auto grid place-items-center">
+    <div className="kx-boot">
+      <div className="kx-boot-bg" aria-hidden="true" />
+      <div className="kx-boot-card">
+        <div className="kx-boot-logoWrap">
           <Image
             src="/kryvexis-logo.png"
             alt="Kryvexis"
-            width={112}
-            height={112}
+            width={120}
+            height={120}
             priority
-            className="rounded-[22px]"
+            className="kx-boot-logo"
           />
         </div>
-
-        <div className="mt-3 text-xl font-extrabold tracking-tight">Kryvexis OS</div>
-        <div className="mt-2 text-sm kx-muted">Preparing your workspace…</div>
-
-        <div
-          className="mt-5 h-2.5 overflow-hidden rounded-full border bg-kx-surface2/70"
-          style={{ borderColor: "rgb(var(--kx-border) / 0.12)" }}
-          aria-label="Loading"
-        >
-          <div className="h-full w-[40%] animate-[kxBoot_1.2s_ease-in-out_infinite] rounded-full bg-kx-accent" />
+        <div className="kx-boot-title">Kryvexis OS</div>
+        <div className="kx-boot-sub">Preparing your workspace…</div>
+        <div className="kx-boot-bar" aria-label="Loading">
+          <div className="kx-boot-barFill" />
         </div>
-
-        <div className="mt-5 text-xs kx-muted2">Secure • Fast • Multi-tenant</div>
+        <div className="kx-boot-foot">Secure • Fast • Multi-tenant</div>
       </div>
-
-      <style jsx global>{`
-        @keyframes kxBoot {
-          0% { transform: translateX(-60%); opacity: 0.55; }
-          50% { opacity: 1; }
-          100% { transform: translateX(160%); opacity: 0.70; }
-        }
-      `}</style>
     </div>
   );
 }
@@ -67,7 +38,8 @@ export default function BootPage() {
     let alive = true;
 
     (async () => {
-      await new Promise((r) => setTimeout(r, 700));
+      // show splash briefly (premium OS feel)
+      await new Promise((r) => setTimeout(r, 900));
       if (!alive) return;
 
       const supabase = createClient();
