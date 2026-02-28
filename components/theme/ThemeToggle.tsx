@@ -42,7 +42,8 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      className="h-10 w-10 rounded-xl border border-[rgba(var(--kx-fg),.12)] bg-[rgba(var(--kx-fg),.05)] text-[rgba(var(--kx-fg),.70)] transition hover:bg-[rgba(var(--kx-fg),.10)] hover:text-[rgba(var(--kx-fg),.92)]"
+      className="h-10 w-10 rounded-xl bg-kx-surface/55 text-[rgba(var(--kx-fg),.72)] transition hover:bg-kx-surface/75 hover:text-[rgba(var(--kx-fg),.92)] active:translate-y-[1px]"
+      style={{ boxShadow: 'var(--kx-shadow-float)' }}
       aria-label="Toggle theme"
     >
       {theme === "dark" ? (

@@ -14,22 +14,25 @@
     --kx-accent: 99 102 241;
     --kx-accent-2: 56 189 248;
 
-    /* Light */
-    --kx-bg: 245 245 247;
-    --kx-shell: 252 252 253;
-    --kx-surface: 255 255 255;
-    --kx-surface-2: 248 248 250;
+    /* Light (Apple/Stripe clean) */
+    --kx-bg: 242 244 248;         /* soft cool gray */
+    --kx-shell: 248 250 252;      /* header/sidebar shell */
+    --kx-surface: 255 255 255;    /* cards */
+    --kx-surface-2: 250 251 253;  /* secondary surfaces */
     --kx-fg: 17 24 39;
     --kx-muted: 92 92 102;
     --kx-border: 17 24 39;
 
-    /* Background accents (light) */
-    --kx-bg-grad-1: rgb(var(--kx-accent) / 0.08);
-    --kx-bg-grad-2: rgb(var(--kx-accent) / 0.05);
+    /* Background accents (light) — subtle, not foggy */
+    --kx-bg-grad-1: rgb(var(--kx-accent) / 0.07);
+    --kx-bg-grad-2: rgb(var(--kx-accent-2) / 0.05);
 
-    --kx-shadow-card: 0 18px 46px rgb(17 24 39 / 0.16);
-    --kx-shadow-card-hover: 0 28px 70px rgb(17 24 39 / 0.22);
-    --kx-shadow-float: 0 14px 34px rgb(17 24 39 / 0.14);
+    /* Floating depth (light) — soft shadows, no borders */
+    --kx-shadow-card: 0 14px 34px rgb(17 24 39 / 0.10);
+    --kx-shadow-card-hover: 0 22px 54px rgb(17 24 39 / 0.14);
+    --kx-shadow-float: 0 10px 22px rgb(17 24 39 / 0.08);
+    --kx-shadow-sidebar: 14px 0 42px rgb(17 24 39 / 0.08);
+    --kx-shadow-header: 0 8px 22px rgb(17 24 39 / 0.06);
     color-scheme: light;
   }
 
@@ -52,6 +55,8 @@
     --kx-shadow-card: 0 22px 60px rgb(0 0 0 / 0.45);
     --kx-shadow-card-hover: 0 34px 92px rgb(0 0 0 / 0.60);
     --kx-shadow-float: 0 16px 44px rgb(0 0 0 / 0.42);
+    --kx-shadow-sidebar: 14px 0 60px rgb(0 0 0 / 0.62);
+    --kx-shadow-header: 0 12px 34px rgb(0 0 0 / 0.45);
     color-scheme: dark;
   }
 
@@ -73,9 +78,9 @@ body { height: 100%; }
       "Segoe UI Emoji";
     color: rgb(var(--kx-fg));
     background:
-      radial-gradient(900px 700px at 18% -14%, var(--kx-bg-grad-1), transparent 62%),
-      radial-gradient(980px 780px at 86% -18%, var(--kx-bg-grad-2), transparent 64%),
-      radial-gradient(900px 700px at 52% 115%, var(--kx-bg-grad-3, rgb(var(--kx-accent) / 0.03)), transparent 62%),
+      radial-gradient(980px 760px at 18% -18%, var(--kx-bg-grad-1), transparent 64%),
+      radial-gradient(980px 760px at 86% -18%, var(--kx-bg-grad-2), transparent 66%),
+      radial-gradient(980px 760px at 52% 118%, var(--kx-bg-grad-3, rgb(var(--kx-accent) / 0.03)), transparent 66%),
       rgb(var(--kx-bg));
   }
 
@@ -174,12 +179,13 @@ body { height: 100%; }
 
   /* Module sub-navigation (inside Sales / Accounting / Operations / Insights) */
   .kx-moduleTabs-wrap {
-    @apply mt-3 mb-5;
+    @apply mt-2 mb-5;
   }
   .kx-moduleTabs {
     @apply inline-flex gap-1.5 rounded-full p-1.5;
-    background: rgb(var(--kx-surface) / 0.55);
+    background: rgb(var(--kx-surface) / 0.48);
     box-shadow: var(--kx-shadow-float);
+    backdrop-filter: blur(12px);
   }
   .kx-moduleTab {
     @apply inline-flex items-center justify-center rounded-full px-3 text-[13px] font-medium transition;
@@ -187,12 +193,12 @@ body { height: 100%; }
     color: rgb(var(--kx-fg) / 0.72);
   }
   .kx-moduleTab:hover {
-    background: rgb(var(--kx-surface) / 0.85);
+    background: rgb(var(--kx-surface) / 0.80);
     color: rgb(var(--kx-fg) / 0.92);
     transform: translateY(-1px);
   }
   .kx-moduleTab.is-active {
-    background: rgb(var(--kx-surface2) / 0.95);
+    background: rgb(var(--kx-surface) / 0.92);
     color: rgb(var(--kx-fg) / 0.96);
     box-shadow: 0 0 0 1px rgb(255 255 255 / 0.05) inset, 0 18px 60px rgb(0 0 0 / 0.35), 0 0 44px rgb(var(--kx-accent) / 0.10);
   }

@@ -89,7 +89,10 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
   return (
     <aside
       className={'hidden md:flex md:flex-col ' + widthCls}
-      style={{ background: 'linear-gradient(180deg, rgb(var(--kx-shell) / 0.92), rgb(var(--kx-shell) / 0.88))', boxShadow: '12px 0 50px rgb(0 0 0 / 0.45)' }}
+      style={{
+        background: 'linear-gradient(180deg, rgb(var(--kx-shell) / 0.94), rgb(var(--kx-shell) / 0.86))',
+        boxShadow: 'var(--kx-shadow-sidebar)',
+      }}
     >
       <div className={'px-5 pt-4 pb-3'}>
         <div className={'flex items-start justify-between gap-3'}>

@@ -43,8 +43,8 @@ export default function Shell({ userEmail, children }: { userEmail: string; chil
         <div className="flex min-w-0 flex-1 flex-col">
           {/* Slim topbar (desktop + mobile) */}
           <header
-            className="sticky top-0 z-40 border-b bg-kx-shell/70 backdrop-blur-md"
-            style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+            className="sticky top-0 z-40 bg-kx-shell/65 backdrop-blur-md"
+            style={{ boxShadow: 'var(--kx-shadow-header)' }}
           >
             {/* Align header content with page content (left-aligned, not centered). */}
             <div className="px-5">
@@ -63,7 +63,7 @@ export default function Shell({ userEmail, children }: { userEmail: string; chil
                 </div>
                 <div className="hidden md:block">
                   <div className="text-sm font-semibold tracking-tight text-kx-fg">{title}</div>
-                  <div className="text-[11px] kx-muted">{pathname}</div>
+                  <div className="text-[11px] kx-muted">Kryvexis OS</div>
                 </div>
                 <div className="md:hidden text-sm font-semibold tracking-tight text-kx-fg truncate">{title}</div>
               </div>
