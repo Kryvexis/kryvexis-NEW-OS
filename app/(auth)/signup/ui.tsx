@@ -43,91 +43,101 @@ export default function SignupClient() {
   }
 
   return (
-    <div className="kx-auth">
-      <div className="kx-auth-shell">
-        <div className="kx-auth-brand">
-          <div className="kx-auth-brandCard">
-            <div className="kx-auth-logoRow">
-              <Image src="/kryvexis-logo.png" alt="Kryvexis" width={72} height={72} priority />
-              <div>
-                <div className="kx-auth-brandName">Kryvexis OS</div>
-                <div className="kx-auth-tag">Create your workspace in minutes.</div>
-              </div>
+    <div className="min-h-screen px-4 py-10">
+      <div className="mx-auto grid w-full max-w-5xl items-stretch gap-4 lg:grid-cols-2">
+        <div className="kx-panel p-6 lg:p-8">
+          <div className="flex items-center gap-3">
+            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={84} height={84} priority className="rounded-2xl" />
+            <div>
+              <div className="text-xl font-semibold tracking-tight">Kryvexis OS</div>
+              <div className="text-sm kx-muted">Create your workspace in minutes.</div>
             </div>
-            <div className="kx-auth-bullets">
-              <div className="kx-auth-bullet">✅ Secure Supabase login</div>
-              <div className="kx-auth-bullet">✅ Works on mobile + desktop</div>
-              <div className="kx-auth-bullet">✅ Help center built in</div>
+          </div>
+
+          <div className="mt-6 space-y-2">
+            <div className="kx-chip">✅ Secure Supabase login</div>
+            <div className="kx-chip">✅ Works on mobile + desktop</div>
+            <div className="kx-chip">✅ Help center built in</div>
+          </div>
+
+          <div className="mt-8 rounded-2xl bg-[rgba(var(--kx-fg),.06)] p-4">
+            <div className="text-xs kx-muted2">Need help?</div>
+            <div className="mt-2 text-sm">
+              <a className="underline-offset-2 hover:underline" href="mailto:kryvexissolutions@gmail.com">
+                kryvexissolutions@gmail.com
+              </a>
             </div>
           </div>
         </div>
 
-        <div className="kx-auth-formWrap">
-          <div className="kx-auth-card">
-            <div className="kx-auth-title">Create account</div>
-            <div className="kx-auth-subtitle">You’ll be able to sign in right after.</div>
+        <div className="kx-card p-6 lg:p-8">
+          <div className="text-xl font-semibold tracking-tight">Create account</div>
+          <div className="mt-1 text-sm kx-muted">You’ll be able to sign in right after.</div>
 
-            {error ? <div className="kx-auth-error">{error}</div> : null}
+          {error ? (
+            <div className="mt-4 rounded-2xl bg-[rgba(255,0,80,.10)] px-4 py-3 text-sm text-[rgb(var(--kx-fg))]">
+              {error}
+            </div>
+          ) : null}
 
-            <form onSubmit={onSubmit} className="kx-auth-form">
-              <label className="kx-auth-label">
-                Email
-                <input
-                  className="kx-auth-input"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@company.com"
-                  autoComplete="email"
-                  inputMode="email"
-                  required
-                />
-              </label>
+          <form onSubmit={onSubmit} className="mt-6 space-y-4">
+            <label className="block">
+              <div className="mb-1 text-sm font-medium">Email</div>
+              <input
+                className="kx-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@company.com"
+                autoComplete="email"
+                inputMode="email"
+                required
+              />
+            </label>
 
-              <label className="kx-auth-label">
-                Password
-                <input
-                  className="kx-auth-input"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                />
-              </label>
+            <label className="block">
+              <div className="mb-1 text-sm font-medium">Password</div>
+              <input
+                className="kx-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                type="password"
+                autoComplete="new-password"
+                required
+              />
+            </label>
 
-              <label className="kx-auth-label">
-                Confirm password
-                <input
-                  className="kx-auth-input"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  placeholder="••••••••"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                />
-              </label>
+            <label className="block">
+              <div className="mb-1 text-sm font-medium">Confirm password</div>
+              <input
+                className="kx-input"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                placeholder="••••••••"
+                type="password"
+                autoComplete="new-password"
+                required
+              />
+            </label>
 
-              <button className="kx-auth-primary" type="submit" disabled={loading}>
-                {loading ? "Creating…" : "Create account"}
-              </button>
+            <button className="kx-btn-primary w-full" type="submit" disabled={loading}>
+              {loading ? "Creating…" : "Create account"}
+            </button>
 
-              <div className="kx-auth-row">
-                <span className="kx-auth-muted">
-                  Already have an account?{" "}
-                  <Link className="kx-auth-link" href="/login">
-                    Sign in
-                  </Link>
-                </span>
-                <Link className="kx-auth-link" href="/demo">
-                  View demo
+            <div className="flex items-center justify-between text-sm">
+              <span className="kx-muted">
+                Already have an account?{" "}
+                <Link className="underline-offset-2 hover:underline" href="/login">
+                  Sign in
                 </Link>
-              </div>
-            </form>
-          </div>
+              </span>
+              <Link className="underline-offset-2 hover:underline" href="/demo">
+                View demo
+              </Link>
+            </div>
 
-          <div className="kx-auth-foot">Need help? Email kryvexissolutions@gmail.com</div>
+            <div className="pt-2 text-xs kx-muted2">Need help? Email kryvexissolutions@gmail.com</div>
+          </form>
         </div>
       </div>
     </div>

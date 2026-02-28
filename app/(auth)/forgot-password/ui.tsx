@@ -31,64 +31,72 @@ export default function ForgotPasswordClient() {
   }
 
   return (
-    <div className="kx-auth">
-      <div className="kx-auth-shell">
-        <div className="kx-auth-brand">
-          <div className="kx-auth-brandCard">
-            <div className="kx-auth-logoRow">
-              <Image src="/kryvexis-logo.png" alt="Kryvexis" width={72} height={72} priority />
-              <div>
-                <div className="kx-auth-brandName">Kryvexis OS</div>
-                <div className="kx-auth-tag">Password reset</div>
-              </div>
+    <div className="min-h-screen px-4 py-10">
+      <div className="mx-auto grid w-full max-w-5xl items-stretch gap-4 lg:grid-cols-2">
+        <div className="kx-panel p-6 lg:p-8">
+          <div className="flex items-center gap-3">
+            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={84} height={84} priority className="rounded-2xl" />
+            <div>
+              <div className="text-xl font-semibold tracking-tight">Kryvexis OS</div>
+              <div className="text-sm kx-muted">Password reset</div>
             </div>
-            <div className="kx-auth-bullets">
-              <div className="kx-auth-bullet">We’ll email you a reset link.</div>
-              <div className="kx-auth-bullet">Check spam/junk if you don’t see it.</div>
+          </div>
+
+          <div className="mt-6 space-y-2">
+            <div className="kx-chip">We’ll email you a reset link</div>
+            <div className="kx-chip">Check spam/junk if you don’t see it</div>
+          </div>
+
+          <div className="mt-8 rounded-2xl bg-[rgba(var(--kx-fg),.06)] p-4">
+            <div className="text-xs kx-muted2">Need help?</div>
+            <div className="mt-2 text-sm">
+              <a className="underline-offset-2 hover:underline" href="https://wa.me/27686282874" target="_blank" rel="noreferrer">
+                WhatsApp +27 68 628 2874
+              </a>
             </div>
           </div>
         </div>
 
-        <div className="kx-auth-formWrap">
-          <div className="kx-auth-card">
-            <div className="kx-auth-title">Forgot password</div>
-            <div className="kx-auth-subtitle">Enter your email to reset your password.</div>
+        <div className="kx-card p-6 lg:p-8">
+          <div className="text-xl font-semibold tracking-tight">Forgot password</div>
+          <div className="mt-1 text-sm kx-muted">Enter your email to reset your password.</div>
 
-            {error ? <div className="kx-auth-error">{error}</div> : null}
+          {error ? (
+            <div className="mt-4 rounded-2xl bg-[rgba(255,0,80,.10)] px-4 py-3 text-sm text-[rgb(var(--kx-fg))]">
+              {error}
+            </div>
+          ) : null}
 
-            {sent ? (
-              <div className="kx-auth-error" style={{ background: "rgba(34,211,238,.10)", borderColor: "rgba(34,211,238,.22)" }}>
-                Reset email sent. Please check your inbox.
-              </div>
-            ) : null}
+          {sent ? (
+            <div className="mt-4 rounded-2xl bg-[rgba(34,211,238,.12)] px-4 py-3 text-sm text-[rgb(var(--kx-fg))]">
+              Reset email sent. Please check your inbox.
+            </div>
+          ) : null}
 
-            <form onSubmit={onSubmit} className="kx-auth-form">
-              <label className="kx-auth-label">
-                Email
-                <input
-                  className="kx-auth-input"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@company.com"
-                  autoComplete="email"
-                  inputMode="email"
-                  required
-                />
-              </label>
+          <form onSubmit={onSubmit} className="mt-6 space-y-4">
+            <label className="block">
+              <div className="mb-1 text-sm font-medium">Email</div>
+              <input
+                className="kx-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@company.com"
+                autoComplete="email"
+                inputMode="email"
+                required
+              />
+            </label>
 
-              <button className="kx-auth-primary" type="submit" disabled={loading}>
-                {loading ? "Sending…" : "Send reset link"}
-              </button>
+            <button className="kx-btn-primary w-full" type="submit" disabled={loading}>
+              {loading ? "Sending…" : "Send reset link"}
+            </button>
 
-              <div className="kx-auth-row">
-                <Link className="kx-auth-link" href="/login">
-                  Back to sign in
-                </Link>
-              </div>
-            </form>
-          </div>
-
-          <div className="kx-auth-foot">Need help? WhatsApp +27 68 628 2874</div>
+            <div className="text-sm">
+              <Link className="underline-offset-2 hover:underline" href="/login">
+                Back to sign in
+              </Link>
+            </div>
+          </form>
         </div>
       </div>
     </div>
