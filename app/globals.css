@@ -102,6 +102,17 @@ body { height: 100%; }
 }
 
 @layer components {
+  /* App shell (used by auth screens too) */
+  .kx-shell {
+    @apply min-h-screen;
+    color: rgb(var(--kx-fg));
+    background:
+      radial-gradient(980px 760px at 18% -18%, var(--kx-bg-grad-1), transparent 64%),
+      radial-gradient(980px 760px at 86% -18%, var(--kx-bg-grad-2), transparent 66%),
+      radial-gradient(980px 760px at 52% 118%, var(--kx-bg-grad-3, rgb(var(--kx-accent) / 0.03)), transparent 66%),
+      rgb(var(--kx-bg));
+  }
+
   /* Text */
   .kx-h1 { @apply text-2xl font-semibold tracking-tight; }
   .kx-sub { @apply text-sm; color: rgb(var(--kx-muted) / 0.95); }

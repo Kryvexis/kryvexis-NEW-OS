@@ -61,6 +61,19 @@ export default function CommandPalette() {
     }))
 
     const quick = [
+      { type: 'nav' as const, label: 'Open POS', hint: '/sales/pos', go: () => router.push('/sales/pos') },
+      {
+        type: 'action' as const,
+        label: 'POS: Hold current sale',
+        hint: 'Park ticket',
+        go: () => window.dispatchEvent(new CustomEvent('kx:pos:hold')),
+      },
+      {
+        type: 'action' as const,
+        label: 'POS: Resume last held sale',
+        hint: 'Restore ticket',
+        go: () => window.dispatchEvent(new CustomEvent('kx:pos:resume')),
+      },
       // Quick-create commands (Kryvexis uses inline create forms on list pages)
       { type: 'nav' as const, label: 'New Invoice', hint: '/invoices', go: () => router.push('/invoices') },
       { type: 'nav' as const, label: 'New Client', hint: '/clients', go: () => router.push('/clients') },

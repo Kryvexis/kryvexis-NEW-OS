@@ -15,6 +15,14 @@ type CartLine = {
   qty: number
 }
 
+type HeldTicket = {
+  id: string
+  createdAt: string
+  client: string
+  lines: CartLine[]
+  note?: string
+}
+
 const PRODUCTS: Product[] = [
   { id: 'p1', name: '12mm Conduit (3m)', sku: 'CON-12-3M', price: 39.9, tag: 'Conduit' },
   { id: 'p2', name: '2.5mm Twin + Earth (1m)', sku: 'CAB-25-TE', price: 18.5, tag: 'Cable' },
@@ -43,6 +51,23 @@ export default function POSClient() {
   const [cashGiven, setCashGiven] = React.useState('')
   const [selectedClient, setSelectedClient] = React.useState('Walk-in')
 
+  const [tickets, setTickets] = React.useState<HeldTicket[]>([])
+
+  React.useEffect(() => {
+    try {
+      const raw = localStorage.getItem('kx_pos_tickets')
+      const parsed = raw ? (JSON.parse(raw) as HeldTicket[]) : []
+      if (Array.isArray(parsed)) setTickets(parsed)
+    } catch {}
+  }, [])
+
+  const persistTickets = React.useCallback((next: HeldTicket[]) => {
+    setTickets(next)
+    try {
+      localStorage.setItem('kx_pos_tickets', JSON.stringify(next))
+    } catch {}
+  }, [])
+
   const tags = React.useMemo(() => {
     const set = new Set(PRODUCTS.map((p) => p.tag))
     return ['All', ...Array.from(set)]
@@ -68,6 +93,64 @@ export default function POSClient() {
 
   const cash = Number((cashGiven || '0').replace(/[^0-9.]/g, ''))
   const change = Math.max(0, cash - total)
+
+  const holdCurrentSale = React.useCallback(
+    (note?: string) => {
+      if (!cart.length) {
+        alert('Nothing to hold yet.')
+        return
+      }
+
+      const t: HeldTicket = {
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        client: selectedClient || 'Walk-in',
+        lines: cart,
+        note,
+      }
+      const next = [t, ...tickets].slice(0, 15)
+      persistTickets(next)
+      setCart([])
+      setSelectedClient('Walk-in')
+      setQuery('')
+      setActiveTag('All')
+      setCashGiven('')
+      alert('Sale held. You can resume it from Parked tickets.')
+    },
+    [cart, persistTickets, selectedClient, tickets],
+  )
+
+  const resumeTicket = React.useCallback(
+    (id: string) => {
+      const t = tickets.find((x) => x.id === id)
+      if (!t) return
+      setCart(t.lines)
+      setSelectedClient(t.client)
+      persistTickets(tickets.filter((x) => x.id !== id))
+    },
+    [persistTickets, tickets],
+  )
+
+  const deleteTicket = React.useCallback(
+    (id: string) => {
+      persistTickets(tickets.filter((x) => x.id !== id))
+    },
+    [persistTickets, tickets],
+  )
+
+  // Allow Command Palette actions to control POS.
+  React.useEffect(() => {
+    const onHold = () => holdCurrentSale()
+    const onResume = () => {
+      if (tickets[0]) resumeTicket(tickets[0].id)
+    }
+    window.addEventListener('kx:pos:hold', onHold as any)
+    window.addEventListener('kx:pos:resume', onResume as any)
+    return () => {
+      window.removeEventListener('kx:pos:hold', onHold as any)
+      window.removeEventListener('kx:pos:resume', onResume as any)
+    }
+  }, [holdCurrentSale, resumeTicket, tickets])
 
   function addToCart(p: Product) {
     setCart((prev) => {
@@ -194,7 +277,7 @@ export default function POSClient() {
               <button className="kx-btn" onClick={() => alert('Open discounts: coming next')}>
                 Discount
               </button>
-              <button className="kx-btn" onClick={() => alert('Hold sale: coming next')}>
+              <button className="kx-btn" onClick={() => holdCurrentSale()}>
                 Hold
               </button>
               <button className="kx-btn" onClick={() => alert('Print: coming next')}>
@@ -274,6 +357,46 @@ export default function POSClient() {
 
         {/* Right: cart */}
         <div className="kx-panel p-4">
+          {/* Parked tickets (held sales) */}
+          <div className="kx-card p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-xs kx-muted">Parked tickets</div>
+                <div className="text-sm font-medium">Resume a held sale</div>
+              </div>
+              <button className="kx-btn" onClick={() => holdCurrentSale()} disabled={cart.length === 0}>
+                Hold current
+              </button>
+            </div>
+
+            {tickets.length ? (
+              <div className="mt-3 space-y-2">
+                {tickets.slice(0, 4).map((t) => (
+                  <div key={t.id} className="kx-panel p-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-medium">{t.client || 'Walk-in'}</div>
+                        <div className="mt-0.5 text-xs kx-muted2">
+                          {new Date(t.createdAt).toLocaleString()} · {t.lines.length} items
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button className="kx-btn" onClick={() => resumeTicket(t.id)}>
+                          Resume
+                        </button>
+                        <button className="kx-btn" onClick={() => deleteTicket(t.id)} title="Delete">
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-2 text-sm kx-muted">No parked tickets yet.</div>
+            )}
+          </div>
+
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm font-medium">Cart</div>

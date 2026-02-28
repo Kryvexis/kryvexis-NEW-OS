@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { fmtZar } from "@/lib/format";
 import QuoteStatus from "./ui-status";
 import ConvertButton from "./ui-convert";
+import WhatsAppQuoteButton from "@/components/whatsapp-quote-button";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -42,6 +43,13 @@ export default async function QuotePage({ params }: PageProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <WhatsAppQuoteButton
+            quoteId={quote.id}
+            quoteNumber={quote.number}
+            clientName={quote.clients?.name}
+            clientPhone={quote.clients?.phone}
+            total={fmtZar(Number(quote.total ?? 0))}
+          />
           <Link className="kx-button" href={`/quotes/${quote.id}/print`} target="_blank">
             Print / PDF
           </Link>
