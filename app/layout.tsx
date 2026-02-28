@@ -4,19 +4,20 @@ import "./globals.css";
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Prevent theme flash by setting the class before React hydrates */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
     const themeRaw = localStorage.getItem('kx_theme_v2') || 'dark';
     const theme = (themeRaw === 'light') ? 'light' : 'dark';
-
     const root = document.documentElement;
-    root.dataset.theme = theme;
+
     root.classList.toggle('dark', theme === 'dark');
-    root.classList.toggle('kx-light', theme === 'light');
+    // Let the browser render built-in UI correctly (form controls, scrollbars, etc.)
+    root.style.colorScheme = theme;
 
     const accent = localStorage.getItem('kx_accent_v2') || 'cyan';
     const map = {
@@ -33,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body>{children}</body>
+      <body className="min-h-screen bg-kx-bg text-kx-fg">{children}</body>
     </html>
   );
 }
