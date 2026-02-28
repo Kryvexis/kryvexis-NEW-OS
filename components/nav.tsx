@@ -145,10 +145,10 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
   return (
     <aside
       className={
-        'hidden md:flex md:flex-col border-r kx-hairline transition-[width] duration-300 ' +
+        'hidden md:flex md:flex-col border-r transition-[width] duration-300 ' +
         widthCls
       }
-      style={{ background: 'rgba(var(--kx-shell), .78)' }}
+      style={{ background: 'rgb(var(--kx-shell) / 0.85)', borderColor: 'rgb(var(--kx-border) / 0.10)' }}
     >
       <div className={collapsed ? 'px-3 pt-5 pb-4' : 'px-5 pt-5 pb-4'}>
         <div className={collapsed ? 'flex flex-col items-center gap-3' : 'flex items-start justify-between gap-3'}>

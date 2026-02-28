@@ -4,22 +4,22 @@ import "./globals.css";
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" className="dark" suppressHydrationWarning>
       <head>
-        {/* Prevent theme flash by setting the class before React hydrates */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    const themeRaw = localStorage.getItem('kx_theme_v2') || 'dark';
+    // Single source of truth is the `dark` class (Tailwind). We also set data-theme for debugging.
+    const themeRaw = localStorage.getItem('kx_theme') || 'dark';
     const theme = (themeRaw === 'light') ? 'light' : 'dark';
+
     const root = document.documentElement;
-
+    root.dataset.theme = theme;
     root.classList.toggle('dark', theme === 'dark');
-    // Let the browser render built-in UI correctly (form controls, scrollbars, etc.)
-    root.style.colorScheme = theme;
+    root.classList.toggle('kx-light', theme === 'light');
 
-    const accent = localStorage.getItem('kx_accent_v2') || 'cyan';
+    const accent = localStorage.getItem('kx_accent') || 'cyan';
     const map = {
       cyan: '34 211 238',
       blue: '59 130 246',
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="min-h-screen bg-kx-bg text-kx-fg">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

@@ -14,7 +14,7 @@ export default function Topbar() {
   }, [])
 
   return (
-    <div className="h-14 flex items-center gap-3 px-4 border-b kx-hairline kx-surface">
+    <div className="h-14 flex items-center gap-3 px-4 border-b bg-kx-shell" style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}>
       <div className="md:hidden font-semibold tracking-tight">Kryvexis OS</div>
       <div className="flex-1" />
       <div className="w-full max-w-md relative">

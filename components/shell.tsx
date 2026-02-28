@@ -10,72 +10,32 @@ import MobileNav from './nav/MobileNav'
 import ThemeToggle from './theme/ThemeToggle'
 import { navMainItems, NavIcon } from './nav'
 
-function GearIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      <path
-        d="M19.4 15a8 8 0 0 0 .1-1 8 8 0 0 0-.1-1l2-1.6a.6.6 0 0 0 .14-.76l-1.9-3.3a.6.6 0 0 0-.72-.26l-2.35.95a7.8 7.8 0 0 0-1.73-1l-.35-2.5A.6.6 0 0 0 14.9 2h-3.8a.6.6 0 0 0-.59.5l-.35 2.5c-.6.26-1.18.6-1.72 1l-2.36-.95a.6.6 0 0 0-.72.26L3.46 10a.6.6 0 0 0 .14.76l2 1.6a8 8 0 0 0-.1 1c0 .34.03.67.1 1l-2 1.6a.6.6 0 0 0-.14.76l1.9 3.3c.15.27.47.38.72.26l2.35-.95c.54.4 1.12.74 1.73 1l.35 2.5c.04.29.3.5.59.5h3.8c.3 0 .55-.21.59-.5l.35-2.5c.61-.26 1.19-.6 1.72-1l2.36.95c.25.12.57 0 .72-.26l1.9-3.3a.6.6 0 0 0-.14-.76l-2-1.6Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function BellIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 22a2.5 2.5 0 0 0 2.45-2H9.55A2.5 2.5 0 0 0 12 22Z"
-        fill="currentColor"
-        opacity="0.9"
-      />
-      <path
-        d="M18 16v-5a6 6 0 1 0-12 0v5l-1.5 1.5h15L18 16Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function UserIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 12a4.2 4.2 0 1 0 0-8.4A4.2 4.2 0 0 0 12 12Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      <path
-        d="M20 21a8 8 0 0 0-16 0"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
 function TopTabs() {
   const pathname = usePathname()
+
   return (
-    <nav className="kx-topTabs" aria-label="Primary">
+    <nav
+      aria-label="Primary"
+      className="flex items-center gap-1 overflow-x-auto rounded-full border bg-kx-surface/70 px-1 py-1 shadow-sm"
+      style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+    >
       {navMainItems.map((item) => {
         const active = pathname === item.href || pathname.startsWith(item.href + '/')
         return (
-          <Link key={item.href} href={item.href} className={active ? 'kx-topTab is-active' : 'kx-topTab'}>
-            <span className="kx-topTabIcon" aria-hidden="true">
+          <Link
+            key={item.href}
+            href={item.href}
+            className={
+              'group inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-sm transition ' +
+              (active
+                ? 'bg-kx-surface text-kx-fg shadow-sm'
+                : 'text-kx-fg/70 hover:bg-kx-surface/80 hover:text-kx-fg')
+            }
+          >
+            <span className={active ? 'text-kx-fg' : 'text-kx-fg/60 group-hover:text-kx-fg/90'} aria-hidden>
               <NavIcon name={item.icon} />
             </span>
-            <span className="kx-topTabText">{item.label}</span>
+            <span className="whitespace-nowrap tracking-tight">{item.label}</span>
           </Link>
         )
       })}
@@ -85,60 +45,67 @@ function TopTabs() {
 
 export default function Shell({ userEmail, children }: { userEmail: string; children: React.ReactNode }) {
   return (
-    <div className="kx-shellV2">
+    <div className="min-h-screen">
       <CommandPalette />
 
-      {/* Mobile */}
-      <div className="kx-mobileHeader md:hidden">
+      {/* Mobile header */}
+      <div
+        className="sticky top-0 z-40 flex h-14 items-center justify-between gap-3 border-b bg-kx-shell/85 px-3 backdrop-blur md:hidden"
+        style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+      >
         <MobileNav userEmail={userEmail} />
-        <div className="kx-mobileBrand">
-          <Image src="/kryvexis-logo.png" alt="Kryvexis" width={34} height={34} className="kx-brandLogo" priority />
-          <div className="kx-brandText">
-            <div className="kx-brandName">Kryvexis</div>
-            <div className="kx-brandSub">OS</div>
+
+        <div className="flex items-center gap-2">
+          <Image src="/kryvexis-logo.png" alt="Kryvexis" width={32} height={32} className="h-8 w-8" priority />
+          <div className="leading-tight">
+            <div className="text-sm font-semibold tracking-tight">Kryvexis</div>
+            <div className="text-[11px] kx-muted">OS</div>
           </div>
         </div>
-        <div className="kx-mobileRight">
+
+        <div className="flex items-center gap-2">
           <ThemeToggle />
+          <LogoutButton />
         </div>
       </div>
 
-      {/* Desktop */}
-      <header className="kx-headerV2 hidden md:block" role="banner">
-        <div className="kx-headerInner">
-          <div className="kx-brand">
-            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={42} height={42} className="kx-brandLogo" priority />
-            <div className="kx-brandText">
-              <div className="kx-brandName">Kryvexis</div>
-              <div className="kx-brandSub">OS</div>
+      {/* Desktop header */}
+      <header
+        className="sticky top-0 z-40 hidden border-b bg-kx-shell/85 backdrop-blur md:block"
+        style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+      >
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
+          {/* Brand */}
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={38} height={38} className="h-9 w-9" priority />
+            <div className="leading-tight">
+              <div className="text-sm font-semibold tracking-tight">Kryvexis</div>
+              <div className="text-[11px] kx-muted">OS</div>
             </div>
-          </div>
+          </Link>
 
-          <div className="kx-tabsWrap">
+          {/* Tabs */}
+          <div className="flex-1 px-2">
             <TopTabs />
           </div>
 
-          <div className="kx-headerRight">
+          {/* Right */}
+          <div className="flex items-center gap-2">
             <ThemeToggle />
-            <button className="kx-iconPill" type="button" aria-label="Settings">
-              <GearIcon />
-            </button>
-            <button className="kx-iconPill" type="button" aria-label="Notifications">
-              <BellIcon />
-            </button>
-            <button className="kx-userPill" type="button" aria-label="User">
-              <UserIcon />
-              <span className="kx-userEmail" title={userEmail}>
-                {userEmail}
-              </span>
-            </button>
+            <div
+              className="hidden max-w-[260px] truncate rounded-full border bg-kx-surface/70 px-3 py-2 text-xs text-kx-fg/75 lg:block"
+              style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+              title={userEmail}
+            >
+              {userEmail}
+            </div>
             <LogoutButton />
           </div>
         </div>
       </header>
 
-      <main className="kx-mainV2">
-        <div className="kx-pageWrap">{children}</div>
+      <main className="mx-auto max-w-6xl px-4 py-5">
+        {children}
       </main>
     </div>
   )
