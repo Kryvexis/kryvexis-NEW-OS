@@ -10,7 +10,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    // Single source of truth is the `dark` class (Tailwind). We also set data-theme for debugging.
+    // Single source of truth is the "dark" class (Tailwind). We also set data-theme for debugging.
     const themeRaw = localStorage.getItem('kx_theme') || 'dark';
     const theme = (themeRaw === 'light') ? 'light' : 'dark';
 
