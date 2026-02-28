@@ -25,8 +25,8 @@
     --kx-muted: 92 92 102;        /* Apple secondary */
     --kx-border: 17 24 39;        /* use with low alpha */
 
-    --kx-shadow: 0 20px 60px rgba(17, 24, 39, 0.10);
-    --kx-shadow-2: 0 12px 32px rgba(17, 24, 39, 0.12);
+    --kx-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+    --kx-shadow-2: 0 4px 14px rgba(17, 24, 39, 0.10);
     --kx-ring: 0 0 0 4px rgba(var(--kx-accent), 0.18);
   }
 
@@ -40,8 +40,8 @@
     --kx-muted: 164 164 174;
     --kx-border: 245 245 247;
 
-    --kx-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
-    --kx-shadow-2: 0 16px 40px rgba(0, 0, 0, 0.50);
+    --kx-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+    --kx-shadow-2: 0 4px 14px rgba(0, 0, 0, 0.55);
     --kx-ring: 0 0 0 4px rgba(var(--kx-accent), 0.22);
   }
 
@@ -126,16 +126,15 @@
 
   /* Core surfaces */
   .kx-panel {
-    border-radius: 18px;
-    border: 1px solid rgba(var(--kx-border), 0.10);
-    background: rgba(var(--kx-surface), 0.72);
-    backdrop-filter: blur(16px);
+    border-radius: 16px;
+    border: 1px solid rgba(var(--kx-border), 0.08);
+    background: rgb(var(--kx-surface));
     box-shadow: var(--kx-shadow);
   }
   html[data-theme='dark'] .kx-panel {
-    background: rgba(var(--kx-surface), 0.62);
-    border-color: rgba(var(--kx-border), 0.14);
-    box-shadow: var(--kx-shadow-2);
+    background: rgb(var(--kx-surface));
+    border-color: rgba(var(--kx-border), 0.12);
+    box-shadow: var(--kx-shadow);
   }
 
   .kx-card {
@@ -143,14 +142,13 @@
   }
 
   .kx-surface {
-    border-radius: 18px;
+    border-radius: 16px;
     border: 1px solid rgba(var(--kx-border), 0.08);
-    background: rgba(var(--kx-surface), 0.62);
-    backdrop-filter: blur(18px);
+    background: rgb(var(--kx-surface));
   }
 
   .kx-overlay {
-    background: rgba(0, 0, 0, 0.52);
+    background: rgba(0, 0, 0, 0.58);
   }
 
   /* Hairline divider */
@@ -164,20 +162,20 @@
   .kx-button {
     @apply inline-flex items-center justify-center gap-2 h-9 px-3 text-[13px] rounded-2xl transition;
     border: 1px solid rgba(var(--kx-border), 0.12);
-    background: rgba(var(--kx-surface), 0.66);
+    background: rgba(var(--kx-surface), 0.92);
     color: rgba(var(--kx-fg), 0.92);
-    box-shadow: 0 10px 24px rgba(17, 24, 39, 0.08);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 6px 18px rgba(17, 24, 39, 0.06);
   }
   html[data-theme='dark'] .kx-btn,
   html[data-theme='dark'] .kx-button {
-    background: rgba(var(--kx-surface), 0.42);
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.32);
+    background: rgba(var(--kx-surface), 0.80);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 10px 22px rgba(0, 0, 0, 0.28);
   }
   .kx-btn:hover,
   .kx-button:hover {
     transform: translateY(-1px);
     border-color: rgba(var(--kx-accent), 0.22);
-    box-shadow: 0 0 0 4px rgba(var(--kx-accent), 0.10), 0 18px 44px rgba(0, 0, 0, 0.16);
+    box-shadow: var(--kx-ring), 0 10px 22px rgba(0, 0, 0, 0.10);
   }
 
   .kx-btn-primary,
@@ -207,7 +205,7 @@
   .kx-icon-btn {
     @apply grid place-items-center h-9 w-9 rounded-2xl transition;
     border: 1px solid rgba(var(--kx-border), 0.12);
-    background: rgba(var(--kx-surface), 0.66);
+    background: rgba(var(--kx-surface), 0.92);
     color: rgba(var(--kx-fg), 0.92);
   }
   .kx-icon-btn:hover {
@@ -220,15 +218,15 @@
   .kx-auth-input {
     @apply w-full h-11 px-3 rounded-2xl text-sm outline-none;
     border: 1px solid rgba(var(--kx-border), 0.12);
-    background: rgba(var(--kx-surface), 0.72);
+    background: rgba(var(--kx-surface), 0.94);
     color: rgba(var(--kx-fg), 0.92);
-    box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.03), 0 8px 18px rgba(17, 24, 39, 0.05);
   }
   html[data-theme='dark'] .kx-input,
   html[data-theme='dark'] .kx-auth-input {
-    background: rgba(var(--kx-surface), 0.46);
+    background: rgba(var(--kx-surface), 0.82);
     border-color: rgba(var(--kx-border), 0.14);
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.30);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 12px 24px rgba(0, 0, 0, 0.26);
   }
   .kx-input:focus,
   .kx-auth-input:focus {
@@ -240,20 +238,20 @@
   .kx-badge {
     @apply inline-flex items-center gap-2 rounded-full px-3 py-2;
     border: 1px solid rgba(var(--kx-border), 0.10);
-    background: rgba(var(--kx-surface), 0.60);
+    background: rgba(var(--kx-surface), 0.92);
   }
   .kx-chip,
   .kx-pill {
     @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs;
     border: 1px solid rgba(var(--kx-border), 0.10);
-    background: rgba(var(--kx-surface), 0.56);
+    background: rgba(var(--kx-surface), 0.92);
     color: rgba(var(--kx-fg), 0.88);
   }
   .kx-kbd {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     @apply text-xs px-1.5 py-0.5 rounded-lg;
     border: 1px solid rgba(var(--kx-border), 0.12);
-    background: rgba(var(--kx-surface), 0.62);
+    background: rgba(var(--kx-surface), 0.92);
   }
 
   /* Nav links */
@@ -296,11 +294,11 @@
     align-items: center;
     padding: calc(10px + var(--safe-top)) 12px 10px;
     border-bottom: 1px solid rgba(var(--kx-border), 0.08);
-    background: rgba(var(--kx-shell), 0.82);
-    backdrop-filter: blur(18px);
+    background: rgba(var(--kx-shell), 0.96);
+    backdrop-filter: none;
   }
   html[data-theme='dark'] .kx-mobileHeader {
-    background: rgba(var(--kx-shell), 0.62);
+    background: rgba(var(--kx-shell), 0.86);
     border-bottom-color: rgba(var(--kx-border), 0.12);
   }
 
@@ -323,11 +321,11 @@
     top: 0;
     z-index: 20;
     border-bottom: 1px solid rgba(var(--kx-border), 0.08);
-    background: rgba(var(--kx-shell), 0.86);
-    backdrop-filter: blur(18px);
+    background: rgba(var(--kx-shell), 0.96);
+    backdrop-filter: none;
   }
   html[data-theme='dark'] .kx-headerV2 {
-    background: rgba(var(--kx-shell), 0.66);
+    background: rgba(var(--kx-shell), 0.86);
     border-bottom-color: rgba(var(--kx-border), 0.12);
   }
 
@@ -375,11 +373,11 @@
     padding: 6px;
     border-radius: 999px;
     border: 1px solid rgba(var(--kx-border), 0.10);
-    background: rgba(var(--kx-surface), 0.58);
-    backdrop-filter: blur(18px);
+    background: rgba(var(--kx-surface), 0.92);
+    backdrop-filter: none;
   }
   html[data-theme='dark'] .kx-topTabs {
-    background: rgba(var(--kx-surface), 0.36);
+    background: rgba(var(--kx-surface), 0.70);
     border-color: rgba(var(--kx-border), 0.12);
   }
 
@@ -422,7 +420,7 @@
   .kx-iconPill {
     @apply inline-flex items-center justify-center h-10 w-10 rounded-2xl transition;
     border: 1px solid rgba(var(--kx-border), 0.10);
-    background: rgba(var(--kx-surface), 0.62);
+    background: rgba(var(--kx-surface), 0.92);
     color: rgba(var(--kx-fg), 0.90);
   }
   .kx-iconPill:hover {
@@ -433,7 +431,7 @@
   .kx-userPill {
     @apply inline-flex items-center gap-2 h-10 rounded-2xl px-3 transition;
     border: 1px solid rgba(var(--kx-border), 0.10);
-    background: rgba(var(--kx-surface), 0.62);
+    background: rgba(var(--kx-surface), 0.92);
     color: rgba(var(--kx-fg), 0.90);
     max-width: 280px;
   }
@@ -470,7 +468,7 @@
     font-size: 12px;
     letter-spacing: 0.02em;
     color: rgba(var(--kx-muted), 0.92);
-    background: rgba(var(--kx-surface-2), 0.70);
+    background: rgba(var(--kx-surface-2), 0.95);
     border-bottom: 1px solid rgba(var(--kx-border), 0.08);
     padding: 12px 14px;
   }
@@ -499,7 +497,7 @@
     padding: 6px;
     border-radius: 999px;
     border: 1px solid rgba(var(--kx-border), 0.10);
-    background: rgba(var(--kx-surface), 0.62);
+    background: rgba(var(--kx-surface), 0.92);
     gap: 6px;
   }
   .kx-toggle-btn {
@@ -700,7 +698,7 @@
     border-radius: 22px;
     border: 1px solid rgba(var(--kx-border), 0.12);
     background: rgba(var(--kx-surface), 0.16);
-    backdrop-filter: blur(22px);
+    backdrop-filter: none;
     box-shadow: 0 28px 90px rgba(0, 0, 0, 0.40);
   }
   html[data-theme='light'] .kx-boot-card {
@@ -771,13 +769,13 @@
     border-radius: 16px;
     border: 1px solid rgba(var(--kx-border), 0.12);
     background: rgba(var(--kx-surface), 0.86);
-    backdrop-filter: blur(18px);
+    backdrop-filter: none;
     box-shadow: var(--kx-shadow);
     color: rgba(var(--kx-fg), 0.92);
     font-size: 13px;
   }
   html[data-theme='dark'] .kx-tooltip {
-    background: rgba(var(--kx-surface), 0.66);
+    background: rgba(var(--kx-surface), 0.92);
   }
 
   .kx-tour-overlay {
@@ -785,7 +783,7 @@
     inset: 0;
     z-index: 70;
     background: rgba(0, 0, 0, 0.58);
-    backdrop-filter: blur(2px);
+    backdrop-filter: none;
   }
   .kx-tour-highlight {
     position: relative;
