@@ -145,27 +145,34 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
   return (
     <aside
       className={
-        'hidden md:flex md:flex-col border-r transition-[width] duration-300 ' +
+        'hidden md:flex md:flex-col border-r kx-hairline transition-[width] duration-300 kx-sidebar ' +
         widthCls
       }
-      style={{ background: 'rgb(var(--kx-shell) / 0.85)', borderColor: 'rgb(var(--kx-border) / 0.10)' }}
     >
       <div className={collapsed ? 'px-3 pt-5 pb-4' : 'px-5 pt-5 pb-4'}>
         <div className={collapsed ? 'flex flex-col items-center gap-3' : 'flex items-start justify-between gap-3'}>
           <div className={collapsed ? 'flex flex-col items-center' : 'flex flex-col'}>
-            {/* Logo (no "block" container). Double-size with soft glow. */}
-            <Image
-              src="/kryvexis-logo.png"
-              alt="Kryvexis"
-              width={collapsed ? 92 : 132}
-              height={collapsed ? 92 : 132}
-              className={collapsed ? 'h-[92px] w-[92px] object-contain' : 'h-[132px] w-[132px] object-contain'}
-              style={{
-                filter:
-                  'drop-shadow(0 0 18px rgba(var(--kx-accent), .22)) drop-shadow(0 10px 28px rgba(0,0,0,.35))',
-              }}
-              priority
-            />
+            {/* Logo plate (anchored + premium) */}
+            <div
+              className={
+                (collapsed ? 'h-[128px] w-[128px]' : 'h-[264px] w-[264px]') +
+                ' grid place-items-center rounded-2xl border border-kx-border/40 bg-kx-surface/60 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_18px_54px_rgba(0,0,0,0.35)]'
+              }
+              style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 54px rgba(0,0,0,0.35), 0 0 0 1px rgb(var(--kx-glow) / 0.08)' }}
+            >
+              <Image
+                src="/kryvexis-logo.png"
+                alt="Kryvexis"
+                width={collapsed ? 120 : 240}
+                height={collapsed ? 120 : 240}
+                className={collapsed ? 'h-[120px] w-[120px] object-contain' : 'h-[240px] w-[240px] object-contain'}
+                style={{
+                  filter:
+                    'drop-shadow(0 0 18px rgba(var(--kx-accent), .22)) drop-shadow(0 10px 28px rgba(0,0,0,.35))',
+                }}
+                priority
+              />
+            </div>
 
             <div className={collapsed ? 'mt-2 text-center' : 'mt-2'}>
               <div className={collapsed ? 'text-[12px] font-semibold tracking-tight' : 'text-[15px] font-semibold tracking-tight'}>Kryvexis OS</div>
