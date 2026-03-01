@@ -5,14 +5,15 @@ import ProductEditUI from "./ui";
 
 type Params = { id: string };
 
-export default async function Page({ params }: { params: Params }) {
+export default async function Page({ params }: { params: Promise<Params> }) {
+  const { id } = await params;
   const supabase = await createClient();
   const companyId = await requireCompanyId();
 
   const { data: product, error } = await supabase
     .from("products")
     .select("id,name,sku,barcode,type,unit_price,cost_price,supplier_id,is_active")
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("company_id", companyId)
     .maybeSingle();
 
