@@ -35,8 +35,8 @@ export default function ProductsUI() {
           setMsg(null);
           const res = await createProductAction(fd);
           setPending(false);
-          setMsg(res.ok ? "Product saved." : res.error ?? "Something went wrong.");
           if (res.ok) router.refresh();
+          setMsg(res.ok ? "Product saved." : res.error ?? "Something went wrong.");
         }}
       >
         <div className="text-sm font-semibold">Add product / service</div>

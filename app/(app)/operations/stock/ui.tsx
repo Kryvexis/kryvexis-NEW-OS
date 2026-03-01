@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { adjustStockAction } from "@/app/(app)/products/actions";
 
 type P = {
@@ -28,6 +29,7 @@ function fmtZar(n: number) {
 }
 
 export default function StockUI({ products }: { products: P[] }) {
+  const router = useRouter();
   const [q, setQ] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -54,6 +56,7 @@ export default function StockUI({ products }: { products: P[] }) {
     const res = await adjustStockAction(id, delta);
     setBusyId(null);
     setToast(res.ok ? "Stock updated." : res.error ?? "Something went wrong.");
+    if (res.ok) router.refresh();
     // We don't have live revalidation here; user can refresh if needed.
   }
 

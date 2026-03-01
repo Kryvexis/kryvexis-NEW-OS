@@ -46,8 +46,8 @@ export default function EditProductUI({ product }: { product: Product }) {
         fd.set('id', product.id)
         const res = await updateProductAction(fd)
         setPending(false)
-        setMsg(res.ok ? 'Saved.' : res.error ?? 'Something went wrong.')
         if (res.ok) router.refresh()
+        setMsg(res.ok ? 'Saved.' : res.error ?? 'Something went wrong.')
       }}
     >
       <div className="grid gap-3 md:grid-cols-2">

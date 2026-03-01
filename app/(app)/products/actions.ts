@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { requireCompanyId } from "@/lib/kx";
-import { revalidatePath } from "next/cache";
 
 function num(v: FormDataEntryValue | null, fallback = 0) {
   const n = Number(v ?? "");
@@ -31,10 +30,6 @@ export async function createProductAction(fd: FormData) {
 
   const { error } = await supabase.from("products").insert(payload);
   if (error) return { ok: false, error: error.message };
-
-  // Keep the products list fresh after create.
-  revalidatePath("/products");
-
   return { ok: true };
 }
 
@@ -53,15 +48,9 @@ export async function updateProductAction(fd: FormData) {
     sku: String(fd.get("sku") || "").trim() || null,
     type: String(fd.get("type") || "product"),
     unit_price: num(fd.get("unit_price"), 0),
+    cost_price: num(fd.get("cost_price"), 0),
     supplier_id: String(fd.get("supplier_id") || "").trim() || null,
   };
-
-  // Optional fields (only update if present in FormData)
-  if (fd.has("barcode")) payload.barcode = String(fd.get("barcode") || "").trim() || null;
-  if (fd.has("cost_price")) payload.cost_price = num(fd.get("cost_price"), 0);
-  if (fd.has("low_stock_threshold"))
-    payload.low_stock_threshold = Math.max(0, Math.trunc(num(fd.get("low_stock_threshold"), 0)));
-  if (fd.has("is_active")) payload.is_active = fd.get("is_active") ? true : false;
 
   const { error } = await supabase
     .from("products")
@@ -70,33 +59,7 @@ export async function updateProductAction(fd: FormData) {
     .eq("company_id", companyId);
 
   if (error) return { ok: false, error: error.message };
-
-  revalidatePath("/products");
-  revalidatePath(`/products/${productId}`);
-
   return { ok: true };
-}
-
-export async function deleteProductAction(fd: FormData): Promise<void> {
-  const supabase = await createClient();
-  const companyId = await requireCompanyId();
-
-  const productId = String(fd.get("id") || "").trim();
-  if (!productId) return;
-
-  const { error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", productId)
-    .eq("company_id", companyId);
-
-  if (error) {
-    // Avoid hard-crashing the page; surface in logs.
-    console.error("deleteProductAction failed:", error);
-    return;
-  }
-
-  revalidatePath("/products");
 }
 
 export async function adjustStockAction(productId: string, delta: number) {
@@ -126,8 +89,22 @@ export async function adjustStockAction(productId: string, delta: number) {
     .eq("company_id", companyId);
 
   if (e2) return { ok: false, error: e2.message };
-
-  revalidatePath("/products");
-
   return { ok: true, next };
 }
+
+export async function deleteProductAction(fd: FormData): Promise<void> {
+  const supabase = await createClient();
+  const companyId = await requireCompanyId();
+
+  const productId = String(fd.get("id") || "").trim();
+  if (!productId) throw new Error("Missing product id.");
+
+  const { error } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", productId)
+    .eq("company_id", companyId);
+
+  if (error) throw new Error(error.message);
+}
+
