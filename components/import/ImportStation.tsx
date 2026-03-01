@@ -4,21 +4,6 @@ import * as React from "react";
 
 type Entity = "products" | "clients" | "suppliers";
 
-// ZAR currency formatter (kept local so this component builds even if shared
-// formatters change elsewhere).
-function fmtZar(n: number) {
-  try {
-    return new Intl.NumberFormat("en-ZA", {
-      style: "currency",
-      currency: "ZAR",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(n);
-  } catch {
-    return "R " + n.toFixed(2);
-  }
-}
-
 function parseCSV(csv: string): { headers: string[]; rows: Record<string,string>[] } {
   const lines = csv
     .split(/\r?\n/)

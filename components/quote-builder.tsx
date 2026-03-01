@@ -6,78 +6,59 @@ import { createQuoteAction } from '@/app/(app)/quotes/actions'
 import { fmtZar, isoDate } from '@/lib/format'
 
 type Client = { id: string; name: string }
-type Product = { id: string; name: string; unit_price: number; sku: string | null }
+type Product = { id: string; name: string; unit_price: number; sku: string | null; barcode: string | null }
 
 type Item = {
   product_id?: string | null
   description: string
   qty: number
   unit_price: number
-  /** Discount percentage (0-100). */
-  discount: number
-  /** VAT rate, e.g. 0.15 for 15% */
+  discount_pct: number
   tax_rate: number
 }
 
-function addDaysISO(iso: string, days: number) {
-  try {
-    const d = new Date(iso + 'T00:00:00')
-    d.setDate(d.getDate() + days)
-    return d.toISOString().slice(0, 10)
-  } catch {
-    return iso
-  }
+function addDaysIso(iso: string, days: number) {
+  const d = new Date(iso + 'T00:00:00Z')
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
 }
 
 export default function QuoteBuilder({ clients, products }: { clients: Client[]; products: Product[] }) {
   const router = useRouter()
   const [pending, start] = useTransition()
   const [clientId, setClientId] = useState(clients[0]?.id || '')
-
   const [issueDate, setIssueDate] = useState(isoDate())
-  const [expiryDate, setExpiryDate] = useState(() => addDaysISO(isoDate(), 14))
+  const [expiryDate, setExpiryDate] = useState('')
   const [expiryAuto, setExpiryAuto] = useState(true)
 
+  useEffect(() => {
+    if (!expiryAuto) return
+    setExpiryDate(addDaysIso(issueDate, 14))
+  }, [issueDate, expiryAuto])
   const [notes, setNotes] = useState('')
   const [terms, setTerms] = useState('Payment due on delivery. Thank you for your business.')
   const [error, setError] = useState<string | null>(null)
 
   const [items, setItems] = useState<Item[]>([
-    {
-      product_id: products[0]?.id || null,
-      description: products[0]?.name || 'Item',
-      qty: 1,
-      unit_price: Number(products[0]?.unit_price || 0),
-      discount: 0,
-      tax_rate: 0.15,
-    },
+    { product_id: products[0]?.id || null, description: products[0]?.name || 'Item', qty: 1, unit_price: Number(products[0]?.unit_price || 0), discount_pct: 0, tax_rate: 0.15 },
   ])
-
-  // Keep expiry date at +14 days unless user explicitly overrides it.
-  useEffect(() => {
-    if (!expiryAuto) return
-    setExpiryDate(addDaysISO(issueDate, 14))
-  }, [issueDate, expiryAuto])
 
   const totals = useMemo(() => {
     let subtotal = 0
     let discount_total = 0
-    let vat_total = 0
-
+    let tax_total = 0
     for (const it of items) {
       const base = it.qty * it.unit_price
-      const discPct = Math.min(Math.max(it.discount || 0, 0), 100) / 100
-      const disc = base * discPct
+      const pct = Math.min(Math.max(it.discount_pct || 0, 0), 100)
+      const disc = base * (pct / 100)
       const after = Math.max(0, base - disc)
-      const vat = after * (it.tax_rate || 0)
-
+      const tax = after * (it.tax_rate || 0)
       subtotal += base
       discount_total += disc
-      vat_total += vat
+      tax_total += tax
     }
-
-    const total = Math.max(0, subtotal - discount_total) + vat_total
-    return { subtotal, discount_total, vat_total, total }
+    const total = Math.max(0, subtotal - discount_total) + tax_total
+    return { subtotal, discount_total, tax_total, total }
   }, [items])
 
   function updateItem(idx: number, patch: Partial<Item>) {
@@ -96,13 +77,11 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
       const res = await createQuoteAction({
         client_id: clientId,
         issue_date: issueDate,
-        // expiry_date is always set client-side (defaults to +14 days), server also enforces it.
         expiry_date: expiryDate || null,
         notes: notes || null,
         terms: terms || null,
         items,
       })
-
       if (!res.ok) {
         setError(res.error || 'Failed')
         return
@@ -142,33 +121,40 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
             <div className="grid grid-cols-2 gap-3">
               <label className="block">
                 <div className="text-xs kx-muted mb-1">Issue date</div>
-                <input
-                  className="kx-input"
-                  type="date"
-                  value={issueDate}
-                  onChange={(e) => {
-                    setIssueDate(e.target.value)
-                  }}
-                />
+                <input className="kx-input" type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} />
               </label>
               <label className="block">
                 <div className="text-xs kx-muted mb-1">Expiry date</div>
-                <input
-                  className="kx-input"
-                  type="date"
-                  value={expiryDate}
-                  onChange={(e) => {
-                    setExpiryAuto(false)
-                    setExpiryDate(e.target.value)
-                  }}
-                />
-                <div className="mt-1 text-[11px] kx-muted2">Defaults to 14 days from issue date.</div>
+                <input className="kx-input" type="date" value={expiryDate} onChange={(e) => { setExpiryAuto(false); setExpiryDate(e.target.value) }} />
               </label>
             </div>
           </div>
 
-          <div className="mt-5">
-            <div className="text-sm font-semibold">Line items</div>
+                    <div className="mt-5">
+            <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+              <div>
+                <div className="text-sm font-semibold">Line items</div>
+                <div className="mt-1 text-xs kx-muted2">Tip: scan a barcode or pick from the list.</div>
+              </div>
+              <label className="block">
+                <div className="text-xs kx-muted mb-1">Scan barcode</div>
+                <input
+                  className="kx-input"
+                  placeholder="Scan or type barcode…"
+                  onKeyDown={(e) => {
+                    if (e.key !== 'Enter') return
+                    const code = (e.currentTarget.value || '').trim()
+                    if (!code) return
+                    const p = products.find((x) => String(x.barcode || '').trim() === code)
+                    if (p) {
+                      setItems((prev) => [...prev, { product_id: p.id, description: p.name, qty: 1, unit_price: Number(p.unit_price || 0), discount_pct: 0, tax_rate: 0.15 }])
+                      e.currentTarget.value = ''
+                    }
+                  }}
+                />
+              </label>
+            </div>
+
             <div className="mt-3 overflow-x-auto rounded-2xl border border-[rgba(var(--kx-border),.12)]">
               <table className="w-full text-sm min-w-[860px]">
                 <thead className="bg-[rgba(var(--kx-border),.06)] kx-muted">
@@ -177,7 +163,7 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
                     <th className="px-3 py-2 text-right font-medium">Qty</th>
                     <th className="px-3 py-2 text-right font-medium">Price</th>
                     <th className="px-3 py-2 text-right font-medium">Discount %</th>
-                    <th className="px-3 py-2 text-right font-medium">VAT</th>
+                    <th className="px-3 py-2 text-right font-medium">Tax</th>
                     <th className="px-3 py-2 text-right font-medium">Line</th>
                     <th className="px-3 py-2"></th>
                   </tr>
@@ -185,12 +171,11 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
                 <tbody>
                   {items.map((it, idx) => {
                     const base = it.qty * it.unit_price
-                    const discPct = Math.min(Math.max(it.discount || 0, 0), 100) / 100
-                    const disc = base * discPct
+                    const pct = Math.min(Math.max(it.discount_pct || 0, 0), 100)
+                    const disc = base * (pct / 100)
                     const after = Math.max(0, base - disc)
-                    const vat = after * (it.tax_rate || 0)
-                    const line = after + vat
-
+                    const tax = after * (it.tax_rate || 0)
+                    const line = after + tax
                     return (
                       <tr key={idx} className="border-t border-[rgba(var(--kx-border),.12)]">
                         <td className="px-3 py-2">
@@ -206,57 +191,31 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
                             <input className="kx-input" value={it.description} onChange={(e) => updateItem(idx, { description: e.target.value })} />
                           </div>
                         </td>
-
-                        <td className="px-3 py-2 text-right">
-                          <input
-                            className="kx-input text-right"
-                            type="number"
-                            inputMode="numeric"
-                            min={1}
-                            step={1}
-                            value={it.qty}
-                            onChange={(e) => {
-                              const raw = e.target.value
-                              const n = raw === '' ? 1 : Math.max(1, Math.floor(Number(raw)))
-                              updateItem(idx, { qty: n })
-                            }}
-                          />
-                        </td>
-
                         <td className="px-3 py-2 text-right">
                           <input
                             className="kx-input text-right opacity-60 cursor-not-allowed"
                             type="number"
                             step="0.01"
                             value={it.unit_price}
-                            disabled
-                            title="Price is locked. Use Discount % to adjust."
                             readOnly
                           />
                         </td>
-
                         <td className="px-3 py-2 text-right">
                           <input
                             className="kx-input text-right"
                             type="number"
-                            inputMode="decimal"
-                            min={0}
-                            max={100}
-                            step="0.5"
-                            value={it.discount}
-                            onChange={(e) => {
-                              const n = Number(e.target.value || 0)
-                              updateItem(idx, { discount: Math.min(100, Math.max(0, n)) })
-                            }}
+                            step="1"
+                            value={it.discount_pct}
+                            onChange={(e) => updateItem(idx, { discount_pct: Math.min(100, Math.max(0, Number(e.target.value || 0))) })}
                           />
                         </td>
-
                         <td className="px-3 py-2 text-right">
-                          <div className="kx-input text-right opacity-70 select-none">15%</div>
+                          <select className="kx-input text-right" value={it.tax_rate} onChange={(e) => updateItem(idx, { tax_rate: Number(e.target.value) })}>
+                            <option value={0}>0%</option>
+                            <option value={0.15}>15%</option>
+                          </select>
                         </td>
-
                         <td className="px-3 py-2 text-right font-medium">{fmtZar(line)}</td>
-
                         <td className="px-3 py-2 text-right">
                           <button
                             className="kx-button"
@@ -280,7 +239,7 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
                 onClick={() =>
                   setItems((prev) => [
                     ...prev,
-                    { product_id: null, description: 'Item', qty: 1, unit_price: 0, discount: 0, tax_rate: 0.15 },
+                    { product_id: null, description: 'Item', qty: 1, unit_price: 0, discount_pct: 0, tax_rate: 0.15 },
                   ])
                 }
               >
@@ -304,26 +263,13 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
         <div className="kx-card p-4 h-fit">
           <div className="text-sm font-semibold">Totals</div>
           <div className="mt-3 space-y-2 text-sm">
-            <div className="flex items-center justify-between kx-muted">
-              <span>Subtotal</span>
-              <span>{fmtZar(totals.subtotal)}</span>
-            </div>
-            <div className="flex items-center justify-between kx-muted">
-              <span>Discount</span>
-              <span>- {fmtZar(totals.discount_total)}</span>
-            </div>
-            <div className="flex items-center justify-between kx-muted">
-              <span>VAT (15%)</span>
-              <span>{fmtZar(totals.vat_total)}</span>
-            </div>
-            <div className="pt-2 mt-2 border-t border-[rgba(var(--kx-border),.12)] flex items-center justify-between font-semibold">
-              <span>Total</span>
-              <span>{fmtZar(totals.total)}</span>
-            </div>
+            <div className="flex items-center justify-between kx-muted"><span>Subtotal</span><span>{fmtZar(totals.subtotal)}</span></div>
+            <div className="flex items-center justify-between kx-muted"><span>Discount</span><span>- {fmtZar(totals.discount_total)}</span></div>
+            <div className="flex items-center justify-between kx-muted"><span>Tax</span><span>{fmtZar(totals.tax_total)}</span></div>
+            <div className="pt-2 mt-2 border-t border-[rgba(var(--kx-border),.12)] flex items-center justify-between font-semibold"><span>Total</span><span>{fmtZar(totals.total)}</span></div>
           </div>
-
           <div className="mt-4 text-xs kx-muted2">
-            Prices are locked for consistency. Use <span className="font-semibold">Discount %</span> to adjust pricing.
+            Tip: Once saved, open the quote and use <span className="font-medium">Convert → Invoice</span>.
           </div>
         </div>
       </div>

@@ -11,8 +11,8 @@ const ItemSchema = z.object({
   description: z.string().min(1),
   qty: z.number().int().positive(),
   unit_price: z.number().nonnegative(),
-  discount: z.number().min(0).max(100).default(0), // percent
-  tax_rate: z.number().nonnegative().default(0.15), // VAT rate (0.15 for 15%)
+  discount_pct: z.number().min(0).max(100).default(0),
+  tax_rate: z.number().nonnegative().default(0), // 0.15 for 15%
 })
 
 const QuoteSchema = z.object({
@@ -30,8 +30,7 @@ function calcTotals(items: z.infer<typeof ItemSchema>[]) {
   let tax_total = 0
   for (const it of items) {
     const lineBase = it.qty * it.unit_price
-    const discPct = Math.min(Math.max(it.discount || 0, 0), 100) / 100
-    const lineDiscount = lineBase * discPct
+    const lineDiscount = lineBase * (Math.min(Math.max(it.discount_pct || 0, 0), 100) / 100)
     const lineAfter = Math.max(0, lineBase - lineDiscount)
     const lineTax = lineAfter * (it.tax_rate || 0)
     subtotal += lineBase
@@ -42,17 +41,6 @@ function calcTotals(items: z.infer<typeof ItemSchema>[]) {
   return { subtotal, discount_total, tax_total, total }
 }
 
-function defaultExpiryDate(issueDate: string) {
-  // Default quote expiry: 14 days from issue date (ISO yyyy-mm-dd).
-  try {
-    const d = new Date(issueDate + 'T00:00:00')
-    d.setDate(d.getDate() + 14)
-    return d.toISOString().slice(0, 10)
-  } catch {
-    return issueDate
-  }
-}
-
 export async function createQuoteAction(payload: unknown) {
   const parsed = QuoteSchema.safeParse(payload)
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid data' }
@@ -61,6 +49,17 @@ export async function createQuoteAction(payload: unknown) {
   const companyId = await requireCompanyId()
 
   const { subtotal, discount_total, tax_total, total } = calcTotals(parsed.data.items)
+
+  // Default expiry: 14 days from issue date
+  const expiry = parsed.data.expiry_date || (() => {
+    try {
+      const d = new Date(parsed.data.issue_date + 'T00:00:00Z')
+      d.setUTCDate(d.getUTCDate() + 14)
+      return d.toISOString().slice(0, 10)
+    } catch {
+      return null
+    }
+  })()
   const number = genDocNumber('Q')
 
   const { data: quote, error: qErr } = await supabase
@@ -71,7 +70,7 @@ export async function createQuoteAction(payload: unknown) {
       number,
       status: 'Draft',
       issue_date: parsed.data.issue_date,
-      expiry_date: parsed.data.expiry_date || defaultExpiryDate(parsed.data.issue_date),
+      expiry_date: expiry || null,
       subtotal,
       discount_total,
       tax_total,
@@ -86,8 +85,7 @@ export async function createQuoteAction(payload: unknown) {
 
   const itemsRows = parsed.data.items.map((it) => {
     const lineBase = it.qty * it.unit_price
-    const discPct = Math.min(Math.max(it.discount || 0, 0), 100) / 100
-    const lineDiscount = lineBase * discPct
+    const lineDiscount = lineBase * (Math.min(Math.max(it.discount_pct || 0, 0), 100) / 100)
     const lineAfter = Math.max(0, lineBase - lineDiscount)
     const lineTax = lineAfter * (it.tax_rate || 0)
     const lineTotal = lineAfter + lineTax
@@ -98,11 +96,7 @@ export async function createQuoteAction(payload: unknown) {
       description: it.description,
       qty: it.qty,
       unit_price: it.unit_price,
-      discount: (() => {
-        const base = Number(it.qty || 0) * Number(it.unit_price || 0)
-        const pct = Math.min(Math.max(Number(it.discount || 0), 0), 100) / 100
-        return base * pct
-      })(),
+      discount: (it.qty * it.unit_price) * (Math.min(Math.max(it.discount_pct || 0, 0), 100) / 100),
       tax_rate_id: null,
       line_total: lineTotal,
     }
@@ -174,11 +168,7 @@ export async function convertQuoteToInvoiceAction(quoteId: string) {
       description: it.description,
       qty: it.qty,
       unit_price: it.unit_price,
-      discount: (() => {
-        const base = Number(it.qty || 0) * Number(it.unit_price || 0)
-        const pct = Math.min(Math.max(Number(it.discount || 0), 0), 100) / 100
-        return base * pct
-      })(),
+      discount: (it.qty * it.unit_price) * (Math.min(Math.max(it.discount_pct || 0, 0), 100) / 100),
       tax_rate_id: it.tax_rate_id,
       line_total: it.line_total,
     }))

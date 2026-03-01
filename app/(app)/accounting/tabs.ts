@@ -1,6 +1,7 @@
 export const accountingTabs = [
-  { href: '/accounting/dashboard', label: 'Dashboard' },
-  { href: '/accounting/payments', label: 'Payments' },
-  { href: '/accounting/pos', label: 'POs' },
-  { href: '/accounting/accounts', label: 'Accounts' },
+  { href: '/accounting/dashboard', label: 'Overview' },
+  { href: '/accounting/cashbook', label: 'Cashbook' },
+  { href: '/accounting/receivables', label: 'Receivables' },
+  { href: '/accounting/payables', label: 'Payables' },
+  { href: '/accounting/vat', label: 'VAT' },
 ]

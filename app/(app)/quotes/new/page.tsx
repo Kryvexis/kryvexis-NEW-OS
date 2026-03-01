@@ -8,7 +8,7 @@ export default async function Page() {
 
   const [{ data: clients }, { data: products }] = await Promise.all([
     supabase.from('clients').select('id,name').eq('company_id', companyId).order('name'),
-    supabase.from('products').select('id,name,unit_price,sku').eq('company_id', companyId).eq('is_active', true).order('name'),
+    supabase.from('products').select('id,name,unit_price,sku,barcode').eq('company_id', companyId).eq('is_active', true).order('name'),
   ])
 
   return (
