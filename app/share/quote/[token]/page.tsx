@@ -7,7 +7,13 @@ import { StatusBadge } from '@/components/share/status-badge'
 
 export const dynamic = 'force-dynamic'
 
-export default async function ShareQuotePage({ params }: { params: Promise<{ token: string } }) {
+export default async function ShareQuotePage({
+  params,
+}: {
+  params: { token: string };
+}) {
+  const { token } = params;
+
   const { token } = await params
   const admin = createAdminClient()
   if (!admin) {
