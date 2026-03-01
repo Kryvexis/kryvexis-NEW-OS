@@ -70,7 +70,7 @@ export default function ClientQuickPanel({ clients }: Props) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="text-sm font-semibold">Clients</div>
-          <div className="text-xs text-white/55">Pick a bucket, search, and open a client.</div>
+          <div className="text-xs text-white/[0.55]">Pick a bucket, search, and open a client.</div>
         </div>
         <Link href="/clients" className="kx-button">View all</Link>
       </div>
@@ -78,7 +78,7 @@ export default function ClientQuickPanel({ clients }: Props) {
       <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Dropdown 1: bucket */}
         <div className="grid gap-1.5">
-          <div className="text-[11px] text-white/55 uppercase tracking-wider">Client type</div>
+          <div className="text-[11px] text-white/[0.55] uppercase tracking-wider">Client type</div>
           <select
             className="kx-input w-full px-3 py-2"
             value={bucket}
@@ -92,7 +92,7 @@ export default function ClientQuickPanel({ clients }: Props) {
 
         {/* Dropdown 2: client */}
         <div className="grid gap-1.5">
-          <div className="text-[11px] text-white/55 uppercase tracking-wider">Select client</div>
+          <div className="text-[11px] text-white/[0.55] uppercase tracking-wider">Select client</div>
           <select
             className="kx-input w-full px-3 py-2"
             value={selectedId}
@@ -112,7 +112,7 @@ export default function ClientQuickPanel({ clients }: Props) {
 
         {/* Search */}
         <div className="grid gap-1.5">
-          <div className="text-[11px] text-white/55 uppercase tracking-wider">Search</div>
+          <div className="text-[11px] text-white/[0.55] uppercase tracking-wider">Search</div>
           <input
             className="kx-input w-full px-3 py-2"
             value={q}
@@ -131,12 +131,12 @@ export default function ClientQuickPanel({ clients }: Props) {
             className="flex items-center justify-between rounded-2xl border border-white/10 kx-card/5 px-3 py-2 hover:kx-card/10"
           >
             <span className="text-sm text-white/85">{c.name}</span>
-            <span className="text-xs text-white/55">Open</span>
+            <span className="text-xs text-white/[0.55]">Open</span>
           </Link>
         ))}
 
         {!visible.length && (
-          <div className="text-sm text-white/55">No clients in this bucket yet.</div>
+          <div className="text-sm text-white/[0.55]">No clients in this bucket yet.</div>
         )}
 
         {filtered.length > 5 && (

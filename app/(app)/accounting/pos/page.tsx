@@ -1,5 +1,3 @@
-import ModuleTabs from '@/components/module-tabs'
-import { accountingTabs } from '../tabs'
 import { PosHeroShell } from '@/components/pos/hero-shell'
 import { RightRail } from '@/components/pos/right-rail'
 import Link from 'next/link'
@@ -9,7 +7,7 @@ export default function AccountingPOs() {
     <PosHeroShell
       title="Purchase Orders"
       subtitle="Create POs, track approvals and receiving."
-      meta={<ModuleTabs tabs={accountingTabs} />}
+      meta={}
       actions={<Link href="/operations/suppliers" className="kx-btn kx-btn-secondary">Suppliers</Link>}
       rail={<RightRail title="PO activity" />}
     >

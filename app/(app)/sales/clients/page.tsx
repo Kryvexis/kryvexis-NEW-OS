@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import ModuleTabs from '@/components/module-tabs'
-import { salesTabs } from '../tabs'
 import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import { Card } from '@/components/card'
@@ -28,10 +26,7 @@ export default async function SalesClients() {
   ])
 
   return (
-    <div className="space-y-4">
-      <ModuleTabs tabs={salesTabs} />
-
-      <PosHeroShell
+    <div className="space-y-4">      <PosHeroShell
         title="Clients"
         subtitle="Find, open or message a client in seconds."
         actions={

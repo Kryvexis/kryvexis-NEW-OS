@@ -3,37 +3,27 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-export type ModuleTab = { href: string; label: string }
+type Tab = { href: string; label: string }
 
-function isActive(pathname: string, href: string) {
-  if (href === '/') return pathname === '/'
-  return pathname === href || pathname.startsWith(href + '/')
+function cx(...s: (string | false | null | undefined)[]) {
+  return s.filter(Boolean).join(' ')
 }
 
-/**
- * Premium, compact sub-navigation used inside a module (Sales / Accounting / Operations / Insights).
- * Designed to reduce sidebar clutter while keeping fast access to related pages.
- */
-export default function ModuleTabs({ tabs }: { tabs: ModuleTab[] }) {
-  const pathname = usePathname() || ''
-
+export default function ModuleTabs({ tabs }: { tabs: Tab[] }) {
+  const pathname = usePathname()
+  const active = (href: string) => pathname === href || pathname.startsWith(href + '/')
   return (
-    <div className="kx-moduleTabs-wrap">
-      <div className="kx-moduleTabs" role="tablist" aria-label="Section navigation">
-        {tabs.map((t) => {
-          const on = isActive(pathname, t.href)
-          return (
-            <Link
-              key={t.href}
-              href={t.href}
-              role="tab"
-              aria-selected={on}
-              className={'kx-moduleTab ' + (on ? 'is-active' : '')}
-            >
-              {t.label}
-            </Link>
-          )
-        })}
+    <div className="kx-tabsWrap">
+      <div className="kx-tabs">
+        {tabs.map((t) => (
+          <Link
+            key={t.href}
+            href={t.href}
+            className={cx('kx-tab', active(t.href) && 'kx-tabActive')}
+          >
+            {t.label}
+          </Link>
+        ))}
       </div>
     </div>
   )

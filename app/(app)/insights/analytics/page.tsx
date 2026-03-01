@@ -1,12 +1,7 @@
-import ModuleTabs from '@/components/module-tabs'
-import { insightsTabs } from '../tabs'
 
 export default function InsightsAnalytics() {
   return (
-    <div className="space-y-4">
-      <ModuleTabs tabs={insightsTabs} />
-
-      <div className="kx-card p-5">
+    <div className="space-y-4">      <div className="kx-card p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-xl font-semibold">Analytics</div>

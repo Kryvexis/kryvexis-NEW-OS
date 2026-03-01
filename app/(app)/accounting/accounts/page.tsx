@@ -1,5 +1,3 @@
-import ModuleTabs from '@/components/module-tabs'
-import { accountingTabs } from '../tabs'
 import { PosHeroShell } from '@/components/pos/hero-shell'
 import { RightRail } from '@/components/pos/right-rail'
 
@@ -8,7 +6,7 @@ export default function AccountingAccounts() {
     <PosHeroShell
       title="Accounts"
       subtitle="Client balances, statements and account history."
-      meta={<ModuleTabs tabs={accountingTabs} />}
+      meta={}
       rail={<RightRail title="Balances" />}
     >
       <div className="kx-card p-6">

@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import ModuleTabs from '@/components/module-tabs'
-import { salesTabs } from '../tabs'
 import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import { fmtZar } from '@/lib/format'
@@ -31,10 +29,7 @@ export default async function SalesQuotes() {
     .length
 
   return (
-    <div className="space-y-4">
-      <ModuleTabs tabs={salesTabs} />
-
-      <PosHeroShell
+    <div className="space-y-4">      <PosHeroShell
         title="Quotes"
         subtitle="Create, send (WhatsApp) and convert quotes to invoices."
         meta={

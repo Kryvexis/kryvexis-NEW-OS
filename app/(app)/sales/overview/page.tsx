@@ -1,5 +1,3 @@
-import ModuleTabs from '@/components/module-tabs'
-import { salesTabs } from '../tabs'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
@@ -43,10 +41,7 @@ export default async function SalesOverview() {
     .slice(0, 6)
 
   return (
-    <div className="space-y-4">
-      <ModuleTabs tabs={salesTabs} />
-
-      <PosHeroShell
+    <div className="space-y-4">      <PosHeroShell
         title="Sales overview"
         subtitle="Command center for quotes, invoices and daily revenue."
         meta={

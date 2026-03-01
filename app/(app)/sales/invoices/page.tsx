@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import ModuleTabs from '@/components/module-tabs'
-import { salesTabs } from '../tabs'
 import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import { fmtZar } from '@/lib/format'
@@ -33,10 +31,7 @@ export default async function SalesInvoices() {
   const collected = (payments || []).reduce((a: number, p: any) => a + Number(p.amount || 0), 0)
 
   return (
-    <div className="space-y-4">
-      <ModuleTabs tabs={salesTabs} />
-
-      <PosHeroShell
+    <div className="space-y-4">      <PosHeroShell
         title="Invoices"
         subtitle="Track receivables, follow up, and stay cash-flow positive."
         meta={

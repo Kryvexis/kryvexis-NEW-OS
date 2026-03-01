@@ -1,5 +1,3 @@
-import ModuleTabs from '@/components/module-tabs'
-import { accountingTabs } from '../tabs'
 import { PosHeroShell } from '@/components/pos/hero-shell'
 import { RightRail } from '@/components/pos/right-rail'
 import Link from 'next/link'
@@ -9,7 +7,7 @@ export default function AccountingDashboard() {
     <PosHeroShell
       title="Accounting"
       subtitle="Payments, balances, POs and visibility."
-      meta={<ModuleTabs tabs={accountingTabs} />}
+      meta={}
       actions={
         <div className="flex items-center gap-2">
           <Link className="kx-btn kx-btn-secondary" href="/accounting/payments">Record payment</Link>
@@ -29,15 +27,15 @@ export default function AccountingDashboard() {
     >
       <div className="grid gap-4 md:grid-cols-3">
         <div className="kx-card p-5">
-          <div className="text-xs text-white/55">Collected (30d)</div>
+          <div className="text-xs text-white/[0.55]">Collected (30d)</div>
           <div className="mt-2 text-2xl font-semibold">R 0,00</div>
         </div>
         <div className="kx-card p-5">
-          <div className="text-xs text-white/55">Outstanding</div>
+          <div className="text-xs text-white/[0.55]">Outstanding</div>
           <div className="mt-2 text-2xl font-semibold">R 0,00</div>
         </div>
         <div className="kx-card p-5">
-          <div className="text-xs text-white/55">Overdue</div>
+          <div className="text-xs text-white/[0.55]">Overdue</div>
           <div className="mt-2 text-2xl font-semibold">R 0,00</div>
         </div>
       </div>

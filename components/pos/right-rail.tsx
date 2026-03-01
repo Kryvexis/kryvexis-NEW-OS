@@ -40,7 +40,7 @@ export function RightRail({
               </div>
             ))
           ) : (
-            <div className="text-sm text-white/55">Nothing yet. When you create quotes, invoices or payments, they’ll show up here.</div>
+            <div className="text-sm text-white/[0.55]">Nothing yet. When you create quotes, invoices or payments, they’ll show up here.</div>
           )}
         </div>
       </div>
