@@ -178,3 +178,67 @@ export async function recordPaymentAction(payload: unknown) {
   revalidatePath('/payments')
   return { ok: true }
 }
+
+
+export async function updateInvoiceStatusAction(invoiceId: string, nextStatus: string) {
+  const supabase = await createClient()
+  const companyId = await requireCompanyId()
+
+  const { data: inv, error: invErr } = await supabase.from('invoices').select('id,status').eq('id', invoiceId).maybeSingle()
+  if (invErr) return { ok: false, error: invErr.message }
+  if (!inv) return { ok: false, error: 'Invoice not found' }
+
+  const prev = String(inv.status || 'Draft')
+  const { error } = await supabase.from('invoices').update({ status: nextStatus }).eq('id', invoiceId)
+  if (error) return { ok: false, error: error.message }
+
+  try {
+    const { data: u } = await supabase.auth.getUser()
+    const userId = u.user?.id
+    if (userId) {
+      await supabase.from('activity_logs').insert({
+        company_id: companyId,
+        user_id: userId,
+        entity_type: 'invoice',
+        entity_id: invoiceId,
+        action: `status:${prev}→${nextStatus}`,
+      })
+    }
+  } catch {}
+
+  revalidatePath(`/invoices/${invoiceId}`)
+  revalidatePath('/sales/invoices')
+  return { ok: true }
+}
+
+export async function logInvoiceWhatsAppSentAction(input: { invoice_id: string; phone?: string | null; message?: string | null }) {
+  const supabase = await createClient()
+  const companyId = await requireCompanyId()
+
+  // mark as Sent if Draft
+  try {
+    const { data: inv } = await supabase.from('invoices').select('status').eq('id', input.invoice_id).maybeSingle()
+    const status = String(inv?.status || 'Draft')
+    if (status === 'Draft') {
+      await supabase.from('invoices').update({ status: 'Sent' }).eq('id', input.invoice_id)
+    }
+  } catch {}
+
+  try {
+    const { data: u } = await supabase.auth.getUser()
+    const userId = u.user?.id
+    if (userId) {
+      await supabase.from('activity_logs').insert({
+        company_id: companyId,
+        user_id: userId,
+        entity_type: 'invoice',
+        entity_id: input.invoice_id,
+        action: 'sent_whatsapp',
+      })
+    }
+  } catch {}
+
+  revalidatePath(`/invoices/${input.invoice_id}`)
+  revalidatePath('/sales/invoices')
+  return { ok: true }
+}

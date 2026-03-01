@@ -1,19 +1,22 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useState, useTransition } from 'react'
+import { updateInvoiceStatusAction } from '@/app/(app)/invoices/actions'
 
 const STATUSES = ['Draft', 'Sent', 'Partially Paid', 'Paid', 'Overdue', 'Void']
 
 export default function InvoiceStatus({ invoiceId, current }: { invoiceId: string; current: string }) {
   const [value, setValue] = useState(current || 'Draft')
   const [pending, start] = useTransition()
-  const supabase = useMemo(() => createClient(), [])
 
   async function save(next: string) {
     setValue(next)
     start(async () => {
-      await supabase.from('invoices').update({ status: next }).eq('id', invoiceId)
+      const res = await updateInvoiceStatusAction(invoiceId, next)
+      if (!res?.ok) {
+        setValue(current || 'Draft')
+        alert(res?.error || 'Failed to update status')
+      }
     })
   }
 

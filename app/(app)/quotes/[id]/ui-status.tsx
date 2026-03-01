@@ -1,19 +1,23 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useState, useTransition } from 'react'
+import { updateQuoteStatusAction } from '@/app/(app)/quotes/actions'
 
 const STATUSES = ['Draft', 'Sent', 'Accepted', 'Declined', 'Expired']
 
 export default function QuoteStatus({ quoteId, current }: { quoteId: string; current: string }) {
   const [value, setValue] = useState(current || 'Draft')
   const [pending, start] = useTransition()
-  const supabase = useMemo(() => createClient(), [])
 
   async function save(next: string) {
     setValue(next)
     start(async () => {
-      await supabase.from('quotes').update({ status: next }).eq('id', quoteId)
+      const res = await updateQuoteStatusAction(quoteId, next)
+      if (!res?.ok) {
+        // revert on failure
+        setValue(current || 'Draft')
+        alert(res?.error || 'Failed to update status')
+      }
     })
   }
 

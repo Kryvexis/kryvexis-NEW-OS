@@ -186,3 +186,67 @@ export async function convertQuoteToInvoiceAction(quoteId: string) {
   revalidatePath('/invoices')
   return { ok: true, invoiceId: invoice.id }
 }
+
+
+export async function updateQuoteStatusAction(quoteId: string, nextStatus: string) {
+  const supabase = await createClient()
+  const companyId = await requireCompanyId()
+  const { data: q, error: qErr } = await supabase.from('quotes').select('id,status').eq('id', quoteId).maybeSingle()
+  if (qErr) return { ok: false, error: qErr.message }
+  if (!q) return { ok: false, error: 'Quote not found' }
+
+  const prev = String(q.status || 'Draft')
+  const { error } = await supabase.from('quotes').update({ status: nextStatus }).eq('id', quoteId)
+  if (error) return { ok: false, error: error.message }
+
+  // best-effort activity log
+  try {
+    const { data: u } = await supabase.auth.getUser()
+    const userId = u.user?.id
+    if (userId) {
+      await supabase.from('activity_logs').insert({
+        company_id: companyId,
+        user_id: userId,
+        entity_type: 'quote',
+        entity_id: quoteId,
+        action: `status:${prev}→${nextStatus}`,
+      })
+    }
+  } catch {}
+
+  revalidatePath(`/quotes/${quoteId}`)
+  revalidatePath('/sales/quotes')
+  return { ok: true }
+}
+
+export async function logQuoteWhatsAppSentAction(input: { quote_id: string; phone?: string | null; message?: string | null }) {
+  const supabase = await createClient()
+  const companyId = await requireCompanyId()
+
+  // update quote to Sent if currently Draft
+  try {
+    const { data: q } = await supabase.from('quotes').select('status').eq('id', input.quote_id).maybeSingle()
+    const status = String(q?.status || 'Draft')
+    if (status === 'Draft') {
+      await supabase.from('quotes').update({ status: 'Sent' }).eq('id', input.quote_id)
+    }
+  } catch {}
+
+  try {
+    const { data: u } = await supabase.auth.getUser()
+    const userId = u.user?.id
+    if (userId) {
+      await supabase.from('activity_logs').insert({
+        company_id: companyId,
+        user_id: userId,
+        entity_type: 'quote',
+        entity_id: input.quote_id,
+        action: 'sent_whatsapp',
+      })
+    }
+  } catch {}
+
+  revalidatePath(`/quotes/${input.quote_id}`)
+  revalidatePath('/sales/quotes')
+  return { ok: true }
+}

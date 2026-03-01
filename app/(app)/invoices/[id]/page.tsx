@@ -1,34 +1,60 @@
 // @ts-nocheck
-import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { fmtZar } from "@/lib/format";
-import InvoiceStatus from "./ui-status";
-import { PaymentDrawer } from "@/components/payments/payment-drawer";
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
+import { fmtZar } from '@/lib/format'
+import InvoiceStatus from './ui-status'
+import { PaymentDrawer } from '@/components/payments/payment-drawer'
+import { PosHeroShell } from '@/components/pos/hero-shell'
+import { Card } from '@/components/card'
+import { StatusTimeline, type TimelineEvent } from '@/components/timeline/status-timeline'
+import InvoiceWhatsAppLauncher from './ui-whatsapp-launcher'
 
 type PageProps = {
-  params: Promise<{ id: string }>;
-};
+  params: Promise<{ id: string }>
+}
+
+function toEvent(a: any): TimelineEvent | null {
+  const action = String(a?.action || '')
+  const at = a?.created_at ? new Date(String(a.created_at)).toLocaleString('en-ZA') : ''
+  if (action === 'created') return { id: a.id, title: 'Invoice created', meta: 'Draft', kind: 'info', at }
+  if (action === 'created_from_quote') return { id: a.id, title: 'Created from quote', meta: 'Conversion', kind: 'info', at }
+  if (action === 'sent_whatsapp') return { id: a.id, title: 'Sent via WhatsApp', meta: 'Customer message', kind: 'good', at }
+  if (action.startsWith('status:')) {
+    const txt = action.replace('status:', '')
+    return { id: a.id, title: 'Status updated', meta: txt, kind: 'info', at }
+  }
+  if (a?.entity_type === 'payment' && action === 'recorded') return { id: a.id, title: 'Payment recorded', meta: 'Invoice updated', kind: 'good', at }
+  if (!action) return null
+  return { id: a.id, title: action.replaceAll('_', ' '), meta: a.entity_type, kind: 'info', at }
+}
 
 export default async function InvoicePage({ params }: PageProps) {
   const { id } = await params
+  const supabase = await createClient()
 
-  const supabase = await createClient();
-  const [{ data: invoice }, { data: items }, { data: pays }] = await Promise.all([
+  const [{ data: invoice }, { data: items }, { data: pays }, { data: logs }] = await Promise.all([
     supabase
-      .from("invoices")
+      .from('invoices')
       .select(
-        "id,number,issue_date,due_date,status,notes,terms,subtotal,discount_total,tax_total,total,balance_due, clients(name,email,phone,billing_address)"
+        'id,company_id,number,issue_date,due_date,status,notes,terms,subtotal,discount_total,tax_total,total,balance_due, clients(name,email,phone,billing_address)'
       )
-      .eq("id", id)
+      .eq('id', id)
       .maybeSingle(),
-    supabase.from("invoice_items").select("id,description,qty,unit_price,discount,tax_rate").eq("invoice_id", id),
+    supabase.from('invoice_items').select('id,description,qty,unit_price,discount,tax_rate').eq('invoice_id', id),
     supabase
-      .from("payments")
-      .select("id,amount,payment_date,method,reference,created_at")
-      .eq("invoice_id", id)
-      .order("payment_date", { ascending: false })
+      .from('payments')
+      .select('id,amount,payment_date,method,reference,created_at')
+      .eq('invoice_id', id)
+      .order('payment_date', { ascending: false })
       .limit(50),
-  ]);
+    supabase
+      .from('activity_logs')
+      .select('id,action,entity_type,entity_id,created_at')
+      .eq('entity_id', id)
+      .in('entity_type', ['invoice', 'payment'])
+      .order('created_at', { ascending: true })
+      .limit(200),
+  ])
 
   if (!invoice) {
     return (
@@ -36,183 +62,176 @@ export default async function InvoicePage({ params }: PageProps) {
         <div className="text-sm font-semibold">Invoice not found</div>
         <div className="text-sm kx-muted mt-1">This invoice may have been deleted.</div>
       </div>
-    );
+    )
   }
 
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
-          <div className="text-xl font-semibold tracking-tight">Invoice {invoice.number ?? ""}</div>
-          <div className="text-sm kx-muted">
-            Client: <span className="text-[rgba(var(--kx-fg),.92)]/85">{((invoice as any)?.clients?.name ?? (invoice as any)?.((invoice as any)?.clients?.name ?? (invoice as any)?.client?.name ?? '—') ?? '—')}</span>
-          </div>
-        </div>
+  const totalText = fmtZar(Number(invoice.total ?? 0))
+  const balanceText = fmtZar(Number(invoice.balance_due ?? 0))
+  const clientName = invoice.clients?.name ?? '—'
+  const events = (logs || []).map(toEvent).filter(Boolean) as TimelineEvent[]
 
-        <div className="flex flex-wrap items-center gap-2">
+  return (
+    <PosHeroShell
+      title={`Invoice ${invoice.number ?? ''}`}
+      subtitle={`Client: ${clientName}`}
+      meta={
+        <div className="flex flex-wrap gap-2">
+          <span className="kx-chip">{invoice.status ?? 'Draft'}</span>
+          <span className="kx-chip">Balance: {balanceText}</span>
+        </div>
+      }
+      actions={
+        <>
+          <InvoiceWhatsAppLauncher
+            invoiceId={invoice.id}
+            invoiceNumber={invoice.number}
+            clientName={clientName}
+            clientPhone={invoice.clients?.phone}
+            totalText={totalText}
+            viewPath={`/invoices/${invoice.id}`}
+          />
           <Link className="kx-button" href={`/invoices/${invoice.id}/print`} target="_blank">
             Print / PDF
           </Link>
-        </div>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="kx-card p-4 lg:col-span-2">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-4">
-                <div className="text-xs kx-muted">Issue date</div>
-                <div className="mt-1 font-medium">{invoice.issue_date ?? "—"}</div>
-              </div>
-              <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-4">
-                <div className="text-xs kx-muted">Due date</div>
-                <div className="mt-1 font-medium">{invoice.due_date ?? "—"}</div>
-              </div>
+          <PaymentDrawer invoiceId={invoice.id} />
+        </>
+      }
+      rail={
+        <>
+          <StatusTimeline title="Status timeline" events={events} />
+          <Card>
+            <div className="text-sm font-semibold">Client</div>
+            <div className="mt-2 text-sm">{clientName}</div>
+            <div className="mt-1 text-xs kx-muted">{invoice.clients?.email ?? ''}</div>
+            <div className="mt-1 text-xs kx-muted">{invoice.clients?.phone ?? ''}</div>
+          </Card>
+          <Card>
+            <div className="text-sm font-semibold">Status</div>
+            <div className="mt-3">
+              <InvoiceStatus invoiceId={invoice.id} current={invoice.status ?? 'Draft'} />
             </div>
-
-            <div className="w-full md:w-[240px]">
-              <InvoiceStatus invoiceId={invoice.id} current={invoice.status ?? "Draft"} />
-            </div>
+          </Card>
+        </>
+      }
+    >
+      <Card>
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="rounded-2xl bg-[rgba(var(--kx-fg),.045)] px-4 py-3">
+            <div className="text-xs kx-muted">Issue date</div>
+            <div className="mt-1 font-medium">{invoice.issue_date ?? '—'}</div>
           </div>
-
-          <div className="mt-5">
-            <div className="text-sm font-semibold">Line items</div>
-            <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] kx-card/4 overflow-x-auto">
-              <table className="w-full text-sm min-w-[760px]">
-                <thead className="kx-muted bg-[rgba(var(--kx-border),.06)]">
-                  <tr>
-                    <th className="text-left px-4 py-3">Description</th>
-                    <th className="text-right px-4 py-3">Qty</th>
-                    <th className="text-right px-4 py-3">Unit</th>
-                    <th className="text-right px-4 py-3">Discount</th>
-                    <th className="text-right px-4 py-3">Tax</th>
-                    <th className="text-right px-4 py-3">Line</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(items ?? []).map((it: any) => {
-                    const base = Number(it.qty ?? 0) * Number(it.unit_price ?? 0);
-                    const disc = Math.min(Number(it.discount ?? 0), base);
-                    const after = Math.max(0, base - disc);
-                    const tax = after * Number(it.tax_rate ?? 0);
-                    const line = after + tax;
-                    return (
-                      <tr key={it.id} className="border-t border-[rgba(var(--kx-border),.12)]">
-                        <td className="px-4 py-3 font-medium">{it.description ?? "—"}</td>
-                        <td className="px-4 py-3 text-right text-[rgba(var(--kx-fg),.82)]">{Number(it.qty ?? 0)}</td>
-                        <td className="px-4 py-3 text-right text-[rgba(var(--kx-fg),.82)]">{fmtZar(Number(it.unit_price ?? 0))}</td>
-                        <td className="px-4 py-3 text-right kx-muted">{fmtZar(Number(it.discount ?? 0))}</td>
-                        <td className="px-4 py-3 text-right kx-muted">{Math.round(Number(it.tax_rate ?? 0) * 100)}%</td>
-                        <td className="px-4 py-3 text-right text-[rgba(var(--kx-fg),.92)]/85">{fmtZar(line)}</td>
-                      </tr>
-                    );
-                  })}
-
-                  {!items?.length && (
-                    <tr>
-                      <td className="px-4 py-6 kx-muted" colSpan={6}>
-                        No items on this invoice.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {(invoice.notes || invoice.terms) && (
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                {invoice.notes && (
-                  <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-4">
-                    <div className="text-xs kx-muted">Notes</div>
-                    <div className="mt-1 text-sm text-[rgba(var(--kx-fg),.82)] whitespace-pre-wrap">{invoice.notes}</div>
-                  </div>
-                )}
-                {invoice.terms && (
-                  <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-4">
-                    <div className="text-xs kx-muted">Terms</div>
-                    <div className="mt-1 text-sm text-[rgba(var(--kx-fg),.82)] whitespace-pre-wrap">{invoice.terms}</div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div className="mt-6 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-4">
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">Payments</div>
-              <div className="text-xs kx-muted">{pays?.length ?? 0} recorded</div>
-            </div>
-
-            <div className="mt-3 overflow-x-auto">
-              <table className="w-full text-sm min-w-[640px]">
-                <thead className="kx-muted">
-                  <tr>
-                    <th className="text-left px-3 py-2">Date</th>
-                    <th className="text-left px-3 py-2">Method</th>
-                    <th className="text-left px-3 py-2">Reference</th>
-                    <th className="text-right px-3 py-2">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(pays ?? []).map((p: any) => (
-                    <tr key={p.id} className="border-t border-[rgba(var(--kx-border),.12)]">
-                      <td className="px-3 py-2 text-[rgba(var(--kx-fg),.82)]">{p.payment_date ?? "—"}</td>
-                      <td className="px-3 py-2 kx-muted">{p.method ?? "—"}</td>
-                      <td className="px-3 py-2 kx-muted">{p.reference ?? "—"}</td>
-                      <td className="px-3 py-2 text-right text-[rgba(var(--kx-fg),.92)]/85">{fmtZar(Number(p.amount ?? 0))}</td>
-                    </tr>
-                  ))}
-                  {!pays?.length && (
-                    <tr>
-                      <td className="px-3 py-3 kx-muted" colSpan={4}>
-                        No payments recorded yet.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            <PaymentForm invoiceId={invoice.id} />
+          <div className="rounded-2xl bg-[rgba(var(--kx-fg),.045)] px-4 py-3">
+            <div className="text-xs kx-muted">Due date</div>
+            <div className="mt-1 font-medium">{invoice.due_date ?? '—'}</div>
           </div>
         </div>
 
-        <div className="kx-card p-4">
-          <div className="text-sm font-semibold">Summary</div>
-          <div className="mt-3 grid gap-2 text-sm">
-            <div className="flex justify-between kx-muted">
+        <div className="mt-6">
+          <div className="text-sm font-semibold">Line items</div>
+          <div className="mt-3 overflow-x-auto rounded-3xl bg-[rgba(var(--kx-fg),.045)]">
+            <table className="w-full text-sm min-w-[760px]">
+              <thead className="kx-muted bg-[rgba(var(--kx-fg),.035)]">
+                <tr>
+                  <th className="text-left px-4 py-3">Description</th>
+                  <th className="text-right px-4 py-3">Qty</th>
+                  <th className="text-right px-4 py-3">Unit</th>
+                  <th className="text-right px-4 py-3">Discount</th>
+                  <th className="text-right px-4 py-3">Tax</th>
+                  <th className="text-right px-4 py-3">Line</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(items || []).map((it: any) => {
+                  const base = Number(it.qty || 0) * Number(it.unit_price || 0)
+                  const disc = Math.min(Number(it.discount || 0), base)
+                  const after = Math.max(0, base - disc)
+                  const tax = after * Number(it.tax_rate || 0)
+                  const line = after + tax
+                  return (
+                    <tr key={it.id} className="border-t border-[rgba(var(--kx-fg),.06)]">
+                      <td className="px-4 py-3">{it.description}</td>
+                      <td className="px-4 py-3 text-right">{Number(it.qty || 0)}</td>
+                      <td className="px-4 py-3 text-right">{fmtZar(Number(it.unit_price || 0))}</td>
+                      <td className="px-4 py-3 text-right">{fmtZar(Number(it.discount || 0))}</td>
+                      <td className="px-4 py-3 text-right">{Math.round(Number(it.tax_rate || 0) * 100)}%</td>
+                      <td className="px-4 py-3 text-right font-semibold">{fmtZar(line)}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-3 md:grid-cols-2">
+          <div className="rounded-3xl bg-[rgba(var(--kx-fg),.04)] p-4">
+            <div className="text-xs kx-muted">Notes</div>
+            <div className="mt-2 text-sm">{invoice.notes || '—'}</div>
+          </div>
+          <div className="rounded-3xl bg-[rgba(var(--kx-fg),.04)] p-4">
+            <div className="text-xs kx-muted">Terms</div>
+            <div className="mt-2 text-sm">{invoice.terms || '—'}</div>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-3xl bg-[rgba(var(--kx-fg),.04)] p-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-semibold">Totals</div>
+            <div className="text-lg font-semibold">{totalText}</div>
+          </div>
+          <div className="mt-3 grid gap-2 text-sm kx-muted">
+            <div className="flex justify-between">
               <span>Subtotal</span>
-              <span className="text-[rgba(var(--kx-fg),.92)]/85">{fmtZar(Number(invoice.subtotal ?? 0))}</span>
+              <span>{fmtZar(Number(invoice.subtotal ?? 0))}</span>
             </div>
-            <div className="flex justify-between kx-muted">
-              <span>Discounts</span>
-              <span className="text-[rgba(var(--kx-fg),.92)]/85">- {fmtZar(Number(invoice.discount_total ?? 0))}</span>
+            <div className="flex justify-between">
+              <span>Discount</span>
+              <span>- {fmtZar(Number(invoice.discount_total ?? 0))}</span>
             </div>
-            <div className="flex justify-between kx-muted">
+            <div className="flex justify-between">
               <span>Tax</span>
-              <span className="text-[rgba(var(--kx-fg),.92)]/85">{fmtZar(Number(invoice.tax_total ?? 0))}</span>
+              <span>{fmtZar(Number(invoice.tax_total ?? 0))}</span>
             </div>
-            <div className="mt-2 flex justify-between font-semibold">
-              <span>Total</span>
-              <span>{fmtZar(Number(invoice.total ?? 0))}</span>
-            </div>
-            <div className="mt-2 flex justify-between kx-muted">
+            <div className="flex justify-between font-medium text-[rgba(var(--kx-fg),.9)]">
               <span>Balance due</span>
-              <span className="text-[rgba(var(--kx-fg),.92)]/90">{fmtZar(Number(invoice.balance_due ?? 0))}</span>
+              <span>{balanceText}</span>
             </div>
-          </div>
-
-          <div className="mt-4 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-4">
-            <div className="text-xs kx-muted">Client details</div>
-            <div className="mt-1 text-sm text-[rgba(var(--kx-fg),.82)]">{((invoice as any)?.clients?.name ?? (invoice as any)?.((invoice as any)?.clients?.name ?? (invoice as any)?.client?.name ?? '—') ?? '—')}</div>
-            {((invoice as any)?.clients?.email ?? (invoice as any)?.client?.email ?? '—') && <div className="text-sm kx-muted mt-1">{invoice.clients.email}</div>}
-            {((invoice as any)?.clients?.phone ?? (invoice as any)?.client?.phone ?? '—') && <div className="text-sm kx-muted">{invoice.clients.phone}</div>}
-            {invoice.clients?.billing_address && (
-              <div className="text-sm kx-muted mt-1 whitespace-pre-wrap">{invoice.clients.billing_address}</div>
-            )}
           </div>
         </div>
-      </div>
-    </div>
-  );
+
+        <div className="mt-6">
+          <div className="text-sm font-semibold">Payments</div>
+          <div className="mt-3 overflow-x-auto rounded-3xl bg-[rgba(var(--kx-fg),.045)]">
+            <table className="w-full text-sm min-w-[760px]">
+              <thead className="kx-muted bg-[rgba(var(--kx-fg),.035)]">
+                <tr>
+                  <th className="text-left px-4 py-3">Date</th>
+                  <th className="text-left px-4 py-3">Method</th>
+                  <th className="text-left px-4 py-3">Reference</th>
+                  <th className="text-right px-4 py-3">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(pays || []).map((p: any) => (
+                  <tr key={p.id} className="border-t border-[rgba(var(--kx-fg),.06)]">
+                    <td className="px-4 py-3">{p.payment_date || '—'}</td>
+                    <td className="px-4 py-3">{p.method || '—'}</td>
+                    <td className="px-4 py-3">{p.reference || '—'}</td>
+                    <td className="px-4 py-3 text-right font-semibold">{fmtZar(Number(p.amount || 0))}</td>
+                  </tr>
+                ))}
+                {(!pays || pays.length === 0) && (
+                  <tr>
+                    <td className="px-4 py-3 kx-muted" colSpan={4}>
+                      No payments yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </Card>
+    </PosHeroShell>
+  )
 }
