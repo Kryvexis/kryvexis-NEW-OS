@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { makeSummaryPdf } from "@/lib/email/pdf-report";
 
 export const runtime = "nodejs";
 
@@ -10,7 +11,6 @@ function env(name: string) {
 }
 
 function todayISO(timeZone = "Africa/Johannesburg") {
-  // YYYY-MM-DD in the chosen timezone
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
@@ -23,15 +23,35 @@ function todayISO(timeZone = "Africa/Johannesburg") {
   return `${y}-${m}-${d}`;
 }
 
+function isoMinusDays(days: number, timeZone = "Africa/Johannesburg") {
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(d);
+  const y = parts.find((p) => p.type === "year")?.value ?? "1970";
+  const m = parts.find((p) => p.type === "month")?.value ?? "01";
+  const dd = parts.find((p) => p.type === "day")?.value ?? "01";
+  return `${y}-${m}-${dd}`;
+}
+
 function money(n: number) {
-  // simple, safe formatting
   const v = Number.isFinite(n) ? n : 0;
   return v.toFixed(2);
 }
 
-async function sendBrevoEmail(opts: { to: string; subject: string; html: string }) {
+async function sendBrevoEmail(opts: {
+  to: string;
+  subject: string;
+  html: string;
+  attachments?: Array<{ name: string; content: string }>;
+}) {
   const apiKey = env("BREVO_API_KEY");
   const fromEmail = env("EMAIL_FROM");
+
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {
@@ -44,6 +64,7 @@ async function sendBrevoEmail(opts: { to: string; subject: string; html: string 
       to: [{ email: opts.to }],
       subject: opts.subject,
       htmlContent: opts.html,
+      attachments: opts.attachments ?? [],
     }),
   });
 
@@ -58,6 +79,7 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const secret = url.searchParams.get("secret");
     const dryRun = url.searchParams.get("dryRun") === "1";
+    const mode = (url.searchParams.get("mode") || "daily") as "daily" | "weekly";
 
     if (!secret || secret !== process.env.CRON_SECRET) {
       return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
@@ -66,6 +88,7 @@ export async function GET(req: Request) {
     const supabase = createClient(env("NEXT_PUBLIC_SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"));
     const tz = process.env.KX_TIMEZONE || "Africa/Johannesburg";
     const today = todayISO(tz);
+    const weekStart = isoMinusDays(6, tz);
 
     const { data: companies, error: companiesErr } = await supabase
       .from("companies")
@@ -76,25 +99,46 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: companiesErr.message }, { status: 500 });
     }
 
-    let sent = 0;
-    let failed = 0;
+    let sentCompanies = 0;
+    let failedCompanies = 0;
     const failures: Array<{ companyId: string; email: string; error: string }> = [];
 
     for (const c of companies ?? []) {
       const companyId = c.id as string;
       const companyName = (c.name as string) || "Your Company";
-      const toEmail = c.email as string;
+      const primaryEmail = c.email as string;
 
-      // SALES + PROFIT (from transactions)
-      const { data: txs, error: txErr } = await supabase
+      // company email settings (toggle + recipients)
+      const { data: settings } = await supabase
+        .from("company_email_settings")
+        .select("daily_enabled,weekly_enabled,recipients_json,timezone")
+        .eq("company_id", companyId)
+        .maybeSingle();
+
+      if (mode === "daily" && settings?.daily_enabled === false) continue;
+      if (mode === "weekly" && settings?.weekly_enabled === false) continue;
+
+      const recipientList =
+        settings?.recipients_json && Array.isArray(settings.recipients_json) && settings.recipients_json.length > 0
+          ? (settings.recipients_json as string[])
+          : [primaryEmail];
+
+      // SALES + PROFIT (transactions)
+      let txQuery = supabase
         .from("transactions")
         .select("kind,amount,tx_date")
-        .eq("company_id", companyId)
-        .eq("tx_date", today);
+        .eq("company_id", companyId);
+
+      txQuery =
+        mode === "weekly"
+          ? txQuery.gte("tx_date", weekStart).lte("tx_date", today)
+          : txQuery.eq("tx_date", today);
+
+      const { data: txs, error: txErr } = await txQuery;
 
       if (txErr) {
-        failed++;
-        failures.push({ companyId, email: toEmail, error: `transactions: ${txErr.message}` });
+        failedCompanies++;
+        failures.push({ companyId, email: primaryEmail, error: `transactions: ${txErr.message}` });
         continue;
       }
 
@@ -107,16 +151,17 @@ export async function GET(req: Request) {
       }
       const profit = income - expense;
 
-      // OVERDUE invoices
+      // OVERDUE invoices (safe query)
       const { data: overdue, error: invErr } = await supabase
         .from("invoices")
         .select("id,number,status,due_date,total,balance_due")
         .eq("company_id", companyId)
-        .or(`status.eq.Overdue,and(due_date.lt.${today},status.in.(Sent,"Partially Paid"))`);
+        .lt("due_date", today)
+        .in("status", ["Sent", "Partially Paid", "Overdue"]);
 
       if (invErr) {
-        failed++;
-        failures.push({ companyId, email: toEmail, error: `invoices: ${invErr.message}` });
+        failedCompanies++;
+        failures.push({ companyId, email: primaryEmail, error: `invoices: ${invErr.message}` });
         continue;
       }
 
@@ -124,7 +169,6 @@ export async function GET(req: Request) {
       const overdueBalance = (overdue ?? []).reduce((sum, r: any) => sum + Number(r.balance_due ?? 0), 0);
 
       // LOW STOCK
-      // We fetch a reasonable batch and filter in code (avoids complex SQL / column-to-column comparisons).
       const { data: products, error: prodErr } = await supabase
         .from("products")
         .select("name,sku,stock_on_hand,low_stock_threshold")
@@ -139,6 +183,9 @@ export async function GET(req: Request) {
         lowStockRows = (products ?? []).filter((p: any) => Number(p.stock_on_hand) <= Number(p.low_stock_threshold));
         lowStockRows = lowStockRows.slice(0, 10);
       }
+
+      const label = mode === "weekly" ? `Weekly Summary (${weekStart} → ${today})` : `Daily Summary`;
+      const subject = `Kryvexis ${label} — ${companyName}`;
 
       const lowStockHtml =
         lowStockRows.length === 0
@@ -173,14 +220,15 @@ export async function GET(req: Request) {
               </tbody>
             </table>`;
 
-      const subject = `Kryvexis Daily Summary — ${companyName} — ${today}`;
       const html = `
         <div style="background:#0B0F17;padding:24px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;">
           <div style="max-width:720px;margin:0 auto;background:#0F172A;border:1px solid #1F2937;border-radius:16px;overflow:hidden;">
             <div style="padding:18px 20px;border-bottom:1px solid #1F2937;">
               <div style="font-size:14px;color:#9CA3AF;">Kryvexis OS</div>
-              <div style="font-size:20px;color:#E5E7EB;font-weight:700;margin-top:4px;">Daily Summary</div>
-              <div style="font-size:13px;color:#9CA3AF;margin-top:4px;">${companyName} • ${today}</div>
+              <div style="font-size:20px;color:#E5E7EB;font-weight:700;margin-top:4px;">${label}</div>
+              <div style="font-size:13px;color:#9CA3AF;margin-top:4px;">${companyName} • ${
+                mode === "weekly" ? `${weekStart} → ${today}` : today
+              }</div>
             </div>
 
             <div style="padding:20px;display:block;">
@@ -217,16 +265,50 @@ export async function GET(req: Request) {
         </div>
       `;
 
+      // PDF attachment
+      const pdf = await makeSummaryPdf({
+        companyName,
+        title: label,
+        range: mode === "weekly" ? `${weekStart} → ${today}` : today,
+        income,
+        profit,
+        overdueCount,
+        overdueBalance,
+        lowStock: lowStockRows.map((p: any) => ({
+          name: String(p.name ?? "Item"),
+          sku: p.sku ? String(p.sku) : undefined,
+          stock: Number(p.stock_on_hand ?? 0),
+          threshold: Number(p.low_stock_threshold ?? 0),
+        })),
+      });
+
+      const attachments = [
+        { name: `Kryvexis-${mode}-${today}.pdf`, content: pdf.toString("base64") },
+      ];
+
       try {
-        if (!dryRun) await sendBrevoEmail({ to: toEmail, subject, html });
-        sent++;
+        if (!dryRun) {
+          for (const email of recipientList) {
+            await sendBrevoEmail({ to: email, subject, html, attachments });
+          }
+        }
+        sentCompanies++;
       } catch (e: any) {
-        failed++;
-        failures.push({ companyId, email: toEmail, error: e?.message ?? "send failed" });
+        failedCompanies++;
+        failures.push({ companyId, email: primaryEmail, error: e?.message ?? "send failed" });
       }
     }
 
-    return NextResponse.json({ ok: true, today, dryRun, sent, failed, failures });
+    return NextResponse.json({
+      ok: true,
+      mode,
+      today,
+      weekStart,
+      dryRun,
+      sentCompanies,
+      failedCompanies,
+      failures,
+    });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e?.message ?? "Unknown error" }, { status: 500 });
   }
