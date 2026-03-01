@@ -6,7 +6,6 @@ export const viewport = {
   initialScale: 1,
 };
 
-// ✅ Add this (controls iPhone home-screen icon + favicon + PWA)
 export const metadata: Metadata = {
   title: "Kryvexis OS",
   description: "Kryvexis Business Operating System",
