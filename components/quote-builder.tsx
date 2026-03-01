@@ -22,7 +22,7 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
   const [pending, start] = useTransition()
   const [clientId, setClientId] = useState(clients[0]?.id || '')
   const [issueDate, setIssueDate] = useState(isoDate())
-  const [expiryDate, setExpiryDate] = useState('')
+  const [expiryDate, setExpiryDate] = useState(isoDate(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)))
   const [notes, setNotes] = useState('')
   const [terms, setTerms] = useState('Payment due on delivery. Thank you for your business.')
   const [error, setError] = useState<string | null>(null)
@@ -158,18 +158,20 @@ export default function QuoteBuilder({ clients, products }: { clients: Client[];
                           <input
                             className="kx-input text-right"
                             type="number"
-                            step="0.01"
+                            step="1"
+                            min="1"
                             value={it.qty}
-                            onChange={(e) => updateItem(idx, { qty: Number(e.target.value || 0) })}
+                            onChange={(e) => updateItem(idx, { qty: Math.max(1, parseInt(e.target.value || "1", 10) || 1) })}
                           />
                         </td>
                         <td className="px-3 py-2 text-right">
                           <input
-                            className="kx-input text-right"
+                            className="kx-input text-right opacity-60 cursor-not-allowed"
                             type="number"
                             step="0.01"
                             value={it.unit_price}
-                            onChange={(e) => updateItem(idx, { unit_price: Number(e.target.value || 0) })}
+                            disabled
+                            title="Price is locked. Use Discount to adjust."
                           />
                         </td>
                         <td className="px-3 py-2 text-right">

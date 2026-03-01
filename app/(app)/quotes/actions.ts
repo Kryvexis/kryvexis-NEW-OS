@@ -9,7 +9,7 @@ import { genDocNumber } from '@/lib/format'
 const ItemSchema = z.object({
   product_id: z.string().uuid().optional().nullable(),
   description: z.string().min(1),
-  qty: z.number().positive(),
+  qty: z.number().int().positive(),
   unit_price: z.number().nonnegative(),
   discount: z.number().nonnegative().default(0),
   tax_rate: z.number().nonnegative().default(0), // 0.15 for 15%
@@ -23,6 +23,13 @@ const QuoteSchema = z.object({
   terms: z.string().optional().nullable(),
   items: z.array(ItemSchema).min(1),
 })
+
+
+function addDaysIso(iso: string, days: number) {
+  const d = new Date(iso)
+  d.setDate(d.getDate() + days)
+  return d.toISOString().slice(0, 10)
+}
 
 function calcTotals(items: z.infer<typeof ItemSchema>[]) {
   let subtotal = 0
@@ -59,7 +66,7 @@ export async function createQuoteAction(payload: unknown) {
       number,
       status: 'Draft',
       issue_date: parsed.data.issue_date,
-      expiry_date: parsed.data.expiry_date || null,
+      expiry_date: parsed.data.expiry_date || addDaysIso(parsed.data.issue_date, 14),
       subtotal,
       discount_total,
       tax_total,

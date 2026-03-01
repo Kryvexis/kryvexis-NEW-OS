@@ -96,3 +96,19 @@ export async function requireCompany() {
   // Fallback name
   return { id: companyId, name: 'Kryvexis' }
 }
+
+
+export async function setActiveCompanyId(companyId: string) {
+  const store = await cookies()
+  // Write a single canonical cookie (others kept for backward compatibility)
+  store.set('kx_active_company_id', companyId, {
+    path: '/',
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: true,
+  })
+  // Back-compat keys (non-breaking)
+  store.set('kx_active_company', companyId, { path: '/', httpOnly: true, sameSite: 'lax', secure: true })
+  store.set('active_company_id', companyId, { path: '/', httpOnly: true, sameSite: 'lax', secure: true })
+}
+

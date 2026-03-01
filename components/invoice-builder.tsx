@@ -155,7 +155,7 @@ export default function InvoiceBuilder({ clients, products }: { clients: Client[
                           </div>
                         </td>
                         <td className="px-3 py-2 text-right">
-                          <input className="kx-input text-right" type="number" step="0.01" value={it.qty} onChange={(e) => updateItem(idx, { qty: Number(e.target.value || 0) })} />
+                          <input className="kx-input text-right" type="number" step="1" min="1" value={it.qty} onChange={(e) => updateItem(idx, { qty: Math.max(1, parseInt(e.target.value || "1", 10) || 1) })} />
                         </td>
                         <td className="px-3 py-2 text-right">
                           <input className="kx-input text-right" type="number" step="0.01" value={it.unit_price} onChange={(e) => updateItem(idx, { unit_price: Number(e.target.value || 0) })} />
