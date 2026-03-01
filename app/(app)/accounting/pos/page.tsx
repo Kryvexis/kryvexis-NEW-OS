@@ -1,35 +1,35 @@
 import ModuleTabs from '@/components/module-tabs'
 import { accountingTabs } from '../tabs'
+import { PosHeroShell } from '@/components/pos/hero-shell'
+import { RightRail } from '@/components/pos/right-rail'
+import Link from 'next/link'
 
 export default function AccountingPOs() {
   return (
-    <div className="space-y-4">
-      <ModuleTabs tabs={accountingTabs} />
-
-      <div className="kx-card p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="text-xl font-semibold">Purchase Orders</div>
-            <div className="text-sm kx-muted">Create POs, approve spend, and receive stock.</div>
+    <PosHeroShell
+      title="Purchase Orders"
+      subtitle="Create POs, track approvals and receiving."
+      meta={<ModuleTabs tabs={accountingTabs} />}
+      actions={<Link href="/operations/suppliers" className="kx-btn kx-btn-secondary">Suppliers</Link>}
+      rail={<RightRail title="PO activity" />}
+    >
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="kx-card p-6">
+          <div className="text-sm font-semibold">Draft POs</div>
+          <div className="mt-2 text-sm text-white/60">No POs yet.</div>
+          <div className="mt-4 flex gap-2">
+            <button className="kx-btn kx-btn-primary">New PO</button>
+            <button className="kx-btn kx-btn-secondary">Import POs</button>
           </div>
-          <span className="kx-chip">Coming next</span>
         </div>
 
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <div className="kx-panel p-4">
-            <div className="text-sm font-semibold">Draft</div>
-            <div className="text-xs kx-muted mt-1">Supplier, items, expected date.</div>
-          </div>
-          <div className="kx-panel p-4">
-            <div className="text-sm font-semibold">Approved</div>
-            <div className="text-xs kx-muted mt-1">Ready to send to supplier.</div>
-          </div>
-          <div className="kx-panel p-4">
-            <div className="text-sm font-semibold">Received</div>
-            <div className="text-xs kx-muted mt-1">Convert to stock receipt.</div>
+        <div className="kx-card p-6">
+          <div className="text-sm font-semibold">Receiving</div>
+          <div className="mt-2 text-sm text-white/60">
+            Mark POs as received to update stock (coming next).
           </div>
         </div>
       </div>
-    </div>
+    </PosHeroShell>
   )
 }

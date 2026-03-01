@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { fmtZar } from "@/lib/format";
 import InvoiceStatus from "./ui-status";
-import PaymentForm from "./ui-payment";
+import { PaymentDrawer } from "@/components/payments/payment-drawer";
 
 type PageProps = {
   params: Promise<{ id: string }>;

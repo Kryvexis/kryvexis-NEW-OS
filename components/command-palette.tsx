@@ -49,11 +49,19 @@ export default function CommandPalette() {
   }, [])
 
   const actions = useMemo(() => {
+    const quick = [
+      { label: 'Open POS', href: '/sales/pos', group: 'Quick actions' },
+      { label: 'New Quote', href: '/sales/quotes/new', group: 'Quick actions' },
+      { label: 'New Invoice', href: '/sales/invoices/new', group: 'Quick actions' },
+      { label: 'Record Payment', href: '/accounting/payments', group: 'Quick actions' },
+      { label: 'Import Products', href: '/operations/import', group: 'Quick actions' },
+    ]
+
     const allNav = [...navMainItems, ...navBottomItems]
       .filter((n) => n.href !== '/help') // help is hidden in v28+ UI
       .map((n) => ({ label: n.label, href: n.href }))
 
-    const core = allNav.map((n) => ({
+    const core = [...quick, ...allNav].map((n) => ({
       type: 'nav' as const,
       label: n.label,
       hint: n.href,
