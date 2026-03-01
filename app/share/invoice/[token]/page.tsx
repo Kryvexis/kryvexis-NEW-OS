@@ -14,7 +14,7 @@ export default async function ShareInvoicePage({
 }) {
   const { token } = params;
 
-  const { token } = await params
+
   const admin = createAdminClient()
   if (!admin) {
     return (
@@ -30,8 +30,6 @@ export default async function ShareInvoicePage({
       </ShareShell>
     )
   }
-
-  const { token } = params
 
   const { data: invoice, error } = await admin
     .from('invoices')

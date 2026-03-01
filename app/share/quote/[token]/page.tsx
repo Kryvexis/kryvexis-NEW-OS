@@ -14,7 +14,7 @@ export default async function ShareQuotePage({
 }) {
   const { token } = params;
 
-  const { token } = await params
+
   const admin = createAdminClient()
   if (!admin) {
     return (
@@ -30,8 +30,6 @@ export default async function ShareQuotePage({
       </ShareShell>
     )
   }
-
-  const { token } = params
 
   const { data: quote, error } = await admin
     .from('quotes')
