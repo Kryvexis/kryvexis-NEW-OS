@@ -33,48 +33,6 @@ export async function createProductAction(fd: FormData) {
   return { ok: true };
 }
 
-export async function updateProductAction(productId: string, fd: FormData) {
-  const supabase = await createClient();
-  const companyId = await requireCompanyId();
-
-  const name = String(fd.get("name") || "").trim();
-  if (!name) return { ok: false, error: "Name is required." };
-
-  const payload: any = {
-    name,
-    sku: String(fd.get("sku") || "").trim() || null,
-    barcode: String(fd.get("barcode") || "").trim() || null,
-    type: String(fd.get("type") || "product"),
-    unit_price: num(fd.get("unit_price"), 0),
-    supplier_id: String(fd.get("supplier_id") || "").trim() || null,
-    low_stock_threshold: Math.max(0, Math.trunc(num(fd.get("low_stock_threshold"), 0))),
-    is_active: fd.get("is_active") ? true : false,
-  };
-
-  const { error } = await supabase
-    .from("products")
-    .update(payload)
-    .eq("id", productId)
-    .eq("company_id", companyId);
-
-  if (error) return { ok: false, error: error.message };
-  return { ok: true };
-}
-
-export async function deleteProductAction(productId: string) {
-  const supabase = await createClient();
-  const companyId = await requireCompanyId();
-
-  const { error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", productId)
-    .eq("company_id", companyId);
-
-  if (error) return { ok: false, error: error.message };
-  return { ok: true };
-}
-
 export async function adjustStockAction(productId: string, delta: number) {
   const supabase = await createClient();
   const companyId = await requireCompanyId();
