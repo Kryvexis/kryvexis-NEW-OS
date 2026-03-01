@@ -49,7 +49,7 @@ export default function CommandPalette() {
   }, [])
 
   const actions = useMemo(() => {
-    const quick = [
+    const quickNav = [
       { label: 'Open POS', href: '/sales/pos', group: 'Quick actions' },
       { label: 'New Quote', href: '/sales/quotes/new', group: 'Quick actions' },
       { label: 'New Invoice', href: '/sales/invoices/new', group: 'Quick actions' },
@@ -61,14 +61,14 @@ export default function CommandPalette() {
       .filter((n) => n.href !== '/help') // help is hidden in v28+ UI
       .map((n) => ({ label: n.label, href: n.href }))
 
-    const core = [...quick, ...allNav].map((n) => ({
+    const core = [...quickNav, ...allNav].map((n) => ({
       type: 'nav' as const,
       label: n.label,
       hint: n.href,
       go: () => router.push(n.href),
     }))
 
-    const quick = [
+    const quickActions = [
       { type: 'nav' as const, label: 'Open POS', hint: '/sales/pos', go: () => router.push('/sales/pos') },
       {
         type: 'action' as const,
@@ -89,7 +89,7 @@ export default function CommandPalette() {
       { type: 'nav' as const, label: 'New Product', hint: '/products', go: () => router.push('/products') },
     ]
 
-    return [...quick, ...core]
+    return [...quickActions, ...core]
   }, [router])
 
   if (!open) return null
