@@ -7,11 +7,8 @@ import { StatusBadge } from '@/components/share/status-badge'
 
 export const dynamic = 'force-dynamic'
 
-// Next.js 15 types `params` as a Promise in server components.
-// Using a Promise here avoids build-time type errors on Vercel.
-type ShareInvoicePageProps = { params: Promise<{ token: string }> }
-
-export default async function ShareInvoicePage({ params }: ShareInvoicePageProps) {
+export default async function ShareInvoicePage({ params }: { params: Promise<{ token: string } }) {
+  const { token } = await params
   const admin = createAdminClient()
   if (!admin) {
     return (
@@ -28,7 +25,7 @@ export default async function ShareInvoicePage({ params }: ShareInvoicePageProps
     )
   }
 
-  const { token } = await params
+  const { token } = params
 
   const { data: invoice, error } = await admin
     .from('invoices')
