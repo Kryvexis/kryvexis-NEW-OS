@@ -5,11 +5,6 @@ import LimitedList from "@/components/lists/LimitedList";
 import { fmtZar } from "@/lib/format";
 import { deleteProductAction } from "./actions";
 
-const deleteProductFormAction = async (fd: FormData) => {
-  "use server";
-  await deleteProductAction(fd);
-};
-
 type ProductRow = {
   id: string;
   name: string;
@@ -58,7 +53,7 @@ export default function ProductList({ products }: { products: ProductRow[] }) {
                   >
                     Edit
                   </Link>
-                  <form action={deleteProductFormAction}>
+                  <form action={deleteProductAction}>
                     <input type="hidden" name="id" value={p.id} />
                     <button
                       type="submit"
