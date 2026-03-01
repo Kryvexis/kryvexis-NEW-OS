@@ -6,7 +6,7 @@ export default function AccountingAccounts() {
     <PosHeroShell
       title="Accounts"
       subtitle="Client balances, statements and account history."
-      meta={null}
+      meta={}
       rail={<RightRail title="Balances" />}
     >
       <div className="kx-card p-6">

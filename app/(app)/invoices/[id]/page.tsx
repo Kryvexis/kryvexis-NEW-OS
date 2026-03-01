@@ -6,26 +6,48 @@ import InvoiceStatus from './ui-status'
 import { PaymentDrawer } from '@/components/payments/payment-drawer'
 import { PosHeroShell } from '@/components/pos/hero-shell'
 import { Card } from '@/components/card'
-import { StatusTimeline, type TimelineEvent } from '@/components/timeline/status-timeline'
+import { EnterpriseTimeline, type EnterpriseTimelineEvent } from '@/components/enterprise/enterprise-timeline'
 import InvoiceWhatsAppLauncher from './ui-whatsapp-launcher'
+import MarkViewedButton from './ui-mark-viewed'
 
 type PageProps = {
   params: Promise<{ id: string }>
 }
 
-function toEvent(a: any): TimelineEvent | null {
-  const action = String(a?.action || '')
-  const at = a?.created_at ? new Date(String(a.created_at)).toLocaleString('en-ZA') : ''
-  if (action === 'created') return { id: a.id, title: 'Invoice created', meta: 'Draft', kind: 'info', at }
-  if (action === 'created_from_quote') return { id: a.id, title: 'Created from quote', meta: 'Conversion', kind: 'info', at }
-  if (action === 'sent_whatsapp') return { id: a.id, title: 'Sent via WhatsApp', meta: 'Customer message', kind: 'good', at }
-  if (action.startsWith('status:')) {
-    const txt = action.replace('status:', '')
-    return { id: a.id, title: 'Status updated', meta: txt, kind: 'info', at }
+function toEnterpriseEvents(logs: any[], invoice: any): EnterpriseTimelineEvent[] {
+  const out: EnterpriseTimelineEvent[] = []
+  const seen = new Set<string>()
+
+  function push(status: EnterpriseTimelineEvent['status'], title: string, meta?: string, at?: string) {
+    if (seen.has(status)) return
+    seen.add(status)
+    out.push({ id: status, status, title, meta, at })
   }
-  if (a?.entity_type === 'payment' && action === 'recorded') return { id: a.id, title: 'Payment recorded', meta: 'Invoice updated', kind: 'good', at }
-  if (!action) return null
-  return { id: a.id, title: action.replaceAll('_', ' '), meta: a.entity_type, kind: 'info', at }
+
+  for (const a of logs || []) {
+    const action = String(a?.action || '')
+    const at = a?.created_at ? new Date(String(a.created_at)).toLocaleString('en-ZA') : ''
+    if (action === 'created' || action === 'created_from_quote') push('created', 'Created', action === 'created_from_quote' ? 'Converted from quote' : 'Draft', at)
+    if (action === 'sent_whatsapp') push('sent', 'Sent via WhatsApp', 'Customer message', at)
+    if (action === 'viewed') push('viewed', 'Viewed', 'Customer opened / confirmed', at)
+    if (a?.entity_type === 'payment' && action === 'recorded') {
+      // we'll derive partial/paid from invoice status below, but keep an informative meta if needed
+      const bal = Number(invoice?.balance_due ?? 0)
+      if (bal > 0.00001) push('partial', 'Partial Payment', 'Payment recorded', at)
+      else push('paid', 'Paid', 'Payment recorded', at)
+    }
+  }
+
+  const invStatus = String(invoice?.status || 'Draft')
+  const bal = Number(invoice?.balance_due ?? 0)
+  if (!seen.has('created')) push('created', 'Created', 'Draft')
+  if ((invStatus === 'Sent' || invStatus === 'Paid' || invStatus === 'Partially Paid') && !seen.has('sent')) {
+    push('sent', 'Sent via WhatsApp', 'Sent')
+  }
+  if (invStatus === 'Partially Paid' && !seen.has('partial')) push('partial', 'Partial Payment', 'Balance remaining')
+  if ((invStatus === 'Paid' || bal <= 0.00001) && !seen.has('paid')) push('paid', 'Paid', 'Balance cleared')
+
+  return out
 }
 
 export default async function InvoicePage({ params }: PageProps) {
@@ -68,7 +90,7 @@ export default async function InvoicePage({ params }: PageProps) {
   const totalText = fmtZar(Number(invoice.total ?? 0))
   const balanceText = fmtZar(Number(invoice.balance_due ?? 0))
   const clientName = invoice.clients?.name ?? '—'
-  const events = (logs || []).map(toEvent).filter(Boolean) as TimelineEvent[]
+  const events = toEnterpriseEvents(logs || [], invoice)
 
   return (
     <PosHeroShell
@@ -98,7 +120,7 @@ export default async function InvoicePage({ params }: PageProps) {
       }
       rail={
         <>
-          <StatusTimeline title="Status timeline" events={events} />
+          <EnterpriseTimeline title="Status timeline" events={events} />
           <Card>
             <div className="text-sm font-semibold">Client</div>
             <div className="mt-2 text-sm">{clientName}</div>
@@ -109,6 +131,9 @@ export default async function InvoicePage({ params }: PageProps) {
             <div className="text-sm font-semibold">Status</div>
             <div className="mt-3">
               <InvoiceStatus invoiceId={invoice.id} current={invoice.status ?? 'Draft'} />
+              <div className="mt-3">
+                <MarkViewedButton invoiceId={invoice.id} />
+              </div>
             </div>
           </Card>
         </>

@@ -242,3 +242,26 @@ export async function logInvoiceWhatsAppSentAction(input: { invoice_id: string; 
   revalidatePath('/sales/invoices')
   return { ok: true }
 }
+
+export async function logInvoiceViewedAction(input: { invoice_id: string }) {
+  const supabase = await createClient()
+  const companyId = await requireCompanyId()
+
+  try {
+    const { data: u } = await supabase.auth.getUser()
+    const userId = u.user?.id
+    if (userId) {
+      await supabase.from('activity_logs').insert({
+        company_id: companyId,
+        user_id: userId,
+        entity_type: 'invoice',
+        entity_id: input.invoice_id,
+        action: 'viewed',
+      })
+    }
+  } catch {}
+
+  revalidatePath(`/invoices/${input.invoice_id}`)
+  revalidatePath('/sales/invoices')
+  return { ok: true }
+}

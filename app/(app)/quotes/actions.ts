@@ -250,3 +250,27 @@ export async function logQuoteWhatsAppSentAction(input: { quote_id: string; phon
   revalidatePath('/sales/quotes')
   return { ok: true }
 }
+
+export async function logQuoteViewedAction(input: { quote_id: string }) {
+  const supabase = await createClient()
+  const companyId = await requireCompanyId()
+
+  // We don't auto-detect customer opens yet; this is used when you confirm the customer viewed the quote.
+  try {
+    const { data: u } = await supabase.auth.getUser()
+    const userId = u.user?.id
+    if (userId) {
+      await supabase.from('activity_logs').insert({
+        company_id: companyId,
+        user_id: userId,
+        entity_type: 'quote',
+        entity_id: input.quote_id,
+        action: 'viewed',
+      })
+    }
+  } catch {}
+
+  revalidatePath(`/quotes/${input.quote_id}`)
+  revalidatePath('/sales/quotes')
+  return { ok: true }
+}
