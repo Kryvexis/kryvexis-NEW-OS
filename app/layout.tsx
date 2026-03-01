@@ -1,5 +1,10 @@
 import "./globals.css";
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 // Root layout must NOT enforce auth redirects.
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
