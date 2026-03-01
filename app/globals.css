@@ -221,3 +221,109 @@ body { height: 100%; }
   .kx-railItemTitle { @apply text-sm font-medium text-white/[0.90] hover:text-white; }
   .kx-railItemSub { @apply text-xs text-white/[0.55] mt-0.5; }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Sales module tabs (Overview / Clients / Quotes / Invoices / POS)
+   Fixes the "OverviewClientsQuotesInvoicesPOS" spacing issue.
+   Desktop only: mobile uses the hamburger drawer.                             */
+/* -------------------------------------------------------------------------- */
+
+.kx-tabsWrap {
+  position: sticky;
+  top: 56px; /* below the top header */
+  z-index: 30;
+  padding: 8px 0 12px;
+}
+
+.kx-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.kx-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--kx-border) / 0.14);
+  background: rgb(var(--kx-surface) / 0.24);
+  color: rgb(var(--kx-fg) / 0.78);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.kx-tab:hover {
+  background: rgb(var(--kx-surface) / 0.32);
+  border-color: rgb(var(--kx-border) / 0.20);
+  color: rgb(var(--kx-fg) / 0.90);
+}
+
+.kx-tabActive {
+  background: linear-gradient(
+    180deg,
+    rgb(var(--kx-surface) / 0.38),
+    rgb(var(--kx-surface) / 0.22)
+  );
+  border-color: rgb(var(--kx-accent) / 0.45);
+  color: rgb(var(--kx-fg) / 0.94);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+}
+
+@media (max-width: 768px) {
+  .kx-tabsWrap { display: none; }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Modal (mobile menu / dialogs)
+   Ensures the mobile nav doesn't render inline on small screens.              */
+/* -------------------------------------------------------------------------- */
+
+.kx-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+}
+
+.kx-modal {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 18px;
+  border: 1px solid rgb(var(--kx-border) / 0.14);
+  background: linear-gradient(
+    180deg,
+    rgb(var(--kx-surface) / 0.88),
+    rgb(var(--kx-surface) / 0.72)
+  );
+  box-shadow: 0 26px 80px rgba(0,0,0,0.55);
+  overflow: hidden;
+}
+
+.kx-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid rgb(var(--kx-border) / 0.10);
+}
+
+.kx-modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgb(var(--kx-fg) / 0.92);
+}
+
+.kx-modal-body {
+  padding: 12px 14px 14px;
+}
