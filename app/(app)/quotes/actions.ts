@@ -67,7 +67,7 @@ export async function createQuoteAction(payload: unknown) {
       notes: parsed.data.notes || null,
       terms: parsed.data.terms || null,
     })
-    .select('id')
+    .select('id,public_token')
     .single()
 
   if (qErr) return { ok: false, error: qErr.message }
@@ -145,7 +145,7 @@ export async function convertQuoteToInvoiceAction(quoteId: string) {
       notes: quote.notes,
       terms: quote.terms,
     })
-    .select('id')
+    .select('id,public_token')
     .single()
 
   if (invErr) return { ok: false, error: invErr.message }
@@ -255,22 +255,26 @@ export async function logQuoteViewedAction(input: { quote_id: string }) {
   const supabase = await createClient()
   const companyId = await requireCompanyId()
 
-  // We don't auto-detect customer opens yet; this is used when you confirm the customer viewed the quote.
+  // Manual mark-viewed (internal), not customer-open tracking.
   try {
     const { data: u } = await supabase.auth.getUser()
     const userId = u.user?.id
     if (userId) {
-      await supabase.from('activity_logs').insert({
+      const { error } = await supabase.from('activity_logs').insert({
         company_id: companyId,
         user_id: userId,
         entity_type: 'quote',
         entity_id: input.quote_id,
         action: 'viewed',
       })
+      if (error) return { ok: false, error: error.message }
     }
-  } catch {}
+  } catch (e: any) {
+    return { ok: false, error: e?.message ?? 'Failed to log viewed' }
+  }
 
   revalidatePath(`/quotes/${input.quote_id}`)
   revalidatePath('/sales/quotes')
   return { ok: true }
 }
+

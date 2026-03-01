@@ -68,7 +68,7 @@ export async function createInvoiceAction(payload: unknown) {
       notes: parsed.data.notes || null,
       terms: parsed.data.terms || null,
     })
-    .select('id')
+    .select('id,public_token')
     .single()
 
   if (invErr) return { ok: false, error: invErr.message }
@@ -251,17 +251,21 @@ export async function logInvoiceViewedAction(input: { invoice_id: string }) {
     const { data: u } = await supabase.auth.getUser()
     const userId = u.user?.id
     if (userId) {
-      await supabase.from('activity_logs').insert({
+      const { error } = await supabase.from('activity_logs').insert({
         company_id: companyId,
         user_id: userId,
         entity_type: 'invoice',
         entity_id: input.invoice_id,
         action: 'viewed',
       })
+      if (error) return { ok: false, error: error.message }
     }
-  } catch {}
+  } catch (e: any) {
+    return { ok: false, error: e?.message ?? 'Failed to log viewed' }
+  }
 
   revalidatePath(`/invoices/${input.invoice_id}`)
   revalidatePath('/sales/invoices')
   return { ok: true }
 }
+

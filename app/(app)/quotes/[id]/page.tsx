@@ -1,6 +1,7 @@
 // @ts-nocheck
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { shareQuoteUrl } from '@/lib/share'
 import { fmtZar } from '@/lib/format'
 import QuoteStatus from './ui-status'
 import ConvertButton from './ui-convert'
@@ -45,7 +46,7 @@ export default async function QuotePage({ params }: PageProps) {
     supabase
       .from('quotes')
       .select(
-        'id,company_id,number,issue_date,expiry_date,status,notes,terms,subtotal,discount_total,tax_total,total, clients(name,email,phone,billing_address)'
+        'id,company_id,public_token,number,issue_date,expiry_date,status,notes,terms,subtotal,discount_total,tax_total,total, clients(name,email,phone,billing_address)'
       )
       .eq('id', id)
       .maybeSingle(),
@@ -89,7 +90,7 @@ export default async function QuotePage({ params }: PageProps) {
             clientName={quote.clients?.name}
             clientPhone={quote.clients?.phone}
             totalText={totalText}
-            viewPath={`/quotes/${quote.id}`}
+            viewPath={quote.public_token ? shareQuoteUrl(quote.public_token) : `/quotes/${quote.id}`}
           />
           <Link className="kx-button" href={`/quotes/${quote.id}/print`} target="_blank">
             Print / PDF

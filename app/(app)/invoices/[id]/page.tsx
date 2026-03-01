@@ -1,6 +1,7 @@
 // @ts-nocheck
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { shareInvoiceUrl } from '@/lib/share'
 import { fmtZar } from '@/lib/format'
 import InvoiceStatus from './ui-status'
 import { PaymentDrawer } from '@/components/payments/payment-drawer'
@@ -58,7 +59,7 @@ export default async function InvoicePage({ params }: PageProps) {
     supabase
       .from('invoices')
       .select(
-        'id,company_id,number,issue_date,due_date,status,notes,terms,subtotal,discount_total,tax_total,total,balance_due, clients(name,email,phone,billing_address)'
+        'id,company_id,public_token,number,issue_date,due_date,status,notes,terms,subtotal,discount_total,tax_total,total,balance_due, clients(name,email,phone,billing_address)'
       )
       .eq('id', id)
       .maybeSingle(),
@@ -110,7 +111,7 @@ export default async function InvoicePage({ params }: PageProps) {
             clientName={clientName}
             clientPhone={invoice.clients?.phone}
             totalText={totalText}
-            viewPath={`/invoices/${invoice.id}`}
+            viewPath={invoice.public_token ? shareInvoiceUrl(invoice.public_token) : `/invoices/${invoice.id}`}
           />
           <Link className="kx-button" href={`/invoices/${invoice.id}/print`} target="_blank">
             Print / PDF
