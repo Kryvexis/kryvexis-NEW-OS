@@ -53,7 +53,7 @@ export async function requireCompanyId() {
   const uid = userData.user.id
 
   // 1) Cookie-selected company, if valid membership
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const cookieCompanyId = cookieStore.get(ACTIVE_COMPANY_COOKIE)?.value
 
   if (cookieCompanyId) {
@@ -72,13 +72,6 @@ export async function requireCompanyId() {
   // 2) First membership
   const firstMembershipCompanyId = await resolveFirstMembershipCompanyId(supabase, uid)
   if (firstMembershipCompanyId) {
-    // persist as active
-    cookieStore.set(ACTIVE_COMPANY_COOKIE, firstMembershipCompanyId, {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-      secure: true,
-    })
     return firstMembershipCompanyId
   }
 
@@ -134,7 +127,7 @@ export async function requireCompany() {
  * Useful later for a company switcher.
  */
 export async function setActiveCompanyId(companyId: string) {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   cookieStore.set(ACTIVE_COMPANY_COOKIE, companyId, {
     httpOnly: true,
     sameSite: 'lax',
