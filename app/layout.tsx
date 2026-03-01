@@ -1,8 +1,21 @@
 import "./globals.css";
+import type { Metadata } from "next";
 
 export const viewport = {
   width: "device-width",
   initialScale: 1,
+};
+
+// ✅ Add this (controls iPhone home-screen icon + favicon + PWA)
+export const metadata: Metadata = {
+  title: "Kryvexis OS",
+  description: "Kryvexis Business Operating System",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/manifest.json",
 };
 
 // Root layout must NOT enforce auth redirects.
