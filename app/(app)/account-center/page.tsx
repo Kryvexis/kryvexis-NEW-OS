@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/card";
 import { requireCompanyId } from "@/lib/kx";
 import { WorkspaceForm } from "@/components/account-center/workspace-form";
+import { PasswordForm } from "@/components/account-center/password-form";
+import { PreferencesForm } from "@/components/account-center/preferences-form";
+import { TeamManager } from "@/components/account-center/team-manager";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +31,7 @@ export default async function AccountCenterPage() {
   const { data: company } = companyId
     ? await supabase
         .from("companies")
-        .select("id,name,email,phone,address,logo_url,created_at")
+        .select("id,name,email,phone,address,logo_url,created_at,settings_json")
         .eq("id", companyId)
         .maybeSingle()
     : { data: null };
@@ -168,40 +171,45 @@ async function deleteAccount() {
       </div>
 
       <Card>
-        <div className="flex items-center justify-between gap-3"><div className="text-sm font-semibold">Billing</div><span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-white/70">Roadmap</span></div>
-        <div className="mt-2 text-sm kx-muted">Billing is on the roadmap (Stripe + PayFast hybrid billing planned).</div>
-        <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-3 text-xs kx-muted">
-          Current mode: manual payments (EFT + cash). Next: automated subscription billing.
+        <div className="text-sm font-semibold">Billing</div>
+        <div className="mt-2 text-sm kx-muted">
+          Current billing mode: <span className="text-[rgba(var(--kx-fg),.90)]">Manual payments (EFT + cash)</span>.
+        </div>
+
+        <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-4 text-sm">
+          <div className="font-medium">Payment instructions</div>
+          <div className="mt-2 kx-muted">
+            For now, billing is handled manually. We’ll keep your account active as long as your payment is up to date.
+          </div>
+          <ul className="mt-3 space-y-1 text-sm kx-muted">
+            <li>• Method: EFT or cash</li>
+            <li>• Reference: your company name</li>
+            <li>• Support: kryvexissolutions@gmail.com</li>
+          </ul>
+          <div className="mt-3 text-[11px] kx-muted2">
+            Next: hybrid billing (Stripe + PayFast) when you’re ready.
+          </div>
         </div>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
-          <div className="flex items-center justify-between gap-3"><div className="text-sm font-semibold">Security</div><span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-white/70">Roadmap</span></div>
-          <div className="mt-2 text-sm kx-muted">Password & security controls.</div>
-          <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-3 text-xs kx-muted">
-            Change password and enable extra security checks (roadmap).
-          </div>
+          <div className="text-sm font-semibold">Security</div>
+          <div className="mt-2 text-sm kx-muted">Update your password securely.</div>
+          <PasswordForm />
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between gap-3"><div className="text-sm font-semibold">Team & Roles</div><span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-white/70">Roadmap</span></div>
-          <div className="mt-2 text-sm kx-muted">Invite staff, assign roles (staff / accounts / manager).</div>
-          <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-3 text-xs kx-muted">
-            Next: manage users, permissions, and activity log.
-          </div>
+          <div className="text-sm font-semibold">Team & Roles</div>
+          <div className="mt-2 text-sm kx-muted">Invite staff and assign roles (owner / manager / accounts / staff).</div>
+          <TeamManager />
         </Card>
       </div>
 
       <Card>
-        <div className="flex items-center justify-between gap-3"><div className="text-sm font-semibold">Preferences</div><span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-white/70">Roadmap</span></div>
+        <div className="text-sm font-semibold">Preferences</div>
         <div className="mt-2 text-sm kx-muted">Notifications and workflow preferences.</div>
-        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-          <div className="kx-muted">Notifications</div>
-          <div className="kx-muted">Roadmap: invoice reminders, payments, stock alerts.</div>
-          <div className="kx-muted">Default currency</div>
-          <div className="kx-muted">Roadmap</div>
-        </div>
+        <PreferencesForm initial={(company?.settings_json as any) || {}} />
       </Card>
 
       <Card>
