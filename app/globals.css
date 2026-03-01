@@ -217,7 +217,7 @@ body { height: 100%; }
 
 
 @layer components {
-  .kx-railItem { @apply rounded-xl px-3 py-2 bg-white/5 hover:bg-white/7 transition; }
-  .kx-railItemTitle { @apply text-sm font-medium text-white/90 hover:text-white; }
-  .kx-railItemSub { @apply text-xs text-white/55 mt-0.5; }
+  .kx-railItem { @apply rounded-xl px-3 py-2 bg-white/[0.05] hover:bg-white/[0.07] transition; }
+  .kx-railItemTitle { @apply text-sm font-medium text-white/[0.90] hover:text-white; }
+  .kx-railItemSub { @apply text-xs text-white/[0.55] mt-0.5; }
 }
