@@ -78,7 +78,7 @@ export const navBottomItems = [
   { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
 ]
 
-export function Sidebar({ userEmail, workspaceName, workspacePhone, memberType }: { userEmail?: string; workspaceName?: string; workspacePhone?: string; memberType?: string }) {
+export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: string; workspaceName?: string; memberType?: string }) {
   const pathname = usePathname() || ''
 
   // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
@@ -101,9 +101,9 @@ export function Sidebar({ userEmail, workspaceName, workspacePhone, memberType }
             <Image
               src="/kryvexis-logo.png"
               alt="Kryvexis"
-              width={200}
-              height={200}
-              className={'h-[180px] w-[180px] object-contain'}
+              width={160}
+              height={160}
+              className={'h-[150px] w-[150px] object-contain'}
               style={{
                 filter:
                   'drop-shadow(0 0 18px rgba(var(--kx-accent), .22)) drop-shadow(0 10px 28px rgba(0,0,0,.35))',
@@ -164,25 +164,17 @@ export function Sidebar({ userEmail, workspaceName, workspacePhone, memberType }
       </nav>
 
       {userEmail && (
-        <div className="mt-auto px-5 py-4" style={{ borderColor: 'rgba(var(--kx-border), .12)' }}>
-          <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-fg),.04)] px-4 py-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-[11px] uppercase tracking-wider kx-muted3">Profile</div>
-                <div className="mt-1 text-sm font-medium tracking-tight truncate">{workspaceName || 'Workspace'}</div>
-                {workspacePhone ? (
-                  <div className="mt-0.5 text-xs kx-muted truncate">WhatsApp {workspacePhone}</div>
-                ) : (
-                  <div className="mt-0.5 text-xs kx-muted truncate">WhatsApp not set</div>
-                )}
-                <div className="mt-2 text-xs text-[rgba(var(--kx-fg),.86)] break-all">{userEmail}</div>
-              </div>
-              {memberType && (
-                <span className="kx-chip shrink-0" title="Member type">
-                  {memberType}
-                </span>
-              )}
+        <div className="mt-auto px-5 py-4 " style={{ borderColor: 'rgba(var(--kx-border), .12)' }}>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-[11px] uppercase tracking-wider kx-muted3">Signed in as</div>
+              <div className="mt-1 text-xs text-[rgba(var(--kx-fg),.86)] break-all">{userEmail}</div>
             </div>
+            {memberType && (
+              <span className="kx-chip" title="Member type">
+                {memberType}
+              </span>
+            )}
           </div>
         </div>
       )}

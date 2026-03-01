@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { makeSummaryPdf } from "@/lib/email/pdf-report";
-import { appOrigin } from "@/lib/share";
 
 export const runtime = "nodejs";
 
@@ -44,26 +43,6 @@ function money(n: number) {
   return v.toFixed(2);
 }
 
-function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-async function safeSend(fn: () => Promise<void>, attempts = 3) {
-  let lastErr: any = null;
-  for (let i = 0; i < attempts; i++) {
-    try {
-      await fn();
-      return;
-    } catch (e: any) {
-      lastErr = e;
-      // backoff: 1s, 2s, 3s...
-      await sleep(1000 * (i + 1));
-    }
-  }
-  throw lastErr ?? new Error("send failed");
-}
-
-
 async function sendBrevoEmail(opts: {
   to: string;
   subject: string;
@@ -98,8 +77,7 @@ async function sendBrevoEmail(opts: {
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    // Prefer secret in header (safer than query params). Keep query param fallback for backward compatibility.
-    const secret = req.headers.get("x-cron-secret") || url.searchParams.get("secret");
+    const secret = url.searchParams.get("secret");
     const dryRun = url.searchParams.get("dryRun") === "1";
     const mode = (url.searchParams.get("mode") || "daily") as "daily" | "weekly";
 
@@ -111,11 +89,6 @@ export async function GET(req: Request) {
     const tz = process.env.KX_TIMEZONE || "Africa/Johannesburg";
     const today = todayISO(tz);
     const weekStart = isoMinusDays(6, tz);
-
-    const origin = appOrigin();
-    if (!origin && !dryRun) {
-      throw new Error("Missing NEXT_PUBLIC_APP_URL (needed for tracking pixel URLs)");
-    }
 
     const { data: companies, error: companiesErr } = await supabase
       .from("companies")
@@ -134,22 +107,6 @@ export async function GET(req: Request) {
       const companyId = c.id as string;
       const companyName = (c.name as string) || "Your Company";
       const primaryEmail = c.email as string;
-
-      // Idempotency: avoid double-sending for the same company/mode/day (e.g., Vercel retries).
-      const { error: runErr } = await supabase.from("email_runs").insert({
-        company_id: companyId,
-        mode,
-        run_date: today,
-      });
-
-      if (runErr) {
-        // Postgres unique-violation is usually code 23505 (already sent).
-        const code = (runErr as any).code;
-        if (code === "23505") continue;
-        failedCompanies++;
-        failures.push({ companyId, email: primaryEmail, error: `email_runs: ${runErr.message}` });
-        continue;
-      }
 
       // company email settings (toggle + recipients)
       const { data: settings } = await supabase
@@ -299,8 +256,6 @@ export async function GET(req: Request) {
               <div style="margin-top:18px;color:#9CA3AF;font-size:12px;line-height:1.5;">
                 Tip: Use the Import Station to keep your stock & clients updated. This email is automated per company.
               </div>
-
-              ${origin ? `<img src="${origin}/api/email/send?companyId=${companyId}&mode=${mode}&day=${today}" width="1" height="1" style="display:none;" alt="" />` : ""}
             </div>
 
             <div style="padding:14px 20px;border-top:1px solid #1F2937;color:#6B7280;font-size:12px;">
@@ -334,32 +289,11 @@ export async function GET(req: Request) {
       try {
         if (!dryRun) {
           for (const email of recipientList) {
-            await safeSend(() => sendBrevoEmail({ to: email, subject, html, attachments }), 3);
-
-            // Delivery audit trail
-            await supabase.from("email_sends").insert({
-              company_id: companyId,
-              recipient: email,
-              mode,
-              run_date: today,
-              status: "sent",
-            });
+            await sendBrevoEmail({ to: email, subject, html, attachments });
           }
         }
         sentCompanies++;
       } catch (e: any) {
-        // Log failed send (best effort)
-        try {
-          await supabase.from("email_sends").insert({
-            company_id: companyId,
-            recipient: primaryEmail,
-            mode,
-            run_date: today,
-            status: "failed",
-            error: e?.message ?? "send failed",
-          });
-        } catch {}
-
         failedCompanies++;
         failures.push({ companyId, email: primaryEmail, error: e?.message ?? "send failed" });
       }

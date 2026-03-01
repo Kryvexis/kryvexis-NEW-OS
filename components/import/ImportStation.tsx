@@ -202,6 +202,16 @@ function ImportBlock({ entity, title }: { entity: Entity; title: string }) {
   );
 }
 
+function formatCell(header: string, value: any) {
+  const h = String(header || '').toLowerCase()
+  if (value === null || value === undefined) return ''
+  if (h.includes('unit_price') || h.includes('price') || h.includes('amount') || h.includes('total') || h.includes('balance')) {
+    const n = Number(value)
+    if (!Number.isNaN(n)) return fmtZar(n)
+  }
+  return String(value)
+}
+
 export default function ImportStation() {
   return (
     <div className="grid gap-5">

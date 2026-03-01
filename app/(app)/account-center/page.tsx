@@ -1,20 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/card";
 import { requireCompanyId } from "@/lib/kx";
-import { WorkspaceForm } from "@/components/account-center/workspace-form";
-import { PasswordForm } from "@/components/account-center/password-form";
-import { PreferencesForm } from "@/components/account-center/preferences-form";
-import { TeamManager } from "@/components/account-center/team-manager";
 
 export const dynamic = "force-dynamic";
-
-function normalizePhone(raw?: string | null) {
-  if (!raw) return "";
-  const digits = String(raw).replace(/\D/g, "");
-  // ZA convenience: 0XXXXXXXXX -> 27XXXXXXXXX
-  if (digits.startsWith("0")) return "27" + digits.slice(1);
-  return digits;
-}
 
 export default async function AccountCenterPage() {
   const supabase = await createClient();
@@ -29,11 +17,7 @@ export default async function AccountCenterPage() {
   }
 
   const { data: company } = companyId
-    ? await supabase
-        .from("companies")
-        .select("id,name,email,phone,address,logo_url,created_at,settings_json")
-        .eq("id", companyId)
-        .maybeSingle()
+    ? await supabase.from("companies").select("id,name,email,phone,address,logo_url,created_at").eq("id", companyId).maybeSingle()
     : { data: null };
 
   async function signOut() {
@@ -42,38 +26,7 @@ export default async function AccountCenterPage() {
     await s.auth.signOut();
   }
 
-  async function updateWorkspace(prevState: any, formData: FormData) {
-    "use server";
-    const s = await createClient();
-
-    let cid: string | null = null;
-    try {
-      cid = await requireCompanyId();
-    } catch {
-      cid = null;
-    }
-    if (!cid) return { ok: false, ts: Date.now(), message: "No workspace" };
-
-    const name = String(formData.get("name") || "").trim();
-    const phoneRaw = String(formData.get("phone") || "").trim();
-    const address = String(formData.get("address") || "").trim();
-
-    const digits = phoneRaw ? phoneRaw.replace(/\D/g, "") : "";
-    const phone = digits ? (digits.startsWith("0") ? "27" + digits.slice(1) : digits) : null;
-
-    await s
-      .from("companies")
-      .update({
-        name: name || null,
-        phone,
-        address: address || null,
-      })
-      .eq("id", cid);
-
-    return { ok: true, ts: Date.now(), message: "Saved" };
-  }
-
-async function deleteAccount() {
+  async function deleteAccount() {
     "use server";
     const s = await createClient();
     const { data: u } = await s.auth.getUser();
@@ -150,66 +103,66 @@ async function deleteAccount() {
             <div className="kx-muted">User ID</div>
             <div className="text-xs kx-muted break-all">{user?.id || "—"}</div>
             <div className="kx-muted">Last sign in</div>
-            <div className="kx-muted">
-              {(user as any)?.last_sign_in_at
-                ? String((user as any).last_sign_in_at).slice(0, 19).replace("T", " ")
-                : "—"}
-            </div>
+            <div className="kx-muted">{(user as any)?.last_sign_in_at ? String((user as any).last_sign_in_at).slice(0, 19).replace('T',' ') : "—"}</div>
           </div>
         </Card>
 
         <Card>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="text-sm font-semibold">Workspace</div>
-              <div className="mt-1 text-xs kx-muted">Edit your company details (used in documents + support).</div>
-            </div>
+          <div className="text-sm font-semibold">Workspace</div>
+          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <div className="kx-muted">Company</div>
+            <div>{company?.name || "—"}</div>
+            <div className="kx-muted">Workspace ID</div>
+            <div className="text-xs kx-muted break-all">{company?.id || "—"}</div>
+            <div className="kx-muted">Email</div>
+            <div>{company?.email || "—"}</div>
+            <div className="kx-muted">Phone</div>
+            <div>{company?.phone || "—"}</div>
+            <div className="kx-muted">Address</div>
+            <div>{company?.address || "—"}</div>
           </div>
-
-          <WorkspaceForm company={company} action={updateWorkspace} />
         </Card>
       </div>
 
       <Card>
         <div className="text-sm font-semibold">Billing</div>
-        <div className="mt-2 text-sm kx-muted">
-          Current billing mode: <span className="text-[rgba(var(--kx-fg),.90)]">Manual payments (EFT + cash)</span>.
-        </div>
-
-        <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-4 text-sm">
-          <div className="font-medium">Payment instructions</div>
-          <div className="mt-2 kx-muted">
-            For now, billing is handled manually. We’ll keep your account active as long as your payment is up to date.
-          </div>
-          <ul className="mt-3 space-y-1 text-sm kx-muted">
-            <li>• Method: EFT or cash</li>
-            <li>• Reference: your company name</li>
-            <li>• Support: kryvexissolutions@gmail.com</li>
-          </ul>
-          <div className="mt-3 text-[11px] kx-muted2">
-            Next: hybrid billing (Stripe + PayFast) when you’re ready.
-          </div>
+        <div className="mt-2 text-sm kx-muted">Billing is coming soon (Stripe + PayFast hybrid billing planned).</div>
+        <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-3 text-xs kx-muted">
+          Current mode: manual payments (EFT + cash). Next: automated subscription billing.
         </div>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <div className="text-sm font-semibold">Security</div>
-          <div className="mt-2 text-sm kx-muted">Update your password securely.</div>
-          <PasswordForm />
+          <div className="mt-2 text-sm kx-muted">
+            Password & security controls.
+          </div>
+          <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-3 text-xs kx-muted">
+            Change password and enable extra security checks (coming soon).
+          </div>
         </Card>
 
         <Card>
           <div className="text-sm font-semibold">Team & Roles</div>
-          <div className="mt-2 text-sm kx-muted">Invite staff and assign roles (owner / manager / accounts / staff).</div>
-          <TeamManager />
+          <div className="mt-2 text-sm kx-muted">
+            Invite staff, assign roles (staff / accounts / manager).
+          </div>
+          <div className="mt-3 rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] p-3 text-xs kx-muted">
+            Next: manage users, permissions, and activity log.
+          </div>
         </Card>
       </div>
 
       <Card>
         <div className="text-sm font-semibold">Preferences</div>
         <div className="mt-2 text-sm kx-muted">Notifications and workflow preferences.</div>
-        <PreferencesForm initial={(company?.settings_json as any) || {}} />
+        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div className="kx-muted">Notifications</div>
+          <div className="kx-muted">Coming soon (invoice reminders, payments, stock alerts).</div>
+          <div className="kx-muted">Default currency</div>
+          <div className="kx-muted">Coming soon</div>
+        </div>
       </Card>
 
       <Card>

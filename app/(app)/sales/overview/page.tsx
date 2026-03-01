@@ -1,50 +1,36 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
+import { fmtZar } from '@/lib/format'
+import { Card } from '@/components/card'
 
-function fmtZar(v: number) {
-  return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(v || 0)
-}
-
-function startOfTodayISO() {
-  const d = new Date()
-  d.setHours(0, 0, 0, 0)
-  return d.toISOString()
-}
+type MonthPoint = { key: string; label: string; total: number }
 
 function monthKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
-
-function monthLabel(key: string) {
-  const [y, m] = key.split('-').map((x) => parseInt(x, 10))
-  const dt = new Date(y, m - 1, 1)
-  return dt.toLocaleString('en-ZA', { month: 'short' })
+function monthLabel(d: Date) {
+  return d.toLocaleString('en-ZA', { month: 'short' })
 }
 
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n))
-}
-
-function BarChart({ series }: { series: { key: string; total: number }[] }) {
-  const max = Math.max(1, ...series.map((s) => s.total))
+function Bars({ points }: { points: MonthPoint[] }) {
+  const max = Math.max(1, ...points.map((p) => p.total))
   return (
-    <div className="mt-4">
-      <div className="flex items-end gap-2 h-28">
-        {series.map((s) => {
-          const h = clamp((s.total / max) * 100, 3, 100)
+    <div className="mt-3">
+      <div className="grid grid-cols-6 gap-3 items-end">
+        {points.map((p) => {
+          const h = Math.max(6, Math.round((p.total / max) * 64))
           return (
-            <div key={s.key} className="flex-1 min-w-[12px]">
+            <div key={p.key} className="text-center">
               <div
-                className="w-full rounded-xl"
+                className="rounded-xl kx-softBorder"
                 style={{
-                  height: `${h}%`,
+                  height: `${h}px`,
                   background:
-                    'linear-gradient(180deg, rgba(var(--kx-accent), .95), rgba(var(--kx-accent-2), .65))',
-                  boxShadow: '0 16px 42px rgba(0,0,0,.35)',
+                    'linear-gradient(135deg, rgba(var(--kx-accent),0.55), rgba(var(--kx-accent-2),0.35))',
                 }}
-                title={`${monthLabel(s.key)} • ${fmtZar(s.total)}`}
+                title={`${p.label}: ${fmtZar(p.total)}`}
               />
-              <div className="mt-2 text-[11px] kx-muted text-center">{monthLabel(s.key)}</div>
+              <div className="mt-2 text-xs kx-muted">{p.label}</div>
             </div>
           )
         })}
@@ -57,151 +43,132 @@ export default async function SalesOverview() {
   const supabase = await createClient()
   const companyId = await requireCompanyId()
 
-  // 1) Daily sales (payments today preferred; fallback to invoices today)
-  const todayIso = startOfTodayISO()
-
-  const { data: payments } = await supabase
-    .from('payments')
-    .select('amount,created_at')
-    .eq('company_id', companyId)
-    .gte('created_at', todayIso)
-
-  const dailyFromPayments = (payments ?? []).reduce((s: number, p: any) => s + (Number(p.amount) || 0), 0)
-
-  const { data: invoicesToday } = await supabase
-    .from('invoices')
-    .select('total,created_at')
-    .eq('company_id', companyId)
-    .gte('created_at', todayIso)
-
-  const dailyFromInvoices = (invoicesToday ?? []).reduce((s: number, inv: any) => s + (Number(inv.total) || 0), 0)
-
-  const dailySales = dailyFromPayments > 0 ? dailyFromPayments : dailyFromInvoices
-
-  // 2) Monthly sales series (last 6 months)
+  // Pull recent invoices + items so we can build an "enterprise SaaS" overview without placeholders.
   const since = new Date()
   since.setMonth(since.getMonth() - 6)
-  since.setHours(0, 0, 0, 0)
 
-  const { data: invoicesRecent } = await supabase
-    .from('invoices')
-    .select('total,created_at')
-    .eq('company_id', companyId)
-    .gte('created_at', since.toISOString())
+  const [{ data: invoices }, { data: items }] = await Promise.all([
+    supabase
+      .from('invoices')
+      .select('id,total,issue_date,status')
+      .eq('company_id', companyId)
+      .gte('issue_date', since.toISOString().slice(0, 10))
+      .limit(5000),
+    supabase
+      .from('invoice_items')
+      .select('description,qty,unit_price,invoice_id, invoices(issue_date, company_id)')
+      .limit(20000),
+  ])
 
-  const map = new Map<string, number>()
-  for (let i = 5; i >= 0; i--) {
+  // Defensive filters (invoice_items select joins, but RLS may still return extra rows depending on policies).
+  const safeInvoices = (invoices || []).filter((i: any) => i && i.issue_date)
+  const invById = new Map<string, any>()
+  for (const i of safeInvoices) invById.set(i.id, i)
+
+  const today = new Date().toISOString().slice(0, 10)
+  const dailyTotal = safeInvoices
+    .filter((i: any) => String(i.issue_date).slice(0, 10) === today && String(i.status || '') !== 'Voided')
+    .reduce((a: number, i: any) => a + Number(i.total || 0), 0)
+
+  // Past 6 months totals
+  const points: MonthPoint[] = []
+  for (let k = 5; k >= 0; k--) {
     const d = new Date()
-    d.setMonth(d.getMonth() - i)
     d.setDate(1)
-    d.setHours(0, 0, 0, 0)
-    map.set(monthKey(d), 0)
+    d.setMonth(d.getMonth() - k)
+    points.push({ key: monthKey(d), label: monthLabel(d), total: 0 })
+  }
+  const idx = new Map(points.map((p, i) => [p.key, i]))
+
+  for (const i of safeInvoices) {
+    const d = new Date(String(i.issue_date))
+    const key = monthKey(d)
+    const at = idx.get(key)
+    if (at === undefined) continue
+    if (String(i.status || '') === 'Voided') continue
+    points[at].total += Number(i.total || 0)
   }
 
-  for (const inv of invoicesRecent ?? []) {
-    const d = new Date((inv as any).created_at)
-    const key = monthKey(new Date(d.getFullYear(), d.getMonth(), 1))
-    if (map.has(key)) map.set(key, (map.get(key) || 0) + (Number((inv as any).total) || 0))
+  // Top/Bottom items by revenue (qty * unit_price) in last 6 months
+  const itemAgg = new Map<string, { desc: string; revenue: number; qty: number }>()
+  for (const it of items || []) {
+    const invId = (it as any).invoice_id
+    const inv = invById.get(invId)
+    if (!inv) continue
+    const desc = String((it as any).description || '').trim() || 'Item'
+    const qty = Number((it as any).qty || 0)
+    const unit = Number((it as any).unit_price || 0)
+    const revenue = qty * unit
+    const cur = itemAgg.get(desc) || { desc, revenue: 0, qty: 0 }
+    cur.revenue += revenue
+    cur.qty += qty
+    itemAgg.set(desc, cur)
   }
-
-  const series = Array.from(map.entries()).map(([key, total]) => ({ key, total }))
-
-  // 3) Top 5 + bottom 5 items (by revenue) - last 90 days
-  const itemsSince = new Date()
-  itemsSince.setDate(itemsSince.getDate() - 90)
-  itemsSince.setHours(0, 0, 0, 0)
-
-  const { data: invoiceItems } = await supabase
-    .from('invoice_items')
-    .select('description,product_name,quantity,unit_price,created_at')
-    .eq('company_id', companyId)
-    .gte('created_at', itemsSince.toISOString())
-    .limit(5000)
-
-  const byItem = new Map<string, number>()
-  for (const it of invoiceItems ?? []) {
-    const name = (it as any).product_name || (it as any).description || 'Item'
-    const qty = Number((it as any).quantity) || 0
-    const price = Number((it as any).unit_price) || 0
-    const rev = qty * price
-    byItem.set(name, (byItem.get(name) || 0) + rev)
-  }
-
-  const ranked = Array.from(byItem.entries())
-    .map(([name, revenue]) => ({ name, revenue }))
-    .sort((a, b) => b.revenue - a.revenue)
-
+  const ranked = Array.from(itemAgg.values()).sort((a, b) => b.revenue - a.revenue)
   const top5 = ranked.slice(0, 5)
   const bottom5 = ranked.slice(-5).reverse()
 
   return (
-    <div className="space-y-5">
-      {/* Premium header */}
-      <div
-        className="kx-card relative overflow-hidden rounded-[28px] border border-white/10 p-6"
-        style={{
-          background:
-            'linear-gradient(120deg, rgba(var(--kx-accent), .22), rgba(var(--kx-accent-2), .14), rgba(255,255,255,.03))',
-          boxShadow: '0 26px 90px rgba(0,0,0,.35)',
-        }}
-      >
-        <div className="text-[11px] uppercase tracking-wider kx-muted3">Today</div>
-        <div className="mt-1 text-2xl font-semibold tracking-tight text-kx-fg">Daily sales</div>
-        <div className="mt-3 text-4xl font-semibold tracking-tight">{fmtZar(dailySales)}</div>
-        <div className="mt-2 text-xs kx-muted">Based on payments today (fallback to invoices).</div>
-      </div>
-
-      {/* Monthly graph */}
-      <div className="kx-card rounded-[28px] border border-white/10 p-6">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <div className="text-[11px] uppercase tracking-wider kx-muted3">Trend</div>
-            <div className="mt-1 text-lg font-semibold tracking-tight">Past months sales</div>
-            <div className="mt-1 text-xs kx-muted">Last 6 months (invoiced totals)</div>
-          </div>
+    <div className="grid gap-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="kx-h1">Overview</div>
+          <div className="kx-sub">Daily sales + trends + product movement.</div>
         </div>
-        <BarChart series={series} />
       </div>
 
-      {/* Top/Bottom items */}
-      <div className="grid gap-5 lg:grid-cols-2">
-        <div className="kx-card rounded-[28px] border border-white/10 p-6">
-          <div className="text-[11px] uppercase tracking-wider kx-muted3">Top</div>
-          <div className="mt-1 text-lg font-semibold tracking-tight">Top 5 items</div>
-          <div className="mt-4 space-y-2">
-            {top5.length ? (
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-1">
+          <div className="kx-cardTitle">Today</div>
+          <div className="mt-2 text-3xl font-semibold">{fmtZar(dailyTotal)}</div>
+          <div className="mt-1 text-sm kx-muted">Total invoices issued today.</div>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <div className="kx-cardTitle">Sales trend</div>
+          <div className="mt-1 text-sm kx-muted">Past 6 months (invoiced total).</div>
+          <Bars points={points} />
+        </Card>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <div className="kx-cardTitle">Top 5 items</div>
+          <div className="mt-3 grid gap-2">
+            {top5.length === 0 ? (
+              <div className="kx-muted text-sm">No items yet.</div>
+            ) : (
               top5.map((it) => (
-                <div key={it.name} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[rgba(var(--kx-fg),.03)] px-3 py-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium tracking-tight">{it.name}</div>
+                <div key={it.desc} className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="truncate">{it.desc}</div>
+                    <div className="text-xs kx-muted">{Math.round(it.qty)} sold</div>
                   </div>
-                  <div className="text-sm font-semibold">{fmtZar(it.revenue)}</div>
+                  <div className="shrink-0 font-medium">{fmtZar(it.revenue)}</div>
                 </div>
               ))
-            ) : (
-              <div className="text-sm kx-muted">No sales items yet.</div>
             )}
           </div>
-        </div>
+        </Card>
 
-        <div className="kx-card rounded-[28px] border border-white/10 p-6">
-          <div className="text-[11px] uppercase tracking-wider kx-muted3">Bottom</div>
-          <div className="mt-1 text-lg font-semibold tracking-tight">Bottom 5 items</div>
-          <div className="mt-4 space-y-2">
-            {bottom5.length ? (
+        <Card>
+          <div className="kx-cardTitle">Bottom 5 items</div>
+          <div className="mt-3 grid gap-2">
+            {bottom5.length === 0 ? (
+              <div className="kx-muted text-sm">No items yet.</div>
+            ) : (
               bottom5.map((it) => (
-                <div key={it.name} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[rgba(var(--kx-fg),.03)] px-3 py-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium tracking-tight">{it.name}</div>
+                <div key={it.desc} className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="truncate">{it.desc}</div>
+                    <div className="text-xs kx-muted">{Math.round(it.qty)} sold</div>
                   </div>
-                  <div className="text-sm font-semibold">{fmtZar(it.revenue)}</div>
+                  <div className="shrink-0 font-medium">{fmtZar(it.revenue)}</div>
                 </div>
               ))
-            ) : (
-              <div className="text-sm kx-muted">No sales items yet.</div>
             )}
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   )

@@ -1,21 +1,4 @@
 import "./globals.css";
-import type { Metadata } from "next";
-
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-};
-
-export const metadata: Metadata = {
-  title: "Kryvexis OS",
-  description: "Kryvexis Business Operating System",
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
-  manifest: "/manifest.json",
-};
 
 // Root layout must NOT enforce auth redirects.
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.

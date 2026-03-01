@@ -40,23 +40,10 @@ export default function LoginClient({ next }: { next: string }) {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden px-4 py-10">
-      {/* premium backdrop */}
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background:
-            `radial-gradient(45% 40% at 18% 18%, rgb(var(--kx-accent) / 0.22), transparent 62%),
-             radial-gradient(55% 45% at 86% 20%, rgb(var(--kx-accent-2) / 0.18), transparent 64%),
-             radial-gradient(55% 45% at 55% 88%, rgb(var(--kx-accent) / 0.10), transparent 62%),
-             linear-gradient(180deg, rgb(0 0 0 / 0.10), rgb(0 0 0 / 0.60))`,
-        }}
-      />
-
-      <div className="relative mx-auto grid w-full max-w-5xl items-stretch gap-4 lg:grid-cols-2">
+    <div className="min-h-screen px-4 py-10">
+      <div className="mx-auto grid w-full max-w-5xl items-stretch gap-4 lg:grid-cols-2">
         {/* Brand panel */}
-        <div className="kx-panel p-6 lg:p-9">
+        <div className="kx-panel p-6 lg:p-8">
           <div className="flex items-center gap-3">
             <Image src="/kryvexis-logo.png" alt="Kryvexis" width={84} height={84} priority className="rounded-2xl" />
             <div>
@@ -65,19 +52,15 @@ export default function LoginClient({ next }: { next: string }) {
             </div>
           </div>
 
-          {/* Keep it clean + premium */}
-          <div className="mt-7 space-y-3">
-            <div className="text-sm font-medium">Everything in one workspace</div>
-            <ul className="space-y-2 text-sm kx-muted">
-              <li className="flex gap-2"><span aria-hidden>•</span><span>Quotes → invoices in one flow</span></li>
-              <li className="flex gap-2"><span aria-hidden>•</span><span>Payments + accounts visibility</span></li>
-              <li className="flex gap-2"><span aria-hidden>•</span><span>Print + PDF automation</span></li>
-            </ul>
-            <div className="text-xs kx-muted2">Secure • Fast • Multi-tenant</div>
+          <div className="mt-6 space-y-2">
+            <div className="kx-chip">📊 Dashboard command center</div>
+            <div className="kx-chip">🧾 Quotes → invoices in one flow</div>
+            <div className="kx-chip">💰 Payments + accounts visibility</div>
+            <div className="kx-chip">🖨️ Print + PDF automation</div>
           </div>
 
           <div className="mt-8 rounded-2xl bg-[rgba(var(--kx-fg),.06)] p-4">
-            <div className="text-xs kx-muted2">Support</div>
+            <div className="text-xs kx-muted2">Need help?</div>
             <div className="mt-2 space-y-1 text-sm">
               <a className="underline-offset-2 hover:underline" href="mailto:kryvexissolutions@gmail.com">
                 kryvexissolutions@gmail.com
@@ -90,7 +73,7 @@ export default function LoginClient({ next }: { next: string }) {
         </div>
 
         {/* Form panel */}
-        <div className="kx-card p-6 lg:p-9">
+        <div className="kx-card p-6 lg:p-8">
           <div className="text-xl font-semibold tracking-tight">Welcome back</div>
           <div className="mt-1 text-sm kx-muted">Sign in to your workspace.</div>
 
@@ -122,23 +105,18 @@ export default function LoginClient({ next }: { next: string }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  type={showPw ? "text" : "password"}
+                  type={showPw ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
                 />
-                <button
-                  type="button"
-                  className="kx-btn"
-                  onClick={() => setShowPw((v) => !v)}
-                  aria-label={showPw ? "Hide password" : "Show password"}
-                >
-                  {showPw ? "Hide" : "Show"}
+                <button type="button" className="kx-btn" onClick={() => setShowPw((v) => !v)} aria-label={showPw ? 'Hide password' : 'Show password'}>
+                  {showPw ? 'Hide' : 'Show'}
                 </button>
               </div>
             </label>
 
             <button className="kx-btn-primary w-full" type="submit" disabled={loading}>
-              {loading ? "Signing in…" : "Sign in"}
+              {loading ? 'Signing in…' : 'Sign in'}
             </button>
 
             <div className="flex items-center justify-between text-sm">
@@ -146,7 +124,7 @@ export default function LoginClient({ next }: { next: string }) {
                 Forgot password?
               </Link>
               <span className="kx-muted">
-                New?{" "}
+                New?{' '}
                 <Link className="underline-offset-2 hover:underline" href="/signup">
                   Create account
                 </Link>
