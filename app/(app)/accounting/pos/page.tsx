@@ -7,7 +7,7 @@ export default function AccountingPOs() {
     <PosHeroShell
       title="Purchase Orders"
       subtitle="Create POs, track approvals and receiving."
-      meta={}
+      meta={null}
       actions={<Link href="/operations/suppliers" className="kx-btn kx-btn-secondary">Suppliers</Link>}
       rail={<RightRail title="PO activity" />}
     >
