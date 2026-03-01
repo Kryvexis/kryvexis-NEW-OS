@@ -62,3 +62,4 @@ export async function adjustStockAction(productId: string, delta: number) {
   if (e2) return { ok: false, error: e2.message };
   return { ok: true, next };
 }
+export { updateProductAction, deleteProductAction };
