@@ -10,9 +10,9 @@ export const dynamic = 'force-dynamic'
 export default async function ShareInvoicePage({
   params,
 }: {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }) {
-  const { token } = params;
+  const { token } = await params;
 
 
   const admin = createAdminClient()
