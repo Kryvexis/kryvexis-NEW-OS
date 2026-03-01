@@ -14,7 +14,10 @@ export default function MarkViewedButton({ invoiceId }: { invoiceId: string }) {
       onClick={() => {
         start(async () => {
           const res = await logInvoiceViewedAction({ invoice_id: invoiceId })
-          if (!res?.ok) alert(res?.error || 'Failed to log viewed')
+
+        if (!res?.ok) {
+  alert('Failed to log viewed')
+}
         })
       }}
     >
