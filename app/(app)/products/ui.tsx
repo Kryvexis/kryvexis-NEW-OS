@@ -1,12 +1,4 @@
-'use cl
-
-            <label className="block">
-              <div className="text-xs kx-muted mb-1">Barcode</div>
-              <input className="kx-input" name="barcode" placeholder="Optional (for scanning)" defaultValue={(product as any)?.barcode || ''} />
-            </label>
-
-ient'
-
+"use client";
 import { useEffect, useState } from 'react'
 import { createProductAction } from './actions'
 
