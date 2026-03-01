@@ -57,7 +57,6 @@ export default function StockUI({ products }: { products: P[] }) {
     setBusyId(null);
     setToast(res.ok ? "Stock updated." : res.error ?? "Something went wrong.");
     if (res.ok) router.refresh();
-    // We don't have live revalidation here; user can refresh if needed.
   }
 
   return (
