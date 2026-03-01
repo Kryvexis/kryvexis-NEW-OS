@@ -14,7 +14,7 @@ export default function MarkViewedButton({ quoteId }: { quoteId: string }) {
       onClick={() => {
         start(async () => {
           const res = await logQuoteViewedAction({ quote_id: quoteId })
-          if (!res?.ok) alert(res?.error || 'Failed to log viewed')
+          if (!res?.ok) alert('Failed to log viewed')
         })
       }}
     >
