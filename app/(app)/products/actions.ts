@@ -25,7 +25,6 @@ export async function createProductAction(formData: FormData) {
     cost_price: formData.get('cost_price'),
     supplier_id: formData.get('supplier_id'),
     barcode: formData.get('barcode'),
-    barcode: formData.get('barcode'),
   })
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid data' }
