@@ -27,7 +27,7 @@ function pageTitleFromPath(pathname: string) {
   return 'Kryvexis OS'
 }
 
-export default function Shell({ userEmail, children }: { userEmail: string; children: React.ReactNode }) {
+export default function Shell({ userEmail, workspaceName, workspacePhone, children }: { userEmail: string; workspaceName?: string; workspacePhone?: string; children: React.ReactNode }) {
   const pathname = usePathname() || '/dashboard'
   const title = pageTitleFromPath(pathname)
 
@@ -37,7 +37,7 @@ export default function Shell({ userEmail, children }: { userEmail: string; chil
 
       <div className="flex min-h-screen">
         {/* Desktop sidebar (A) + hidden on small screens (C) */}
-        <Sidebar userEmail={userEmail} workspaceName="Kryvexis" />
+        <Sidebar userEmail={userEmail} workspaceName={workspaceName || 'Kryvexis'} workspacePhone={workspacePhone} />
 
         {/* Main area */}
         <div className="flex min-w-0 flex-1 flex-col">
