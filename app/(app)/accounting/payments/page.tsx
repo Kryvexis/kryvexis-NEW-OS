@@ -7,7 +7,7 @@ export default async function AccountingPayments() {
     <PosHeroShell
       title="Payments"
       subtitle="Record and review incoming payments."
-      meta={}
+      meta={null}
       rail={<RightRail title="Payment activity" />}
     >
       <PaymentsPage />

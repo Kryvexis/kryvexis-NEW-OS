@@ -7,7 +7,7 @@ export default function AccountingDashboard() {
     <PosHeroShell
       title="Accounting"
       subtitle="Payments, balances, POs and visibility."
-      meta={}
+      meta={null}
       actions={
         <div className="flex items-center gap-2">
           <Link className="kx-btn kx-btn-secondary" href="/accounting/payments">Record payment</Link>
