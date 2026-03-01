@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { updateProductAction } from '../actions'
 
 type Product = {
@@ -17,6 +18,7 @@ type Product = {
 type SupplierOpt = { id: string; name: string }
 
 export default function EditProductUI({ product }: { product: Product }) {
+  const router = useRouter()
   const [pending, setPending] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
   const [suppliers, setSuppliers] = useState<SupplierOpt[]>([])
@@ -45,6 +47,7 @@ export default function EditProductUI({ product }: { product: Product }) {
         const res = await updateProductAction(fd)
         setPending(false)
         setMsg(res.ok ? 'Saved.' : res.error ?? 'Something went wrong.')
+        if (res.ok) router.refresh()
       }}
     >
       <div className="grid gap-3 md:grid-cols-2">

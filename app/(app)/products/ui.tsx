@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createProductAction } from "./actions";
 
 type SupplierOpt = { id: string; name: string };
 
 export default function ProductsUI() {
+  const router = useRouter();
   const [pending, setPending] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [suppliers, setSuppliers] = useState<SupplierOpt[]>([]);
@@ -34,6 +36,7 @@ export default function ProductsUI() {
           const res = await createProductAction(fd);
           setPending(false);
           setMsg(res.ok ? "Product saved." : res.error ?? "Something went wrong.");
+          if (res.ok) router.refresh();
         }}
       >
         <div className="text-sm font-semibold">Add product / service</div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import LimitedList from "@/components/lists/LimitedList";
 import { fmtZar } from "@/lib/format";
 import { deleteProductAction } from "./actions";
@@ -16,6 +17,8 @@ type ProductRow = {
 };
 
 export default function ProductList({ products }: { products: ProductRow[] }) {
+  const router = useRouter();
+
   return (
     <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
       <div className="p-4 border-b border-[rgba(var(--kx-border),.12)]">
@@ -53,7 +56,10 @@ export default function ProductList({ products }: { products: ProductRow[] }) {
                   >
                     Edit
                   </Link>
-                  <form action={deleteProductAction}>
+                  <form action={async (fd) => {
+                    await deleteProductAction(fd);
+                    router.refresh();
+                  }}>
                     <input type="hidden" name="id" value={p.id} />
                     <button
                       type="submit"
