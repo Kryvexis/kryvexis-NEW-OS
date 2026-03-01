@@ -7,7 +7,11 @@ import { StatusBadge } from '@/components/share/status-badge'
 
 export const dynamic = 'force-dynamic'
 
-export default async function ShareQuotePage({ params }: { params: { token: string } }) {
+// Next.js 15 types `params` as a Promise in server components.
+// Using a Promise here avoids build-time type errors on Vercel.
+type ShareQuotePageProps = { params: Promise<{ token: string }> }
+
+export default async function ShareQuotePage({ params }: ShareQuotePageProps) {
   const admin = createAdminClient()
   if (!admin) {
     return (
@@ -24,7 +28,7 @@ export default async function ShareQuotePage({ params }: { params: { token: stri
     )
   }
 
-  const { token } = params
+  const { token } = await params
 
   const { data: quote, error } = await admin
     .from('quotes')
