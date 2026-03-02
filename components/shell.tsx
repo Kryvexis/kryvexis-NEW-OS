@@ -13,6 +13,7 @@ function pageTitleFromPath(pathname: string) {
   const p = (pathname || '/dashboard').split('?')[0]
   if (p === '/' || p === '/dashboard') return 'Dashboard'
   if (p.startsWith('/clients')) return 'Clients'
+  if (p.startsWith('/buyers')) return 'Buyers'
   if (p.startsWith('/products')) return 'Products'
   if (p.startsWith('/suppliers')) return 'Suppliers'
   if (p.startsWith('/quotes')) return 'Quotes'
