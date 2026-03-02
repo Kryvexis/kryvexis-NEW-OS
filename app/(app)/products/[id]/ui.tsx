@@ -1,14 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { updateProductAction } from '../actions'
 
 type Product = {
   id: string
   name: string
   sku: string | null
-  barcode: string | null
   type: 'product' | 'service'
   unit_price: number
   cost_price: number
@@ -18,8 +16,7 @@ type Product = {
 
 type SupplierOpt = { id: string; name: string }
 
-export default function ProductEditUI({ product }: { product: Product }) {
-  const router = useRouter()
+export default function EditProductUI({ product }: { product: Product }) {
   const [pending, setPending] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
   const [suppliers, setSuppliers] = useState<SupplierOpt[]>([])
@@ -44,12 +41,9 @@ export default function ProductEditUI({ product }: { product: Product }) {
       action={async (fd) => {
         setPending(true)
         setMsg(null)
-
         fd.set('id', product.id)
         const res = await updateProductAction(fd)
-
         setPending(false)
-        if (res.ok) router.refresh()
         setMsg(res.ok ? 'Saved.' : res.error ?? 'Something went wrong.')
       }}
     >
@@ -63,7 +57,6 @@ export default function ProductEditUI({ product }: { product: Product }) {
             className="w-full rounded-xl border border-[rgba(var(--kx-border),.12)] bg-black/20 px-3 py-2 text-sm outline-none focus:border-cyan-300/40"
           />
         </div>
-
         <div>
           <div className="text-xs kx-muted mb-1">SKU</div>
           <input
@@ -72,16 +65,6 @@ export default function ProductEditUI({ product }: { product: Product }) {
             className="w-full rounded-xl border border-[rgba(var(--kx-border),.12)] bg-black/20 px-3 py-2 text-sm outline-none focus:border-cyan-300/40"
           />
         </div>
-
-        <div>
-          <div className="text-xs kx-muted mb-1">Barcode</div>
-          <input
-            name="barcode"
-            defaultValue={product.barcode ?? ''}
-            className="w-full rounded-xl border border-[rgba(var(--kx-border),.12)] bg-black/20 px-3 py-2 text-sm outline-none focus:border-cyan-300/40"
-          />
-        </div>
-
         <div>
           <div className="text-xs kx-muted mb-1">Type</div>
           <select
@@ -93,7 +76,6 @@ export default function ProductEditUI({ product }: { product: Product }) {
             <option value="service">Service</option>
           </select>
         </div>
-
         <div>
           <div className="text-xs kx-muted mb-1">Supplier</div>
           <select
@@ -109,7 +91,6 @@ export default function ProductEditUI({ product }: { product: Product }) {
             ))}
           </select>
         </div>
-
         <div>
           <div className="text-xs kx-muted mb-1">Sell price</div>
           <input
@@ -121,7 +102,6 @@ export default function ProductEditUI({ product }: { product: Product }) {
             className="w-full rounded-xl border border-[rgba(var(--kx-border),.12)] bg-black/20 px-3 py-2 text-sm outline-none focus:border-cyan-300/40"
           />
         </div>
-
         <div>
           <div className="text-xs kx-muted mb-1">Cost price</div>
           <input
@@ -132,18 +112,6 @@ export default function ProductEditUI({ product }: { product: Product }) {
             defaultValue={product.cost_price ?? 0}
             className="w-full rounded-xl border border-[rgba(var(--kx-border),.12)] bg-black/20 px-3 py-2 text-sm outline-none focus:border-cyan-300/40"
           />
-        </div>
-
-        <div className="md:col-span-2">
-          <label className="inline-flex items-center gap-2 text-xs kx-muted">
-            <input
-              type="checkbox"
-              name="is_active"
-              defaultChecked={Boolean(product.is_active ?? true)}
-              className="h-4 w-4 rounded border border-[rgba(var(--kx-border),.25)] bg-black/30"
-            />
-            Active
-          </label>
         </div>
       </div>
 

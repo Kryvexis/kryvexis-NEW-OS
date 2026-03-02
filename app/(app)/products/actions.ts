@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireCompanyId } from "@/lib/kx";
 
@@ -23,7 +22,6 @@ export async function createProductAction(fd: FormData) {
     barcode: String(fd.get("barcode") || "").trim() || null,
     type: String(fd.get("type") || "product"),
     unit_price: num(fd.get("unit_price"), 0),
-    cost_price: num(fd.get("cost_price"), 0),
     supplier_id: String(fd.get("supplier_id") || "").trim() || null,
     stock_on_hand: Math.max(0, Math.trunc(num(fd.get("stock_on_hand"), 0))),
     low_stock_threshold: Math.max(0, Math.trunc(num(fd.get("low_stock_threshold"), 0))),
@@ -33,10 +31,6 @@ export async function createProductAction(fd: FormData) {
   const { error } = await supabase.from("products").insert(payload);
   if (error) return { ok: false, error: error.message };
 
-  // Keep UI fresh after mutations
-  revalidatePath("/products");
-  revalidatePath("/operations/stock");
-
   return { ok: true };
 }
 
@@ -44,8 +38,8 @@ export async function updateProductAction(fd: FormData) {
   const supabase = await createClient();
   const companyId = await requireCompanyId();
 
-  const id = String(fd.get("id") || "").trim();
-  if (!id) return { ok: false, error: "Missing product id." };
+  const productId = String(fd.get("id") || "").trim();
+  if (!productId) return { ok: false, error: "Missing product id." };
 
   const name = String(fd.get("name") || "").trim();
   if (!name) return { ok: false, error: "Name is required." };
@@ -53,47 +47,19 @@ export async function updateProductAction(fd: FormData) {
   const payload: any = {
     name,
     sku: String(fd.get("sku") || "").trim() || null,
-    barcode: String(fd.get("barcode") || "").trim() || null,
     type: String(fd.get("type") || "product"),
     unit_price: num(fd.get("unit_price"), 0),
     cost_price: num(fd.get("cost_price"), 0),
     supplier_id: String(fd.get("supplier_id") || "").trim() || null,
-    is_active: fd.get("is_active") ? true : false,
   };
 
   const { error } = await supabase
     .from("products")
     .update(payload)
-    .eq("id", id)
+    .eq("id", productId)
     .eq("company_id", companyId);
 
   if (error) return { ok: false, error: error.message };
-
-  revalidatePath("/products");
-  revalidatePath(`/products/${id}`);
-  revalidatePath("/operations/stock");
-
-  return { ok: true };
-}
-
-export async function deleteProductAction(fd: FormData) {
-  const supabase = await createClient();
-  const companyId = await requireCompanyId();
-
-  const id = String(fd.get("id") || "").trim();
-  if (!id) return { ok: false, error: "Missing product id." };
-
-  const { error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", id)
-    .eq("company_id", companyId);
-
-  if (error) return { ok: false, error: error.message };
-
-  revalidatePath("/products");
-  revalidatePath("/operations/stock");
-
   return { ok: true };
 }
 
@@ -124,9 +90,21 @@ export async function adjustStockAction(productId: string, delta: number) {
     .eq("company_id", companyId);
 
   if (e2) return { ok: false, error: e2.message };
-
-  revalidatePath("/products");
-  revalidatePath("/operations/stock");
-
   return { ok: true, next };
+}
+
+export async function deleteProductAction(fd: FormData): Promise<void> {
+  const supabase = await createClient();
+  const companyId = await requireCompanyId();
+
+  const productId = String(fd.get("id") || "").trim();
+  if (!productId) throw new Error("Missing product id.");
+
+  const { error } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", productId)
+    .eq("company_id", companyId);
+
+  if (error) throw new Error(error.message);
 }

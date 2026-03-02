@@ -1,9 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-
 import LimitedList from "@/components/lists/LimitedList";
 import { fmtZar } from "@/lib/format";
 import { deleteProductAction } from "./actions";
@@ -19,21 +16,11 @@ type ProductRow = {
 };
 
 export default function ProductList({ products }: { products: ProductRow[] }) {
-  const router = useRouter();
-  const [toast, setToast] = useState<string | null>(null);
-  const [busyId, setBusyId] = useState<string | null>(null);
-
   return (
     <div className="rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] overflow-hidden">
       <div className="p-4 border-b border-[rgba(var(--kx-border),.12)]">
         <div className="text-sm font-semibold">All items</div>
         <div className="text-xs kx-muted2 mt-1">Showing max 5 by default. Use search + View more.</div>
-
-        {toast && (
-          <div className="mt-3 rounded-xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.04)] px-3 py-2 text-xs kx-muted">
-            {toast}
-          </div>
-        )}
       </div>
 
       <div className="p-4">
@@ -52,19 +39,13 @@ export default function ProductList({ products }: { products: ProductRow[] }) {
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-2 px-3 py-3">
                   <div className="md:col-span-4">
                     <div className="text-sm font-medium text-[rgba(var(--kx-fg),.92)]/90">{p.name}</div>
-                    <div className="text-xs kx-muted2">
-                      {p.type ?? "—"}
-                      {p.sku ? ` · ${p.sku}` : ""}
-                    </div>
+                    <div className="text-xs kx-muted2">{p.type ?? "—"}{p.sku ? ` · ${p.sku}` : ""}</div>
                   </div>
                   <div className="md:col-span-2 text-xs kx-muted md:text-right">Sell: {fmtZar(sell)}</div>
                   <div className="md:col-span-2 text-xs kx-muted md:text-right">Cost: {fmtZar(cost)}</div>
-                  <div className="md:col-span-2 text-xs font-semibold text-[rgba(var(--kx-fg),.92)]/85 md:text-right">
-                    Margin: {fmtZar(margin)}
-                  </div>
+                  <div className="md:col-span-2 text-xs font-semibold text-[rgba(var(--kx-fg),.92)]/85 md:text-right">Margin: {fmtZar(margin)}</div>
                   <div className="md:col-span-2 text-xs kx-muted md:text-right">{p.suppliers?.name ?? "—"}</div>
                 </div>
-
                 <div className="px-3 pb-3 flex items-center justify-end gap-2">
                   <Link
                     href={`/products/${p.id}`}
@@ -72,32 +53,13 @@ export default function ProductList({ products }: { products: ProductRow[] }) {
                   >
                     Edit
                   </Link>
-
-                  <form
-                    action={async (fd) => {
-                      if (busyId) return;
-                      setBusyId(p.id);
-                      setToast(null);
-
-                      const res = await deleteProductAction(fd);
-
-                      if (res?.ok) {
-                        setToast("Deleted.");
-                        router.refresh();
-                      } else {
-                        setToast(res?.error ?? "Delete failed.");
-                      }
-
-                      setBusyId(null);
-                    }}
-                  >
+                  <form action={deleteProductAction}>
                     <input type="hidden" name="id" value={p.id} />
                     <button
                       type="submit"
-                      disabled={busyId === p.id}
-                      className="rounded-lg border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-xs text-red-100 hover:bg-red-500/15 disabled:opacity-50"
+                      className="rounded-lg border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-xs text-red-100 hover:bg-red-500/15"
                     >
-                      {busyId === p.id ? "Deleting…" : "Delete"}
+                      Delete
                     </button>
                   </form>
                 </div>

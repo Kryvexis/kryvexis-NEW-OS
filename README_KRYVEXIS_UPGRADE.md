@@ -59,3 +59,17 @@ Vercel will also run it daily because of `vercel.json`.
 ```bash
 git add . && git commit -m "Indigo: share fix + daily emails + import RLS fix" && git push
 ```
+
+---
+
+## 4) Accounting upgrades (Expenses, Payables, Categories, P&L)
+
+To enable the new Accounting features (supplier bills, categories, and P&L links), run this file in Supabase SQL editor:
+
+- `sql/060_accounting_payables.sql`
+
+Then redeploy (or just refresh) and visit:
+- `/accounting/payables`
+- `/accounting/expenses`
+- `/accounting/categories`
+- `/accounting/pnl`
