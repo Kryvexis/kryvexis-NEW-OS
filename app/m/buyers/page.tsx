@@ -1,28 +1,18 @@
-// app/m/buyers/page.tsx
-// Next.js 15.5.x typegen can type `searchParams` as a Promise in generated PageProps.
-
-import BuyersUI, { type BuyersRow, type BuyersTab } from "@/components/mobile/buyers/BuyersUI";
-import { requireCompanyId } from "@/lib/kx";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { suggestReorderQty } from "@/lib/buyers/recommend";
+import { requireCompanyId } from "@/lib/kx";
+import { recommendOrderQty } from "@/lib/buyers/recommend";
 
 export const dynamic = "force-dynamic";
 
-type SearchParams = {
-  tab?: string | string[];
+type SearchParams = { tab?: string };
+type P = {
+  id: string;
+  name: string;
+  sku: string | null;
+  stock_on_hand: number | null;
+  low_stock_threshold: number | null;
 };
-
-function getTab(sp: SearchParams): BuyersTab {
-  const raw = Array.isArray(sp.tab) ? sp.tab[0] : sp.tab;
-  const t = (raw ?? "low").toLowerCase();
-  if (t === "out") return "out";
-  if (t === "recent") return "recent";
-  return "low";
-}
-
-function iso(d: Date) {
-  return d.toISOString().slice(0, 10);
-}
 
 export default async function BuyersPage({
   searchParams,
@@ -30,91 +20,97 @@ export default async function BuyersPage({
   searchParams?: Promise<SearchParams>;
 }) {
   const sp = (await searchParams) ?? {};
-  const tab = getTab(sp);
+  const tab = String(sp.tab || "low");
 
   const supabase = await createClient();
   const companyId = await requireCompanyId();
 
-  // Pull product list (cap for mobile)
-  const { data: products } = await supabase
-    .from("products")
-    .select(
-      "id,name,sku,unit_price,stock_on_hand,low_stock_threshold,is_active,created_at"
-    )
-    .eq("company_id", companyId)
-    .eq("is_active", true)
-    .order("name", { ascending: true })
-    .limit(600);
-
-  const now = new Date();
-  const start = new Date(now);
-  start.setDate(start.getDate() - 14);
-
-  // Load invoice ids for last 14 days, then aggregate item qty per product
-  const { data: invoices } = await supabase
-    .from("invoices")
-    .select("id,issue_date")
-    .eq("company_id", companyId)
-    .gte("issue_date", iso(start))
-    .limit(5000);
-
-  const invoiceIds = (invoices || []).map((i: any) => i.id);
-  const velocity: Record<string, number> = {};
-
-  if (invoiceIds.length) {
-    const { data: items } = await supabase
+  const [{ data: products }, { data: items }] = await Promise.all([
+    supabase
+      .from("products")
+      .select("id,name,sku,stock_on_hand,low_stock_threshold")
+      .eq("company_id", companyId)
+      .eq("is_active", true)
+      .order("name", { ascending: true })
+      .limit(800),
+    supabase
       .from("invoice_items")
-      .select("product_id,qty,invoice_id")
-      .in("invoice_id", invoiceIds)
-      .limit(20000);
+      .select("product_id,qty,created_at")
+      .limit(20000),
+  ]);
 
-    for (const it of items || []) {
-      const pid = String((it as any).product_id || "");
-      if (!pid) continue;
-      velocity[pid] = (velocity[pid] || 0) + Number((it as any).qty || 0);
-    }
+  const prod = (products || []) as P[];
+  const it = items || [];
+
+  // sales over last 14 days per product
+  const since = Date.now() - 14 * 864e5;
+  const sold = new Map<string, number>();
+  for (const row of it as any[]) {
+    const pid = row.product_id;
+    if (!pid) continue;
+    const t = Date.parse(row.created_at || "");
+    if (!Number.isFinite(t) || t < since) continue;
+    sold.set(pid, (sold.get(pid) || 0) + Number(row.qty || 0));
   }
 
-  const all = (products || []).map((p: any) => {
-    const rec = suggestReorderQty(
-      {
-        id: p.id,
-        name: p.name,
-        sku: p.sku,
-        stock_on_hand: p.stock_on_hand,
-        low_stock_threshold: p.low_stock_threshold,
-      },
-      velocity,
-      { windowDays: 14, leadTimeDays: 4, safetyDays: 2 }
-    );
+  const low = prod.filter((p) => Number(p.stock_on_hand || 0) <= Number(p.low_stock_threshold || 0));
+  const out = prod.filter((p) => Number(p.stock_on_hand || 0) <= 0);
 
-    const row: BuyersRow = {
-      id: p.id,
-      name: String(p.name || ""),
-      sku: p.sku ?? null,
-      stock_on_hand: Number(p.stock_on_hand ?? 0),
-      low_stock_threshold: Number(p.low_stock_threshold ?? 0),
-      unit_price: p.unit_price ?? null,
-      suggested_qty: rec.qty,
-      reason: rec.reason,
-      sold_window: rec.soldWindow,
-      window_days: rec.windowDays,
-      avg_daily: rec.avgDaily,
-    };
-    return row;
-  });
+  const shown = tab === "out" ? out : low;
 
-  const lowRows = all
-    .filter((r) => r.stock_on_hand > 0 && r.stock_on_hand <= Math.max(0, r.low_stock_threshold))
-    .sort((a, b) => a.stock_on_hand - b.stock_on_hand)
-    .slice(0, 120);
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold">Buyers</h1>
+        <Link href="/operations/stock" className="text-sm text-zinc-500 hover:underline">
+          Full stock
+        </Link>
+      </div>
 
-  const outRows = all
-    .filter((r) => r.stock_on_hand <= 0)
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .slice(0, 120);
+      <div className="grid grid-cols-3 gap-2 rounded-2xl border border-black/5 bg-white p-2 text-sm dark:border-white/10 dark:bg-zinc-900">
+        <Link href="/m/buyers?tab=low" className={"rounded-xl px-2 py-2 text-center " + (tab !== "out" ? "bg-blue-600 text-white" : "text-zinc-500")}>Low Stock</Link>
+        <Link href="/m/buyers?tab=out" className={"rounded-xl px-2 py-2 text-center " + (tab === "out" ? "bg-blue-600 text-white" : "text-zinc-500")}>Out</Link>
+        <Link href="/m/buyers?tab=recent" className="rounded-xl px-2 py-2 text-center text-zinc-400">Recent</Link>
+      </div>
 
-  const rows = tab === "out" ? outRows : tab === "low" ? lowRows : [];
+      <div className="space-y-2">
+        {shown.map((p) => {
+          const rec = recommendOrderQty({
+            product: p,
+            sales: { product_id: p.id, qty: sold.get(p.id) || 0, days: 14 },
+            leadTimeDays: 4,
+            safetyDays: 2,
+          });
+          return (
+            <Link
+              key={p.id}
+              href={`/m/buyers/${p.id}`}
+              className="flex items-center justify-between rounded-2xl border border-black/5 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-zinc-900"
+            >
+              <div className="min-w-0">
+                <div className="truncate font-medium">{p.name}</div>
+                <div className="mt-0.5 text-xs text-zinc-500">
+                  {Number(p.stock_on_hand || 0)} left • Suggest{" "}
+                  <span className="font-semibold text-blue-600">{rec.suggestedQty}</span>
+                </div>
+              </div>
+              <span className="text-zinc-400">›</span>
+            </Link>
+          );
+        })}
+        {shown.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-black/10 bg-white p-6 text-center text-sm text-zinc-500 dark:border-white/10 dark:bg-zinc-900">
+            Nothing here 🎉
+          </div>
+        ) : null}
+      </div>
 
-  return <BuyersUI tab={tab} rows={rows} />;
+      <Link
+        href="/m/buyers/purchase-list"
+        className="block rounded-2xl bg-blue-600 px-4 py-4 text-center font-semibold text-white shadow-lg"
+      >
+        Review & Order
+      </Link>
+    </div>
+  );
 }

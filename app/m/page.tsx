@@ -1,5 +1,2 @@
-import { redirect } from 'next/navigation'
-
-export default function MobileIndex() {
-  redirect('/m/home')
-}
+import { redirect } from "next/navigation";
+export default function M(){ redirect("/m/home"); }

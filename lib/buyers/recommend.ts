@@ -1,57 +1,71 @@
-export type ProductLite = {
+export type BuyersProduct = {
   id: string;
   name: string;
-  sku?: string | null;
-  stock_on_hand?: number | null;
-  low_stock_threshold?: number | null;
+  sku: string | null;
+  stock_on_hand: number | null;
+  low_stock_threshold: number | null;
 };
 
-export type VelocityMap = Record<string, number>; // product_id -> qty sold over window
+export type SalesSignal = {
+  product_id: string;
+  qty: number;
+  days: number;
+};
 
-export function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n));
+export type Recommendation = {
+  suggestedQty: number;
+  reason: string;
+  velocityPerDay: number;
+  targetStock: number;
+};
+
+function clampInt(n: number) {
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.round(n));
 }
 
 /**
- * Simple, explainable reorder suggestion.
- *
- * - Uses a 14-day sales window (qty sold) when available.
- * - Maintains a minimum target of (threshold * 2) to reduce re-order spam.
- * - Adds "lead time" coverage as (avg daily * (leadTimeDays + safetyDays)).
+ * Simple but smart reorder math:
+ * - uses velocity over a lookback window (default 14d)
+ * - target stock = max(reorder_level, velocity*(leadTime+safety))
  */
-export function suggestReorderQty(
-  product: ProductLite,
-  velocity: VelocityMap,
-  opts?: { windowDays?: number; leadTimeDays?: number; safetyDays?: number }
-) {
-  const windowDays = opts?.windowDays ?? 14;
-  const leadTimeDays = opts?.leadTimeDays ?? 4;
-  const safetyDays = opts?.safetyDays ?? 2;
+export function recommendOrderQty(input: {
+  product: BuyersProduct;
+  sales: SalesSignal | null;
+  leadTimeDays?: number;
+  safetyDays?: number;
+  minOrderQty?: number;
+  packSize?: number;
+}): Recommendation {
+  const onHand = Number(input.product.stock_on_hand || 0);
+  const reorderLevel = Number(input.product.low_stock_threshold || 0);
 
-  const onHand = Number(product.stock_on_hand ?? 0);
-  const threshold = Math.max(0, Number(product.low_stock_threshold ?? 0));
+  const leadTimeDays = Math.max(0, Number(input.leadTimeDays ?? 4));
+  const safetyDays = Math.max(0, Number(input.safetyDays ?? 2));
+  const minOrderQty = Math.max(0, Number(input.minOrderQty ?? 0));
+  const packSize = Math.max(0, Number(input.packSize ?? 0));
 
-  const soldWindow = Number(velocity[product.id] ?? 0);
-  const avgDaily = soldWindow > 0 ? soldWindow / windowDays : 0;
+  const qtySold = Number(input.sales?.qty ?? 0);
+  const days = Math.max(1, Number(input.sales?.days ?? 14));
+  const velocityPerDay = qtySold / days;
 
-  const minTarget = threshold > 0 ? threshold * 2 : 0;
-  const coverTarget = avgDaily > 0 ? Math.ceil(avgDaily * (leadTimeDays + safetyDays)) : 0;
-  const target = Math.max(minTarget, coverTarget);
+  const coverageDays = leadTimeDays + safetyDays;
+  const computedTarget = velocityPerDay * coverageDays;
+  const targetStock = Math.max(reorderLevel, computedTarget);
 
-  const raw = target - onHand;
-  const qty = raw > 0 ? Math.ceil(raw) : 0;
+  let rawSuggested = targetStock - onHand;
+  let suggested = clampInt(rawSuggested);
 
-  const reasonParts: string[] = [];
-  if (threshold > 0) reasonParts.push(`target ≥ ${minTarget} (2× reorder level)`);
-  if (avgDaily > 0) reasonParts.push(`cover ${leadTimeDays + safetyDays} days @ ~${avgDaily.toFixed(2)}/day`);
-  const reason = reasonParts.length ? reasonParts.join(" · ") : "No history yet — using reorder level only.";
+  if (minOrderQty > 0) suggested = Math.max(suggested, minOrderQty);
 
-  return {
-    qty,
-    avgDaily,
-    soldWindow,
-    windowDays,
-    target,
-    reason,
-  };
+  if (packSize > 1) {
+    suggested = Math.ceil(suggested / packSize) * packSize;
+  }
+
+  const reason =
+    suggested <= 0
+      ? "Stock ok"
+      : `Velocity ${(velocityPerDay).toFixed(2)}/day • Target ${Math.ceil(targetStock)} (lead ${leadTimeDays}d + safety ${safetyDays}d)`;
+
+  return { suggestedQty: suggested, reason, velocityPerDay, targetStock: Math.ceil(targetStock) };
 }
