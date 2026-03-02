@@ -5,9 +5,8 @@ import { ChevronRight } from 'lucide-react'
 
 type SP = { tab?: string }
 
-export default async function MobileBuyers({ searchParams }: { searchParams: Promise<SP> | SP }) {
-  const sp: SP = (await (searchParams as any)) || {}
-  const tab = String(sp.tab || 'low')
+export default async function MobileBuyers({ searchParams }: { searchParams?: SP }) {
+  const tab = String(searchParams?.tab || 'low').toLowerCase()
 
   const supabase = await createClient()
   const companyId = await requireCompanyId()
@@ -36,8 +35,10 @@ export default async function MobileBuyers({ searchParams }: { searchParams: Pro
         </Link>
       </div>
 
-      <div className="mt-4 rounded-3xl bg-[rgba(var(--kx-surface),1)] shadow-[var(--kx-shadow-card)] p-2"
-        style={{ border: '1px solid rgb(var(--kx-border) / 0.06)' }}>
+      <div
+        className="mt-4 rounded-3xl bg-[rgba(var(--kx-surface),1)] shadow-[var(--kx-shadow-card)] p-2"
+        style={{ border: '1px solid rgb(var(--kx-border) / 0.06)' }}
+      >
         <div className="grid grid-cols-3 gap-2">
           <Tab href="/m/buyers?tab=low" active={tab === 'low'} label={`Low Stock (${low.length})`} />
           <Tab href="/m/buyers?tab=out" active={tab === 'out'} label={`Out (${out.length})`} />
@@ -46,8 +47,10 @@ export default async function MobileBuyers({ searchParams }: { searchParams: Pro
       </div>
 
       <div className="mt-4">
-        <div className="rounded-3xl bg-[rgba(var(--kx-surface),1)] shadow-[var(--kx-shadow-card)]"
-          style={{ border: '1px solid rgb(var(--kx-border) / 0.06)' }}>
+        <div
+          className="rounded-3xl bg-[rgba(var(--kx-surface),1)] shadow-[var(--kx-shadow-card)]"
+          style={{ border: '1px solid rgb(var(--kx-border) / 0.06)' }}
+        >
           {tab === 'recent' ? (
             <div className="p-5">
               <div className="text-sm font-semibold">Recently reordered</div>
@@ -76,15 +79,21 @@ export default async function MobileBuyers({ searchParams }: { searchParams: Pro
         </div>
       </div>
 
-      <div className="mt-5 rounded-3xl bg-[rgba(var(--kx-surface),1)] shadow-[var(--kx-shadow-card)] p-4"
-        style={{ border: '1px solid rgb(var(--kx-border) / 0.06)' }}>
+      <div
+        className="mt-5 rounded-3xl bg-[rgba(var(--kx-surface),1)] shadow-[var(--kx-shadow-card)] p-4"
+        style={{ border: '1px solid rgb(var(--kx-border) / 0.06)' }}
+      >
         <div className="text-sm font-semibold">Next up: Review & Order</div>
         <div className="mt-1 text-sm kx-muted">
           We’ll add a purchase list, group by supplier, auto-generate order emails, and log purchase orders for history.
         </div>
         <div className="mt-3 flex gap-2">
-          <Link href="/operations/suppliers" className="px-4 py-2 rounded-2xl bg-black/5 text-sm font-semibold">Suppliers</Link>
-          <Link href="/operations/stock" className="px-4 py-2 rounded-2xl bg-black/5 text-sm font-semibold">Stock</Link>
+          <Link href="/operations/suppliers" className="px-4 py-2 rounded-2xl bg-black/5 text-sm font-semibold">
+            Suppliers
+          </Link>
+          <Link href="/operations/stock" className="px-4 py-2 rounded-2xl bg-black/5 text-sm font-semibold">
+            Stock
+          </Link>
         </div>
       </div>
 
