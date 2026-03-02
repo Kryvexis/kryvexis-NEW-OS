@@ -4,21 +4,22 @@ import { cookies } from "next/headers";
 
 type Item = { product_id: string; name: string; qty: number };
 
-function readList(): Item[] {
-  const raw = cookies().get("kx_purchase_list")?.value;
+async function readList(): Promise<Item[]> {
+  const cookieStore = await cookies();
+  const raw = cookieStore.get("kx_purchase_list")?.value;
   if (!raw) return [];
   try {
     const parsed = JSON.parse(decodeURIComponent(raw));
-    if (Array.isArray(parsed)) return parsed;
-    return [];
+    return Array.isArray(parsed) ? (parsed as Item[]) : [];
   } catch {
     return [];
   }
 }
 
-function writeList(list: Item[]) {
+async function writeList(list: Item[]) {
+  const cookieStore = await cookies();
   const val = encodeURIComponent(JSON.stringify(list));
-  cookies().set("kx_purchase_list", val, {
+  cookieStore.set("kx_purchase_list", val, {
     httpOnly: false,
     sameSite: "lax",
     path: "/",
@@ -31,16 +32,16 @@ export async function addToPurchaseListAction(formData: FormData) {
   const name = String(formData.get("name") || "Item");
   const qty = Math.max(1, Number(formData.get("suggested_qty") || 1));
 
-  const list = readList();
+  const list = await readList();
   const existing = list.find((i) => i.product_id === product_id);
   if (existing) {
     existing.qty = Math.max(existing.qty, qty);
   } else {
     list.push({ product_id, name, qty });
   }
-  writeList(list);
+  await writeList(list);
 }
 
 export async function clearPurchaseListAction() {
-  writeList([]);
+  await writeList([]);
 }
