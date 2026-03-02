@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { requireCompanyId } from "@/lib/kx";
 import { fmtZar } from "@/lib/format";
+import { Home as HomeIcon, Package, ReceiptText, AlertTriangle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,32 @@ function Card({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-zinc-900">
       {children}
+    </div>
+  );
+}
+
+function StatRow({
+  icon,
+  title,
+  value,
+  note,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+  note?: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-2xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+      <div className="grid h-10 w-10 place-items-center rounded-2xl bg-zinc-50 text-zinc-700 dark:bg-zinc-950/40 dark:text-zinc-200">
+        {icon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-xs text-zinc-500">{title}</div>
+        <div className="mt-0.5 text-lg font-semibold truncate">{value}</div>
+        {note ? <div className="mt-0.5 text-xs text-zinc-500">{note}</div> : null}
+      </div>
+      <span className="text-zinc-400">›</span>
     </div>
   );
 }
@@ -59,6 +86,9 @@ export default async function MobileHome() {
     return due && due < today;
   });
 
+  // Top seller from invoice_items is computed on desktop dashboard; keep mobile lightweight.
+  const topStockRisk = low[0];
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -68,57 +98,34 @@ export default async function MobileHome() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Card>
-          <div className="text-xs text-zinc-500">Sales Today</div>
-          <div className="mt-1 text-lg font-semibold text-emerald-600 dark:text-emerald-400">{fmtZar(salesToday)}</div>
-        </Card>
-        <Card>
-          <div className="text-xs text-zinc-500">This Week</div>
-          <div className="mt-1 text-lg font-semibold text-blue-600 dark:text-blue-400">{fmtZar(salesWeek)}</div>
-        </Card>
-        <Card>
-          <div className="text-xs text-zinc-500">This Month</div>
-          <div className="mt-1 text-lg font-semibold">{fmtZar(salesMonth)}</div>
-        </Card>
-        <Card>
-          <div className="text-xs text-zinc-500">Owed</div>
-          <div className="mt-1 text-lg font-semibold text-red-600 dark:text-red-400">{fmtZar(owed)}</div>
-        </Card>
+      {/* KPI stack (simple + scannable) */}
+      <div className="space-y-2">
+        <StatRow icon={<HomeIcon className="h-5 w-5" />} title="Revenue" value={fmtZar(salesMonth)} note="This month" />
+        <StatRow icon={<Package className="h-5 w-5" />} title="Low stock" value={`${low.length} items`} note={topStockRisk ? `${topStockRisk.name} low` : "All good"} />
+        <StatRow icon={<ReceiptText className="h-5 w-5" />} title="Unpaid invoices" value={`${unpaid.length}`} note={`${overdue.length} past due`} />
+        <StatRow icon={<AlertTriangle className="h-5 w-5" />} title="Today" value={fmtZar(salesToday)} note="Sales today" />
       </div>
 
       <Card>
         <div className="flex items-center justify-between">
-          <div className="font-semibold">Stock Overview</div>
+          <div className="font-semibold">Smart insights</div>
           <Link href="/m/buyers" className="text-sm text-blue-600 hover:underline">
-            See all
+            Stock
           </Link>
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-          <div className="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-950/40">
-            <div className="text-xs text-zinc-500">Low Stock</div>
-            <div className="mt-1 text-lg font-semibold">{low.length}</div>
+        <div className="mt-3 space-y-2 text-sm">
+          <Link href="/m/sales" className="flex items-center justify-between rounded-xl bg-zinc-50 px-3 py-2 dark:bg-zinc-950/40">
+            <span>{overdue.length} overdue invoices</span>
+            <span className="text-zinc-400">›</span>
+          </Link>
+          <Link href="/m/buyers" className="flex items-center justify-between rounded-xl bg-zinc-50 px-3 py-2 dark:bg-zinc-950/40">
+            <span>{low.length} items low in stock</span>
+            <span className="text-zinc-400">›</span>
+          </Link>
+          <div className="flex items-center justify-between rounded-xl bg-zinc-50 px-3 py-2 dark:bg-zinc-950/40">
+            <span>{fmtZar(owed)} owed</span>
+            <span className="text-zinc-400">•</span>
           </div>
-          <div className="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-950/40">
-            <div className="text-xs text-zinc-500">Out of Stock</div>
-            <div className="mt-1 text-lg font-semibold">{out.length}</div>
-          </div>
-        </div>
-
-        <div className="mt-3 space-y-2">
-          {low.slice(0, 3).map((p: any) => (
-            <Link
-              key={p.id}
-              href={`/m/buyers/${p.id}`}
-              className="flex items-center justify-between rounded-xl border border-black/5 bg-white px-3 py-2 text-sm dark:border-white/10 dark:bg-zinc-900"
-            >
-              <div>
-                <div className="font-medium">{p.name}</div>
-                <div className="text-xs text-zinc-500">Only {Number(p.stock_on_hand || 0)} left</div>
-              </div>
-              <span className="text-blue-600">›</span>
-            </Link>
-          ))}
         </div>
       </Card>
 

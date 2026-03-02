@@ -6,10 +6,10 @@ import { fmtZar } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-export default async function BuyersItemWeb({ params }: { params: { id: string } }) {
+export default async function BuyersItemWeb({ params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
   const companyId = await requireCompanyId();
-  const id = params.id;
+  const { id } = await params;
 
   const [{ data: product }, { data: items }] = await Promise.all([
     supabase
