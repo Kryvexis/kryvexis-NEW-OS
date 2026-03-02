@@ -1,4 +1,5 @@
 import "./globals.css";
+import InstallPrompt from "@/components/pwa/InstallPrompt";
 
 // Root layout must NOT enforce auth redirects.
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
@@ -6,6 +7,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-theme="dark" className="dark" suppressHydrationWarning>
       <head>
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#10b981" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(() => {
@@ -37,7 +43,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="kx-no-lines">{children}</body>
+      <body className="kx-no-lines">
+        <InstallPrompt />
+        {children}
+      </body>
     </html>
   );
 }
