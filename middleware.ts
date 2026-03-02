@@ -10,6 +10,21 @@ export function middleware(req: NextRequest) {
   // Only redirect entry points
   if (pathname !== "/" && pathname !== "/home") return NextResponse.next();
 
+  // IMPORTANT:
+  // If the user is not authenticated, let "/" render the login page.
+  // Otherwise we create a redirect loop:
+  //   /  -> (middleware) /dashboard -> (app layout) / -> ...
+  //
+  // Supabase auth cookies vary by project (sb-<ref>-auth-token).
+  // We treat the presence of any sb-*auth-token cookie as a session signal.
+  const cookieHeader = req.headers.get("cookie") ?? "";
+  const hasSupabaseSession =
+    /(?:^|;\s*)sb-[^=;]+-auth-token=/.test(cookieHeader) ||
+    /(?:^|;\s*)sb-auth-token=/.test(cookieHeader) ||
+    /(?:^|;\s*)sb-access-token=/.test(cookieHeader);
+
+  if (!hasSupabaseSession) return NextResponse.next();
+
   const ui = searchParams.get("ui");
   if (ui === "desktop") {
     const url = req.nextUrl.clone();
