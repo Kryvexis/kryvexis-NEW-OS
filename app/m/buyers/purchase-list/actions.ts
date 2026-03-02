@@ -4,8 +4,10 @@ import { cookies } from "next/headers";
 
 type Item = { product_id: string; name: string; qty: number };
 
-function readList(): Item[] {
-  const raw = cookies().get("kx_purchase_list")?.value;
+async function readList(): Promise<Item[]> {
+  // Next.js 15: cookies() can be async depending on runtime/context.
+  const cookieStore = await cookies();
+  const raw = cookieStore.get("kx_purchase_list")?.value;
   if (!raw) return [];
   try {
     const parsed = JSON.parse(decodeURIComponent(raw));
@@ -16,9 +18,10 @@ function readList(): Item[] {
   }
 }
 
-function writeList(list: Item[]) {
+async function writeList(list: Item[]) {
   const val = encodeURIComponent(JSON.stringify(list));
-  cookies().set("kx_purchase_list", val, {
+  const cookieStore = await cookies();
+  cookieStore.set("kx_purchase_list", val, {
     httpOnly: false,
     sameSite: "lax",
     path: "/",
@@ -31,16 +34,16 @@ export async function addToPurchaseListAction(formData: FormData) {
   const name = String(formData.get("name") || "Item");
   const qty = Math.max(1, Number(formData.get("suggested_qty") || 1));
 
-  const list = readList();
+  const list = await readList();
   const existing = list.find((i) => i.product_id === product_id);
   if (existing) {
     existing.qty = Math.max(existing.qty, qty);
   } else {
     list.push({ product_id, name, qty });
   }
-  writeList(list);
+  await writeList(list);
 }
 
 export async function clearPurchaseListAction() {
-  writeList([]);
+  await writeList([]);
 }

@@ -4,8 +4,9 @@ import { clearPurchaseListAction } from "./actions";
 
 type Item = { product_id: string; name: string; qty: number };
 
-function readList(): Item[] {
-  const raw = cookies().get("kx_purchase_list")?.value;
+async function readList(): Promise<Item[]> {
+  const cookieStore = await cookies();
+  const raw = cookieStore.get("kx_purchase_list")?.value;
   if (!raw) return [];
   try {
     const parsed = JSON.parse(decodeURIComponent(raw));
@@ -17,7 +18,7 @@ function readList(): Item[] {
 }
 
 export default async function PurchaseListPage() {
-  const items = readList();
+  const items = await readList();
 
   const body = [
     "Hi there,",
@@ -49,7 +50,10 @@ export default async function PurchaseListPage() {
 
       <div className="space-y-2">
         {items.map((i) => (
-          <div key={i.product_id} className="rounded-2xl border border-black/5 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+          <div
+            key={i.product_id}
+            className="rounded-2xl border border-black/5 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-zinc-900"
+          >
             <div className="font-medium">{i.name}</div>
             <div className="text-sm text-zinc-500">Qty: {i.qty}</div>
           </div>
@@ -64,7 +68,7 @@ export default async function PurchaseListPage() {
       <div className="grid grid-cols-2 gap-2">
         <a
           href={mailto}
-          className="rounded-2xl bg-blue-600 px-4 py-3 text-center font-semibold text-white shadow-lg"
+          className='rounded-2xl bg-blue-600 px-4 py-3 text-center font-semibold text-white shadow-lg'
         >
           Send Email
         </a>
