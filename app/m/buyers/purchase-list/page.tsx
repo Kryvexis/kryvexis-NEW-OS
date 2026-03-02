@@ -4,9 +4,8 @@ import { clearPurchaseListAction } from "./actions";
 
 type Item = { product_id: string; name: string; qty: number };
 
-async function readList(): Promise<Item[]> {
-  const store = await cookies();
-  const raw = store.get("kx_purchase_list")?.value;
+function readList(): Item[] {
+  const raw = cookies().get("kx_purchase_list")?.value;
   if (!raw) return [];
   try {
     const parsed = JSON.parse(decodeURIComponent(raw));
@@ -18,7 +17,7 @@ async function readList(): Promise<Item[]> {
 }
 
 export default async function PurchaseListPage() {
-  const items = await readList();
+  const items = readList();
 
   const body = [
     "Hi there,",

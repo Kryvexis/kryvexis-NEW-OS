@@ -5,7 +5,8 @@ import InstallPrompt from "@/components/pwa/InstallPrompt";
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" className="dark" suppressHydrationWarning>
+    // Default to LIGHT theme to match the Kryvexis OS reference UI.
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#10b981" />
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `(() => {
   try {
     // Single source of truth is the "dark" class (Tailwind). We also set data-theme for debugging.
-    const themeRaw = localStorage.getItem('kx_theme') || 'dark';
+    const themeRaw = localStorage.getItem('kx_theme') || 'light';
     const theme = (themeRaw === 'light') ? 'light' : 'dark';
 
     const root = document.documentElement;

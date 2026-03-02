@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
-export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
+export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
   const common = 'h-4 w-4'
   switch (name) {
     case 'sales':
@@ -14,15 +14,6 @@ export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'o
           <path d="M7 15l3-3 3 2 4-5" stroke="currentColor" strokeWidth="1.6" opacity="0.9" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       )
-    case 'buyers':
-      return (
-        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M7 7h10v10H7V7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
-          <path d="M9 10h6M9 13h6M9 16h4" stroke="currentColor" strokeWidth="1.6" opacity="0.9" strokeLinecap="round" />
-          <path d="M6 21h12" stroke="currentColor" strokeWidth="1.5" opacity="0.25" />
-        </svg>
-      )
-
     case 'accounting':
       return (
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -74,7 +65,6 @@ export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'o
 
 export const navMainItems = [
   { href: '/sales', label: 'Sales', icon: 'sales' as const },
-  { href: '/buyers', label: 'Buyers', icon: 'buyers' as const },
   { href: '/accounting', label: 'Accounting', icon: 'accounting' as const },
   { href: '/operations', label: 'Operations', icon: 'operations' as const },
   { href: '/insights', label: 'Insights', icon: 'insights' as const },

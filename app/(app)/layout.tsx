@@ -1,4 +1,4 @@
-import Shell from "@/components/shell";
+import ShellRef from "@/components/shell-ref";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
@@ -19,5 +19,5 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     redirect("/");
   }
 
-  return <Shell userEmail={user.email ?? ""}>{children}</Shell>;
+  return <ShellRef userEmail={user.email ?? ""}>{children}</ShellRef>;
 }
