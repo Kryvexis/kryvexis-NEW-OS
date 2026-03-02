@@ -23,11 +23,16 @@ export default function MobileTabBar() {
   const active = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50">
-      <div className="mx-auto w-full max-w-md px-4 pb-4">
+    // Always float above content on mobile.
+    <div className="fixed inset-x-0 bottom-0 z-[9999]">
+      {/*
+        Safe-area padding so the bar doesn't sit under iOS home indicator.
+        The outer wrapper provides the spacing; inner card stays floating.
+      */}
+      <div className="mx-auto w-full max-w-md px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
         <div
-          className="relative rounded-[28px] bg-[rgba(var(--kx-surface),1)] shadow-[var(--kx-shadow-float)]"
-          style={{ border: '1px solid rgb(var(--kx-border) / 0.06)' }}
+          className="relative rounded-[28px] bg-[rgba(var(--kx-surface),0.88)] backdrop-blur-md shadow-[var(--kx-shadow-float)]"
+          style={{ border: '1px solid rgb(var(--kx-border) / 0.08)' }}
         >
           {/* Floating primary action */}
           <Link
@@ -58,7 +63,7 @@ export default function MobileTabBar() {
                   <Icon className={clsx('h-5 w-5', isActive ? '' : 'opacity-90')} />
                   <span className={clsx(isActive ? 'font-semibold' : '')}>{t.label}</span>
                 </Link>
-              )
+              )}
             })}
           </div>
         </div>
