@@ -23,11 +23,11 @@ export async function POST(req: Request) {
   if (!email || !email.includes("@")) {
     return NextResponse.json({ error: "Valid email required" }, { status: 400 });
   }
-  if (!["owner", "manager", "accounts", "staff"].includes(role)) {
+  if (!["owner", "manager", "accounts", "cashier", "buyer", "staff"].includes(role)) {
     return NextResponse.json({ error: "Invalid role" }, { status: 400 });
   }
 
-  // Ensure caller is owner
+  // Ensure caller is owner/manager
   const { data: me } = await supabase
     .from("company_users")
     .select("role")
@@ -35,8 +35,8 @@ export async function POST(req: Request) {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (me?.role !== "owner") {
-    return NextResponse.json({ error: "Owner only" }, { status: 403 });
+  if (!me?.role || !["owner", "manager"].includes(String(me.role))) {
+    return NextResponse.json({ error: "Manager only" }, { status: 403 });
   }
 
   // Record invite row

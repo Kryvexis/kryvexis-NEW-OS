@@ -7,6 +7,8 @@ import CommandPalette from './command-palette'
 import LogoutButton from './logout-button'
 import MobileNav from './nav/MobileNav'
 import { Sidebar } from './nav'
+import type { UserRole } from '@/lib/roles/shared'
+import { roleLabel } from '@/lib/roles/shared'
 // Desktop UI is enforced LIGHT (clean reference UI). We remove the dark-mode toggle to avoid mismatched screens.
 
 function pageTitleFromPath(pathname: string) {
@@ -29,7 +31,7 @@ function pageTitleFromPath(pathname: string) {
   return 'Kryvexis OS'
 }
 
-export default function Shell({ userEmail, children }: { userEmail: string; children: React.ReactNode }) {
+export default function Shell({ userEmail, role, children }: { userEmail: string; role: UserRole; children: React.ReactNode }) {
   const pathname = usePathname() || '/dashboard'
   const title = pageTitleFromPath(pathname)
 
@@ -39,7 +41,7 @@ export default function Shell({ userEmail, children }: { userEmail: string; chil
 
       <div className="flex min-h-screen">
         {/* Desktop sidebar (A) + hidden on small screens (C) */}
-        <Sidebar userEmail={userEmail} workspaceName="Kryvexis" />
+        <Sidebar userEmail={userEmail} workspaceName="Kryvexis" role={role} />
 
         {/* Main area */}
         <div className="flex min-w-0 flex-1 flex-col">
@@ -53,7 +55,7 @@ export default function Shell({ userEmail, children }: { userEmail: string; chil
               <div className="flex h-14 w-full max-w-[1280px] items-center gap-3">
               {/* Mobile menu */}
               <div className="md:hidden">
-                <MobileNav userEmail={userEmail} />
+                <MobileNav userEmail={userEmail} role={role} />
               </div>
 
               {/* Title */}
@@ -80,6 +82,15 @@ export default function Shell({ userEmail, children }: { userEmail: string; chil
                   title={userEmail}
                 >
                   {userEmail}
+                </div>
+                <div className="hidden md:flex items-center gap-2">
+                  <span
+                    className="rounded-full border px-2 py-1 text-[11px] kx-muted"
+                    style={{ borderColor: 'rgb(var(--kx-border) / 0.12)' }}
+                    title="Role"
+                  >
+                    {roleLabel(role)}
+                  </span>
                 </div>
                 <LogoutButton />
               </div>

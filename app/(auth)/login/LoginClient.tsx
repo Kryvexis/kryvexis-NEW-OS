@@ -40,57 +40,54 @@ export default function LoginClient({ next }: { next: string }) {
   }
 
   return (
-    <div className="min-h-screen px-4 py-10">
-      <div className="mx-auto grid w-full max-w-5xl items-stretch gap-4 lg:grid-cols-2">
-        {/* Brand panel */}
-        <div className="kx-panel p-6 lg:p-8">
-          <div className="flex items-center gap-3">
-            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={84} height={84} priority className="rounded-2xl" />
-            <div>
-              <div className="text-xl font-semibold tracking-tight">Kryvexis OS</div>
-              <div className="text-sm kx-muted">Minimal. Powerful. Business-ready.</div>
-            </div>
-          </div>
-
-          <div className="mt-6 space-y-2">
-            <div className="kx-chip">📊 Dashboard command center</div>
-            <div className="kx-chip">🧾 Quotes → invoices in one flow</div>
-            <div className="kx-chip">💰 Payments + accounts visibility</div>
-            <div className="kx-chip">🖨️ Print + PDF automation</div>
-          </div>
-
-          <div className="mt-8 rounded-2xl bg-[rgba(var(--kx-fg),.06)] p-4">
-            <div className="text-xs kx-muted2">Need help?</div>
-            <div className="mt-2 space-y-1 text-sm">
-              <a className="underline-offset-2 hover:underline" href="mailto:kryvexissolutions@gmail.com">
-                kryvexissolutions@gmail.com
-              </a>
-              <a className="underline-offset-2 hover:underline" href="https://wa.me/27686282874" target="_blank" rel="noreferrer">
-                WhatsApp +27 68 628 2874
-              </a>
-            </div>
-          </div>
+    <div
+      className="min-h-screen px-4 py-10"
+      style={{
+        background:
+          'radial-gradient(1200px 700px at 10% 10%, rgba(16, 185, 129, .22) 0%, rgba(0,0,0,0) 55%), radial-gradient(900px 600px at 90% 20%, rgba(59, 130, 246, .18) 0%, rgba(0,0,0,0) 60%), linear-gradient(180deg, #0b1220 0%, #07101d 55%, #050b14 100%)',
+      }}
+    >
+      <div className="mx-auto w-full max-w-md">
+        <div className="mb-6 flex items-center justify-center gap-3 text-white">
+          <Image
+            src="/kryvexis-logo.png"
+            alt="Kryvexis"
+            width={48}
+            height={48}
+            priority
+            className="h-10 w-10 object-contain"
+            style={{ filter: 'drop-shadow(0 14px 28px rgba(0,0,0,.45))' }}
+          />
+          <div className="text-lg font-semibold tracking-tight">Kryvexis OS</div>
         </div>
 
-        {/* Form panel */}
-        <div className="kx-card p-6 lg:p-8">
-          <div className="text-xl font-semibold tracking-tight">Welcome back</div>
-          <div className="mt-1 text-sm kx-muted">Sign in to your workspace.</div>
+        <div
+          className="rounded-3xl border px-6 py-7 text-white"
+          style={{
+            borderColor: 'rgba(255,255,255,.10)',
+            background: 'rgba(255,255,255,.06)',
+            boxShadow: '0 30px 80px rgba(0,0,0,.45)',
+            backdropFilter: 'blur(12px)',
+          }}
+        >
+          <div className="text-2xl font-semibold tracking-tight">Sign in to your account</div>
+          <div className="mt-1 text-sm text-white/70">Access your workspace and continue where you left off.</div>
 
           {error ? (
-            <div className="mt-4 rounded-2xl bg-[rgba(255,0,80,.10)] px-4 py-3 text-sm text-[rgb(var(--kx-fg))]">
+            <div className="mt-4 rounded-2xl bg-[rgba(255,0,80,.12)] px-4 py-3 text-sm text-white">
               {error}
             </div>
           ) : null}
 
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
             <label className="block">
-              <div className="mb-1 text-sm font-medium">Email</div>
+              <div className="mb-1 text-sm font-medium text-white/85">Email Address</div>
               <input
-                className="kx-input"
+                className="w-full rounded-2xl border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none"
+                style={{ borderColor: 'rgba(255,255,255,.12)', background: 'rgba(0,0,0,.18)' }}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
+                placeholder="user@example.com"
                 autoComplete="email"
                 inputMode="email"
                 required
@@ -98,10 +95,11 @@ export default function LoginClient({ next }: { next: string }) {
             </label>
 
             <label className="block">
-              <div className="mb-1 text-sm font-medium">Password</div>
+              <div className="mb-1 text-sm font-medium text-white/85">Password</div>
               <div className="flex gap-2">
                 <input
-                  className="kx-input flex-1"
+                  className="flex-1 rounded-2xl border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none"
+                  style={{ borderColor: 'rgba(255,255,255,.12)', background: 'rgba(0,0,0,.18)' }}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -109,29 +107,49 @@ export default function LoginClient({ next }: { next: string }) {
                   autoComplete="current-password"
                   required
                 />
-                <button type="button" className="kx-btn" onClick={() => setShowPw((v) => !v)} aria-label={showPw ? 'Hide password' : 'Show password'}>
+                <button
+                  type="button"
+                  className="rounded-2xl border px-4 py-3 text-sm text-white/85 transition hover:bg-white/10"
+                  style={{ borderColor: 'rgba(255,255,255,.12)', background: 'rgba(255,255,255,.06)' }}
+                  onClick={() => setShowPw((v) => !v)}
+                  aria-label={showPw ? 'Hide password' : 'Show password'}
+                >
                   {showPw ? 'Hide' : 'Show'}
                 </button>
               </div>
             </label>
 
-            <button className="kx-btn-primary w-full" type="submit" disabled={loading}>
-              {loading ? 'Signing in…' : 'Sign in'}
+            <button
+              className="w-full rounded-2xl px-4 py-3 text-sm font-semibold text-white transition"
+              style={{ background: 'linear-gradient(90deg, rgba(16,185,129,1) 0%, rgba(13,148,136,1) 100%)' }}
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? 'Signing in…' : 'Sign In'}
             </button>
 
             <div className="flex items-center justify-between text-sm">
-              <Link className="underline-offset-2 hover:underline" href="/forgot-password">
+              <Link className="text-white/80 underline-offset-2 hover:underline" href="/forgot-password">
                 Forgot password?
               </Link>
-              <span className="kx-muted">
+              <span className="text-white/70">
                 New?{' '}
-                <Link className="underline-offset-2 hover:underline" href="/signup">
+                <Link className="text-white/85 underline-offset-2 hover:underline" href="/signup">
                   Create account
                 </Link>
               </span>
             </div>
 
-            <div className="pt-2 text-xs kx-muted2">By signing in, you agree to Kryvexis terms.</div>
+            <div className="pt-2 text-center text-xs text-white/55">Powered by ⚡ Supabase</div>
+            <div className="pt-1 text-center text-xs text-white/45">
+              Support:{' '}
+              <a
+                className="underline underline-offset-4 decoration-white/20 hover:decoration-white/40"
+                href="mailto:kryvexissolutions@gmail.com"
+              >
+                kryvexissolutions@gmail.com
+              </a>
+            </div>
           </form>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import Shell from "@/components/shell";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUserRole } from "@/lib/roles";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -19,5 +20,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     redirect("/login");
   }
 
-  return <Shell userEmail={user.email ?? ""}>{children}</Shell>;
+  const role = await getCurrentUserRole();
+  return (
+    <Shell userEmail={user.email ?? ""} role={role}>
+      {children}
+    </Shell>
+  );
 }

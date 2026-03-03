@@ -4,30 +4,32 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
+import type { UserRole } from "@/lib/roles/shared";
 
 const NAV = [
-  ["Dashboard", "/dashboard"],
-  ["Clients", "/clients"],
-  ["Buyers", "/buyers"],
-  ["Products", "/products"],
-  ["Suppliers", "/suppliers"],
-  ["Quotes", "/quotes"],
-  ["Invoices", "/invoices"],
-  ["Payments", "/payments"],
-  ["Accounts", "/accounts"],
-  ["Reports", "/reports"],
-  ["Operations", "/operations"],
-  ["Settings", "/settings"],
-  ["Help", "/help"],
-  ["Import Center", "/import-station"],
-  ["Account Center", "/account-center"],
+  { label: "Dashboard", href: "/dashboard", roles: ["owner", "manager", "cashier", "staff", "accounts"] as UserRole[] },
+  { label: "Clients", href: "/clients", roles: ["owner", "manager", "cashier", "staff", "accounts"] as UserRole[] },
+  { label: "Buyers", href: "/buyers", roles: ["owner", "manager", "buyer"] as UserRole[] },
+  { label: "Products", href: "/products", roles: ["owner", "manager", "buyer"] as UserRole[] },
+  { label: "Suppliers", href: "/suppliers", roles: ["owner", "manager", "buyer"] as UserRole[] },
+  { label: "Quotes", href: "/quotes", roles: ["owner", "manager", "cashier", "staff"] as UserRole[] },
+  { label: "Invoices", href: "/invoices", roles: ["owner", "manager", "cashier", "staff", "accounts"] as UserRole[] },
+  { label: "Payments", href: "/payments", roles: ["owner", "manager", "cashier", "staff", "accounts"] as UserRole[] },
+  { label: "Accounting", href: "/accounting/dashboard", roles: ["owner", "manager", "accounts"] as UserRole[] },
+  { label: "Reports", href: "/reports", roles: ["owner", "manager", "accounts"] as UserRole[] },
+  { label: "Operations", href: "/operations", roles: ["owner", "manager", "buyer"] as UserRole[] },
+  { label: "Settings", href: "/settings", roles: ["owner", "manager", "cashier", "buyer", "accounts", "staff"] as UserRole[] },
+  { label: "Help", href: "/help", roles: ["owner", "manager", "cashier", "buyer", "accounts", "staff"] as UserRole[] },
+  { label: "Import Center", href: "/import-station", roles: ["owner", "manager"] as UserRole[] },
+  { label: "Account Center", href: "/account-center", roles: ["owner", "manager"] as UserRole[] },
 ] as const;
 
 type MobileNavProps = {
   userEmail?: string
+  role: UserRole
 }
 
-export default function MobileNav(_props: MobileNavProps) {
+export default function MobileNav(props: MobileNavProps) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
 
@@ -39,12 +41,12 @@ export default function MobileNav(_props: MobileNavProps) {
 
       <Modal open={open} title="Menu" onClose={() => setOpen(false)}>
         <div className="grid gap-2">
-          {NAV.map(([label, href]) => {
-            const active = pathname === href;
+          {NAV.filter((it) => it.roles.includes(props.role) || props.role === 'owner' || props.role === 'manager').map((it) => {
+            const active = pathname === it.href;
             return (
               <Link
-                key={href}
-                href={href}
+                key={it.href}
+                href={it.href}
                 className={
                   "block rounded-xl border px-3 py-2 text-sm transition " +
                   (active
@@ -53,7 +55,7 @@ export default function MobileNav(_props: MobileNavProps) {
                 }
                 onClick={() => setOpen(false)}
               >
-                {label}
+                {it.label}
               </Link>
             );
           })}

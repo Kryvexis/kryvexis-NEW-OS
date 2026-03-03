@@ -1,11 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/card'
 import ThemeControls from '@/components/theme/ThemeControls'
+import Link from 'next/link'
+import { getCurrentUserRole } from '@/lib/roles'
+import { canManageUsers } from '@/lib/roles/shared'
 
 export default async function Page() {
   const supabase = await createClient()
   const { data: userData } = await supabase.auth.getUser()
   const uid = userData.user?.id
+  const role = await getCurrentUserRole()
 
   const { data: company } = uid
     ? await supabase
@@ -36,6 +40,18 @@ export default async function Page() {
         </div>
         <div className="mt-4 text-xs kx-muted2">Next: editable profile, invoice numbering, tax rates, theme, PDF automation.</div>
       </Card>
+
+      {canManageUsers(role) ? (
+        <Card>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold">Team & roles</div>
+              <div className="mt-1 text-sm kx-muted">Manage who can see Sales / Procurement / Accounting.</div>
+            </div>
+            <Link className="kx-btn" href="/settings/users">Open</Link>
+          </div>
+        </Card>
+      ) : null}
 
       <Card>
         <ThemeControls />

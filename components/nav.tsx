@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import type { UserRole } from '@/lib/roles/shared'
+import { canManageUsers } from '@/lib/roles/shared'
 
 export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
   const common = 'h-4 w-4'
@@ -64,10 +66,10 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
 }
 
 export const navMainItems = [
-  { href: '/sales', label: 'Sales', icon: 'sales' as const },
-  { href: '/accounting', label: 'Accounting', icon: 'accounting' as const },
-  { href: '/operations', label: 'Operations', icon: 'operations' as const },
-  { href: '/insights', label: 'Insights', icon: 'insights' as const },
+  { href: '/sales', label: 'Sales', icon: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[] },
+  { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[] },
+  { href: '/operations', label: 'Operations', icon: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
+  { href: '/insights', label: 'Insights', icon: 'insights' as const, roles: ['owner', 'manager'] as UserRole[] },
 ]
 
 // Bottom section: keep this near the footer. Import Center must be second-to-last.
@@ -78,7 +80,7 @@ export const navBottomItems = [
   { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
 ]
 
-export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: string; workspaceName?: string; memberType?: string }) {
+export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string; workspaceName?: string; role: UserRole }) {
   const pathname = usePathname() || ''
 
   // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
@@ -120,7 +122,9 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
 
       {/* Main navigation */}
       <nav className={'px-3 pb-2 space-y-1 text-white/80'}>
-        {navMainItems.map((it) => {
+        {navMainItems
+          .filter((it) => it.roles.includes(role) || role === 'owner' || role === 'manager')
+          .map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
             <Link
@@ -175,9 +179,9 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
               <div className="text-[11px] uppercase tracking-wider text-white/50">Signed in as</div>
               <div className="mt-1 text-xs text-white/80 break-all">{userEmail}</div>
             </div>
-            {memberType && (
-              <span className="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/80" title="Member type">
-                {memberType}
+            {canManageUsers(role) && (
+              <span className="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/80" title="Manager access">
+                Admin
               </span>
             )}
           </div>
