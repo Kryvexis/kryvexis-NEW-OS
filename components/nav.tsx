@@ -90,37 +90,36 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
     <aside
       className={'hidden md:flex md:flex-col ' + widthCls}
       style={{
-        background: 'linear-gradient(180deg, rgb(var(--kx-shell) / 0.94), rgb(var(--kx-shell) / 0.86))',
+        // Always-dark sidebar (matches the reference UI) regardless of theme.
+        background: 'linear-gradient(180deg, #0b1220 0%, #0a1628 55%, #081324 100%)',
         boxShadow: 'var(--kx-shadow-sidebar)',
       }}
     >
-      <div className={'px-5 pt-4 pb-3'}>
+      <div className={'px-5 pt-5 pb-3 text-white'}>
         <div className={'flex items-start justify-between gap-3'}>
           <div className={'flex flex-col'}>
-            {/* Logo (no "block" container). Double-size with soft glow. */}
-            <Image
-              src="/kryvexis-logo.png"
-              alt="Kryvexis"
-              width={160}
-              height={160}
-              className={'h-[150px] w-[150px] object-contain'}
-              style={{
-                filter:
-                  'drop-shadow(0 0 18px rgba(var(--kx-accent), .22)) drop-shadow(0 10px 28px rgba(0,0,0,.35))',
-              }}
-              priority
-            />
-
-            <div className={'mt-1'}>
-              <div className={'text-[14px] font-semibold tracking-tight leading-tight'}>Kryvexis OS</div>
-              <div className="text-[11px] kx-muted leading-tight">{workspaceName ?? 'Workspace'}</div>
+            {/* Compact brand (icon + name) */}
+            <div className="flex items-center gap-2">
+              <Image
+                src="/kryvexis-logo.png"
+                alt="Kryvexis"
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain"
+                style={{ filter: 'drop-shadow(0 10px 22px rgba(0,0,0,.35))' }}
+                priority
+              />
+              <div>
+                <div className="text-sm font-semibold tracking-tight">Kryvexis OS</div>
+                <div className="text-[11px] text-white/60 leading-tight">{workspaceName ?? 'Workspace'}</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main navigation */}
-      <nav className={'px-3 pb-2 space-y-1'}>
+      <nav className={'px-3 pb-2 space-y-1 text-white/80'}>
         {navMainItems.map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
@@ -129,13 +128,16 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
               href={it.href}
               data-tour={`nav-${it.icon}`}
               title={it.label}
-              className={'kx-navlink group flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'is-active' : '')}
+              className={
+                'group flex items-center rounded-xl py-2 text-sm transition ' +
+                (on ? 'bg-white/10 text-white' : 'hover:bg-white/5')
+              }
             >
-              <span className={'ml-3 ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
+              <span className={'ml-3 ' + (on ? 'text-white' : 'text-white/70 group-hover:text-white/90')}>
                 <NavIcon name={it.icon} />
               </span>
               <span className="ml-2 tracking-tight">{it.label}</span>
-              {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(var(--kx-accent), 0.95)' }} />}
+              {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.9)' }} />}
             </Link>
           )
         })}
@@ -143,7 +145,7 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
 
       {/* Bottom navigation */}
       <div className="mt-auto" />
-      <nav className={'px-3 pt-2 pb-3 space-y-1'}>
+      <nav className={'px-3 pt-2 pb-3 space-y-1 text-white/80'}>
         {navBottomItems.map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
@@ -151,27 +153,30 @@ export function Sidebar({ userEmail, workspaceName, memberType }: { userEmail?: 
               key={it.href}
               href={it.href}
               title={it.label}
-              className={'kx-navlink group flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'is-active' : '')}
+              className={
+                'group flex items-center rounded-xl py-2 text-sm transition ' +
+                (on ? 'bg-white/10 text-white' : 'hover:bg-white/5')
+              }
             >
-              <span className={'ml-3 ' + (on ? 'text-[rgba(var(--kx-fg),.92)]' : 'text-[rgba(var(--kx-fg),.70)] group-hover:text-[rgba(var(--kx-fg),.90)]')}>
+              <span className={'ml-3 ' + (on ? 'text-white' : 'text-white/70 group-hover:text-white/90')}>
                 <NavIcon name={it.icon} />
               </span>
               <span className="ml-2 tracking-tight">{it.label}</span>
-              {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(var(--kx-accent), 0.95)' }} />}
+              {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.9)' }} />}
             </Link>
           )
         })}
       </nav>
 
       {userEmail && (
-        <div className="mt-auto px-5 py-4 " style={{ borderColor: 'rgba(var(--kx-border), .12)' }}>
+        <div className="mt-auto px-5 py-4 text-white/80">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <div className="text-[11px] uppercase tracking-wider kx-muted3">Signed in as</div>
-              <div className="mt-1 text-xs text-[rgba(var(--kx-fg),.86)] break-all">{userEmail}</div>
+              <div className="text-[11px] uppercase tracking-wider text-white/50">Signed in as</div>
+              <div className="mt-1 text-xs text-white/80 break-all">{userEmail}</div>
             </div>
             {memberType && (
-              <span className="kx-chip" title="Member type">
+              <span className="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/80" title="Member type">
                 {memberType}
               </span>
             )}

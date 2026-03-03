@@ -20,22 +20,15 @@ export function PosHeroShell({
 }) {
   return (
     <div className={clsx('space-y-4', className)}>
-      <div className="kx-card overflow-hidden">
-        <div
-          className="relative p-6"
-          style={{
-            background:
-              'radial-gradient(900px 420px at 16% -10%, rgb(var(--kx-accent) / 0.24), transparent 60%), radial-gradient(900px 420px at 86% -12%, rgb(var(--kx-accent-2) / 0.22), transparent 62%), linear-gradient(180deg, rgb(255 255 255 / 0.03), transparent 52%)',
-          }}
-        >
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="min-w-0">
-              <div className="text-2xl font-semibold tracking-tight">{title}</div>
-              {subtitle ? <div className="mt-1 text-sm kx-muted">{subtitle}</div> : null}
-              {meta ? <div className="mt-4">{meta}</div> : null}
-            </div>
-            {actions ? <div className="flex flex-wrap items-center justify-end gap-2">{actions}</div> : null}
+      {/* Slim header (clean + minimal, like the reference UI) */}
+      <div className="kx-card">
+        <div className="flex flex-col gap-3 p-5 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0">
+            <div className="text-xl font-semibold tracking-tight">{title}</div>
+            {subtitle ? <div className="mt-1 text-sm kx-muted">{subtitle}</div> : null}
+            {meta ? <div className="mt-3">{meta}</div> : null}
           </div>
+          {actions ? <div className="flex flex-wrap items-center justify-end gap-2">{actions}</div> : null}
         </div>
       </div>
 

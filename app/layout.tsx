@@ -5,7 +5,8 @@ import InstallPrompt from "@/components/pwa/InstallPrompt";
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" className="dark" suppressHydrationWarning>
+    // Default to LIGHT — matches the "simple clean" UI reference. Users can still toggle.
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#10b981" />
@@ -17,7 +18,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `(() => {
   try {
     // Single source of truth is the "dark" class (Tailwind). We also set data-theme for debugging.
-    const themeRaw = localStorage.getItem('kx_theme') || 'dark';
+    // Default: light (clean + airy). Persisted in localStorage once user toggles.
+    const themeRaw = localStorage.getItem('kx_theme') || 'light';
     const theme = (themeRaw === 'light') ? 'light' : 'dark';
 
     const root = document.documentElement;
@@ -26,7 +28,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     root.classList.toggle('kx-light', theme === 'light');
 
     // Accent pairs power the subtle premium depth gradients.
-    const accent = localStorage.getItem('kx_accent') || 'indigo';
+    // Default: green (matches the Kryvexis UI references).
+    const accent = localStorage.getItem('kx_accent') || 'green';
     const map = {
       indigo: { a: '99 102 241', b: '56 189 248' },
       purple: { a: '168 85 247', b: '59 130 246' },
