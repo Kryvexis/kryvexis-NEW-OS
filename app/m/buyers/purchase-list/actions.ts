@@ -5,21 +5,22 @@ import { cookies } from "next/headers";
 type Item = { product_id: string; name: string; qty: number };
 
 async function readList(): Promise<Item[]> {
-  const cookieStore = await cookies();
-  const raw = cookieStore.get("kx_purchase_list")?.value;
+  const store = await cookies();
+  const raw = store.get("kx_purchase_list")?.value;
   if (!raw) return [];
   try {
     const parsed = JSON.parse(decodeURIComponent(raw));
-    return Array.isArray(parsed) ? (parsed as Item[]) : [];
+    if (Array.isArray(parsed)) return parsed;
+    return [];
   } catch {
     return [];
   }
 }
 
 async function writeList(list: Item[]) {
-  const cookieStore = await cookies();
   const val = encodeURIComponent(JSON.stringify(list));
-  cookieStore.set("kx_purchase_list", val, {
+  const store = await cookies();
+  store.set("kx_purchase_list", val, {
     httpOnly: false,
     sameSite: "lax",
     path: "/",

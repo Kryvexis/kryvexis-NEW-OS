@@ -23,7 +23,7 @@ type HeldTicket = {
   note?: string
 }
 
-const PRODUCTS: Product[] = [
+const SEED_PRODUCTS: Product[] = [
   { id: 'p1', name: '12mm Conduit (3m)', sku: 'CON-12-3M', price: 39.9, tag: 'Conduit' },
   { id: 'p2', name: '2.5mm Twin + Earth (1m)', sku: 'CAB-25-TE', price: 18.5, tag: 'Cable' },
   { id: 'p3', name: '20A Circuit Breaker', sku: 'CB-20A', price: 89.0, tag: 'Breaker' },
@@ -43,15 +43,50 @@ function currencyZAR(n: number) {
 }
 
 export default function POSClient() {
+  const inputRef = React.useRef<HTMLInputElement | null>(null)
   const [query, setQuery] = React.useState('')
   const [activeTag, setActiveTag] = React.useState<string>('All')
   const [cart, setCart] = React.useState<CartLine[]>([])
   const [drawerOpen, setDrawerOpen] = React.useState(false)
-  const [paymentMethod, setPaymentMethod] = React.useState<'Card' | 'Cash' | 'EFT'>('Card')
+  const [paymentMethod, setPaymentMethod] = React.useState<'Card' | 'Cash' | 'EFT' | 'Split' | 'PayLater'>('Card')
   const [cashGiven, setCashGiven] = React.useState('')
   const [selectedClient, setSelectedClient] = React.useState('Walk-in')
 
+  // Walk-in name capture (optional, but used for Pay Later)
+  const [walkInName, setWalkInName] = React.useState('')
+
+  // Split payments
+  const [splitCash, setSplitCash] = React.useState('')
+  const [splitCard, setSplitCard] = React.useState('')
+  const [splitEFT, setSplitEFT] = React.useState('')
+
+  // Local-first product catalog (demo). Replace with server data when wiring to DB.
+  const [products, setProducts] = React.useState<Product[]>(SEED_PRODUCTS)
+
   const [tickets, setTickets] = React.useState<HeldTicket[]>([])
+
+  React.useEffect(() => {
+    // Load persisted catalog
+    try {
+      const raw = localStorage.getItem('kx_pos_products')
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed)) setProducts(parsed)
+    } catch {}
+  }, [])
+
+  const persistProducts = React.useCallback((next: Product[]) => {
+    setProducts(next)
+    try {
+      localStorage.setItem('kx_pos_products', JSON.stringify(next))
+    } catch {}
+  }, [])
+
+  React.useEffect(() => {
+    // Barcode-first: keep the cursor in the search box
+    const t = setTimeout(() => inputRef.current?.focus(), 50)
+    return () => clearTimeout(t)
+  }, [])
 
   React.useEffect(() => {
     try {
@@ -69,20 +104,20 @@ export default function POSClient() {
   }, [])
 
   const tags = React.useMemo(() => {
-    const set = new Set(PRODUCTS.map((p) => p.tag))
+    const set = new Set(products.map((p) => p.tag))
     return ['All', ...Array.from(set)]
-  }, [])
+  }, [products])
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase()
-    return PRODUCTS.filter((p) => {
+    return products.filter((p) => {
       const tagOk = activeTag === 'All' ? true : p.tag === activeTag
       const qOk = q
         ? p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
         : true
       return tagOk && qOk
     })
-  }, [query, activeTag])
+  }, [query, activeTag, products])
 
   const subtotal = React.useMemo(
     () => cart.reduce((sum, l) => sum + l.product.price * l.qty, 0),
@@ -93,6 +128,15 @@ export default function POSClient() {
 
   const cash = Number((cashGiven || '0').replace(/[^0-9.]/g, ''))
   const change = Math.max(0, cash - total)
+
+  const splitCashN = Number((splitCash || '0').replace(/[^0-9.]/g, ''))
+  const splitCardN = Number((splitCard || '0').replace(/[^0-9.]/g, ''))
+  const splitEFTN = Number((splitEFT || '0').replace(/[^0-9.]/g, ''))
+  const splitTotal = splitCashN + splitCardN + splitEFTN
+  const splitRemaining = Math.max(0, total - splitTotal)
+  const splitOver = Math.max(0, splitTotal - total)
+
+  const customerLabel = selectedClient === 'Walk-in' ? (walkInName.trim() ? walkInName.trim() : 'Walk-in') : selectedClient
 
   const holdCurrentSale = React.useCallback(
     (note?: string) => {
@@ -112,9 +156,13 @@ export default function POSClient() {
       persistTickets(next)
       setCart([])
       setSelectedClient('Walk-in')
+      setWalkInName('')
       setQuery('')
       setActiveTag('All')
       setCashGiven('')
+      setSplitCash('')
+      setSplitCard('')
+      setSplitEFT('')
       alert('Sale held. You can resume it from Parked tickets.')
     },
     [cart, persistTickets, selectedClient, tickets],
@@ -162,6 +210,30 @@ export default function POSClient() {
       }
       return [...prev, { product: p, qty: 1 }]
     })
+    setTimeout(() => inputRef.current?.focus(), 0)
+  }
+
+  function quickAddProductFromQuery() {
+    const sku = query.trim()
+    if (!sku) return
+    const name = window.prompt('Quick add product name:', sku)
+    if (!name) return
+    const priceRaw = window.prompt('Selling price (ZAR):', '0')
+    const price = Math.max(0, Number((priceRaw || '0').replace(/[^0-9.]/g, '')))
+    const tag = (window.prompt('Category/Tag (optional):', 'New') || 'New').trim() || 'New'
+
+    const p: Product = {
+      id: crypto.randomUUID(),
+      name: String(name),
+      sku: sku.toUpperCase(),
+      price,
+      tag,
+    }
+
+    persistProducts([p, ...products])
+    setQuery('')
+    setActiveTag('All')
+    addToCart(p)
   }
 
   function dec(id: string) {
@@ -181,6 +253,10 @@ export default function POSClient() {
     setCart([])
     setCashGiven('')
     setSelectedClient('Walk-in')
+    setWalkInName('')
+    setSplitCash('')
+    setSplitCard('')
+    setSplitEFT('')
   }
 
   function openCharge() {
@@ -189,6 +265,51 @@ export default function POSClient() {
 
   function closeCharge() {
     setDrawerOpen(false)
+  }
+
+  function completeSale() {
+    if (!cart.length) return
+
+    if (paymentMethod === 'Cash' && cash < total) {
+      alert('Cash received is less than the total.')
+      return
+    }
+
+    if (paymentMethod === 'Split' && splitTotal < total) {
+      alert('Split payments do not cover the total yet.')
+      return
+    }
+
+    if (paymentMethod === 'PayLater') {
+      if (selectedClient === 'Walk-in' && !walkInName.trim()) {
+        alert('Please add a customer name for Pay Later sales.')
+        return
+      }
+      alert(`Saved as UNPAID invoice for: ${customerLabel}`)
+      closeCharge()
+      clear()
+      return
+    }
+
+    const receiptId = `POS-${Date.now()}`
+    try {
+      const raw = localStorage.getItem('kx_pos_receipts')
+      const prev = raw ? JSON.parse(raw) : []
+      const next = Array.isArray(prev) ? prev : []
+      next.unshift({
+        id: receiptId,
+        at: new Date().toISOString(),
+        customer: customerLabel,
+        method: paymentMethod,
+        total,
+        lines: cart,
+      })
+      localStorage.setItem('kx_pos_receipts', JSON.stringify(next.slice(0, 200)))
+    } catch {}
+
+    alert(`Sale complete (${paymentMethod}). Receipt: ${receiptId}`)
+    closeCharge()
+    clear()
   }
 
   function keypadPress(k: string) {
@@ -222,7 +343,7 @@ export default function POSClient() {
               {currencyZAR(total)}
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <span className="kx-chip">Client: {selectedClient}</span>
+              <span className="kx-chip">Client: {customerLabel}</span>
               <span className="kx-chip">Tax 15%</span>
               <span className="kx-chip">Today</span>
             </div>
@@ -232,8 +353,14 @@ export default function POSClient() {
             <button className="kx-btn" onClick={clear} disabled={cart.length === 0}>
               Clear
             </button>
-            <button className="kx-btn" onClick={() => setSelectedClient(selectedClient === 'Walk-in' ? 'Account Client' : 'Walk-in')}>
-              {selectedClient === 'Walk-in' ? 'Select client' : 'Walk-in'}
+            <button
+              className="kx-btn"
+              onClick={() => {
+                const n = window.prompt('Customer name (optional):', walkInName || '')
+                if (n !== null) setWalkInName(n)
+              }}
+            >
+              {walkInName.trim() ? 'Edit name' : 'Add name'}
             </button>
             <button className="kx-btn" onClick={() => alert('Save draft: coming next')}
               disabled={!canCharge}
@@ -306,6 +433,7 @@ export default function POSClient() {
                 placeholder="Search products / SKU…"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                ref={inputRef}
               />
               <button className="kx-btn" onClick={() => alert('Barcode scan: coming next')}>
                 Scan
@@ -349,7 +477,15 @@ export default function POSClient() {
             {filtered.length === 0 && (
               <div className="kx-card col-span-full p-5">
                 <div className="text-sm font-medium">No matches</div>
-                <div className="text-sm kx-muted">Try a different keyword or clear filters.</div>
+                <div className="text-sm kx-muted">Try a different keyword or clear filters. If this is a new barcode/SKU, add it instantly.</div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button className="kx-btn" onClick={() => { setQuery(''); setActiveTag('All'); inputRef.current?.focus() }}>
+                    Clear search
+                  </button>
+                  <button className="kx-btn-primary" onClick={quickAddProductFromQuery} disabled={!query.trim()}>
+                    Quick add product
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -454,8 +590,15 @@ export default function POSClient() {
               <span className="text-2xl font-semibold">{currencyZAR(total)}</span>
             </div>
             <div className="mt-4 flex gap-2">
-              <button className="kx-btn flex-1" onClick={() => alert('Convert to invoice: coming next')} disabled={!canCharge}>
-                Invoice
+              <button
+                className="kx-btn flex-1"
+                onClick={() => {
+                  setPaymentMethod('PayLater')
+                  openCharge()
+                }}
+                disabled={!canCharge}
+              >
+                Pay later
               </button>
               <button className="kx-btn-primary flex-1" onClick={openCharge} disabled={!canCharge}>
                 Charge
@@ -491,13 +634,13 @@ export default function POSClient() {
                     <div className="text-sm kx-muted">Checkout</div>
                     <div className="mt-1 text-3xl font-semibold tracking-tight">{currencyZAR(total)}</div>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {(['Card', 'Cash', 'EFT'] as const).map((m) => (
+                      {(['Card', 'Cash', 'EFT', 'Split', 'PayLater'] as const).map((m) => (
                         <button
                           key={m}
                           className={`kx-chip transition ${m === paymentMethod ? 'opacity-100' : 'opacity-70 hover:opacity-100'}`}
                           onClick={() => setPaymentMethod(m)}
                         >
-                          {m}
+                          {m === 'PayLater' ? 'Pay later' : m}
                         </button>
                       ))}
                     </div>
@@ -515,7 +658,7 @@ export default function POSClient() {
                     <div className="kx-card p-3">
                       <div className="flex items-center justify-between text-sm">
                         <span className="kx-muted">Client</span>
-                        <span className="font-medium">{selectedClient}</span>
+                        <span className="font-medium">{customerLabel}</span>
                       </div>
                       <div className="mt-2 flex items-center justify-between text-sm">
                         <span className="kx-muted">Method</span>
@@ -554,7 +697,69 @@ export default function POSClient() {
                       </div>
                     )}
 
-                    {paymentMethod !== 'Cash' && (
+                    {paymentMethod === 'Split' && (
+                      <div className="kx-card p-3">
+                        <div className="text-sm font-medium">Split payment</div>
+                        <div className="mt-2 grid grid-cols-3 gap-2">
+                          <div>
+                            <div className="text-xs kx-muted">Cash</div>
+                            <input className="kx-input h-10" value={splitCash} onChange={(e) => setSplitCash(e.target.value)} placeholder="0.00" />
+                          </div>
+                          <div>
+                            <div className="text-xs kx-muted">Card</div>
+                            <input className="kx-input h-10" value={splitCard} onChange={(e) => setSplitCard(e.target.value)} placeholder="0.00" />
+                          </div>
+                          <div>
+                            <div className="text-xs kx-muted">EFT</div>
+                            <input className="kx-input h-10" value={splitEFT} onChange={(e) => setSplitEFT(e.target.value)} placeholder="0.00" />
+                          </div>
+                        </div>
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {[50, 100, 200, 500, 1000].map((n) => (
+                            <button key={n} className="kx-btn" onClick={() => setSplitCash(String(n))}>
+                              R{n}
+                            </button>
+                          ))}
+                          <button className="kx-btn" onClick={() => { setSplitCash(''); setSplitCard(''); setSplitEFT('') }}>
+                            Clear
+                          </button>
+                        </div>
+
+                        <div className="mt-3 grid gap-1 text-sm">
+                          <div className="flex items-center justify-between">
+                            <span className="kx-muted">Paid so far</span>
+                            <span className="font-medium">{currencyZAR(splitTotal)}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="kx-muted">Remaining</span>
+                            <span className="font-medium">{currencyZAR(splitRemaining)}</span>
+                          </div>
+                          {splitOver > 0 && (
+                            <div className="flex items-center justify-between">
+                              <span className="kx-muted">Over</span>
+                              <span className="font-medium">{currencyZAR(splitOver)}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {paymentMethod === 'PayLater' && (
+                      <div className="kx-card p-3">
+                        <div className="text-sm font-medium">Pay later</div>
+                        <div className="mt-2 text-sm kx-muted">
+                          This will create an <b>UNPAID</b> invoice for the customer.
+                        </div>
+                        {selectedClient === 'Walk-in' && !walkInName.trim() && (
+                          <div className="mt-2 text-xs kx-muted">
+                            Please add a customer name before completing.
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {paymentMethod !== 'Cash' && paymentMethod !== 'Split' && paymentMethod !== 'PayLater' && (
                       <div className="kx-card p-3">
                         <div className="text-sm font-medium">Notes</div>
                         <div className="mt-2 text-sm kx-muted">
@@ -590,12 +795,9 @@ export default function POSClient() {
                     <div className="mt-4 grid gap-2">
                       <button
                         className="kx-btn-primary"
-                        onClick={() => {
-                          alert('Charge complete: next step = save payment + create invoice + auto PDF')
-                          closeCharge()
-                        }}
+                        onClick={completeSale}
                       >
-                        Confirm {paymentMethod}
+                        Complete sale
                       </button>
                       <div className="grid grid-cols-2 gap-2">
                         <button className="kx-btn" onClick={() => alert('Print receipt: coming next')}>
