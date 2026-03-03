@@ -32,7 +32,10 @@ export default function ShellRef({ userEmail, children }: { userEmail: string; c
 
       <div className="flex min-h-screen">
         {/* Left sidebar — compact + clean like reference */}
-        <aside className="hidden md:flex md:w-[240px] md:flex-col bg-kx-shell/90" style={{ boxShadow: 'var(--kx-shadow-sidebar)' }}>
+        <aside
+          className="hidden md:flex md:w-[260px] md:flex-col bg-[#0B2340] text-white"
+          style={{ boxShadow: 'var(--kx-shadow-sidebar)' }}
+        >
           <div className="px-4 py-4">
             <div className="flex items-center gap-2">
               <Image src="/kryvexis-logo.png" alt="Kryvexis" width={28} height={28} className="h-7 w-7" priority />
@@ -55,18 +58,18 @@ export default function ShellRef({ userEmail, children }: { userEmail: string; c
                   href={it.href}
                   className={
                     'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition ' +
-                    (on ? 'bg-kx-surface shadow-sm font-medium' : 'hover:bg-kx-surface/70')
+                    (on ? 'bg-white/12 font-medium' : 'hover:bg-white/10')
                   }
                 >
-                  <span className={on ? 'text-kx-fg' : 'text-kx-muted'}>{it.label}</span>
+                  <span className={on ? 'text-white' : 'text-white/80'}>{it.label}</span>
                 </Link>
               )
             })}
           </nav>
 
-          <div className="mt-auto px-4 py-3 text-xs text-kx-muted">
+          <div className="mt-auto px-4 py-3 text-xs text-white/70">
             <div className="uppercase tracking-wider">Signed in as</div>
-            <div className="mt-1 break-all text-kx-fg/80">{userEmail}</div>
+            <div className="mt-1 break-all text-white/85">{userEmail}</div>
           </div>
         </aside>
 

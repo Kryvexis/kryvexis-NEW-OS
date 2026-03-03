@@ -1,13 +1,20 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import { fmtZar } from '@/lib/format'
-import { PosHeroShell } from '@/components/pos/hero-shell'
+import { getCurrentUserRole } from '@/lib/roles'
+import { redirect } from 'next/navigation'
+import { Page as PageLayout } from '@/components/ui/page'
 
 function monthKey(d: string) {
   return String(d || '').slice(0, 7) // YYYY-MM
 }
 
 export default async function SalesOverview() {
+  const role = await getCurrentUserRole()
+  if (role === 'cashier' || role === 'staff') {
+    redirect('/sales/pos')
+  }
+
   const supabase = await createClient()
   const companyId = await requireCompanyId()
 
@@ -61,25 +68,28 @@ export default async function SalesOverview() {
   const hasClients = (clients || []).length > 0
 
   return (
-    <PosHeroShell title="Overview" subtitle="Today’s sales, the last 6 months, and what’s moving.">
+    <PageLayout title="Overview" subtitle="Today’s sales, the last 6 months, and what’s moving.">
       <div className="grid gap-4 md:grid-cols-3">
         <div className="kx-card p-5 md:col-span-1">
-          <div className="text-xs text-white/[0.55]">Today</div>
-          <div className="mt-2 text-3xl font-semibold">{fmtZar(todayTotal)}</div>
-          <div className="mt-1 text-xs text-white/55">Total invoices issued today.</div>
+          <div className="text-xs text-kx-muted">Today</div>
+          <div className="mt-2 text-3xl font-semibold text-kx-fg">{fmtZar(todayTotal)}</div>
+          <div className="mt-1 text-xs text-kx-muted">Total invoices issued today.</div>
         </div>
 
         <div className="kx-card p-5 md:col-span-2">
-          <div className="text-sm font-semibold">Sales trend</div>
-          <div className="mt-1 text-xs text-white/55">Past 6 months (invoiced total).</div>
+          <div className="text-sm font-semibold text-kx-fg">Sales trend</div>
+          <div className="mt-1 text-xs text-kx-muted">Past 6 months (invoiced total).</div>
           <div className="mt-4 grid grid-cols-6 gap-3 items-end">
             {trend.map((m) => {
               const h = Math.round((m.total / max) * 80) + 6
               const label = m.key.slice(5)
               return (
                 <div key={m.key} className="text-center">
-                  <div className="mx-auto w-full max-w-[46px] rounded-xl bg-white/[0.06] border border-[rgba(var(--kx-border),.12)]" style={{ height: h }} />
-                  <div className="mt-2 text-[11px] text-white/55">{label}</div>
+                  <div
+                    className="mx-auto w-full max-w-[46px] rounded-xl bg-[rgba(var(--kx-fg),.06)] border border-[rgba(var(--kx-border),.18)]"
+                    style={{ height: h }}
+                  />
+                  <div className="mt-2 text-[11px] text-kx-muted">{label}</div>
                 </div>
               )
             })}
@@ -87,29 +97,29 @@ export default async function SalesOverview() {
         </div>
 
         <div className="kx-card p-5 md:col-span-1">
-          <div className="text-sm font-semibold">Top 5 items</div>
+          <div className="text-sm font-semibold text-kx-fg">Top 5 items</div>
           <div className="mt-3 space-y-2">
             {top5.length ? top5.map((x) => (
               <div key={x.name} className="flex items-center justify-between gap-3 text-sm">
-                <div className="truncate text-white/90">{x.name}</div>
-                <div className="text-white/60">{fmtZar(x.total)}</div>
+                <div className="truncate text-kx-fg">{x.name}</div>
+                <div className="text-kx-muted">{fmtZar(x.total)}</div>
               </div>
-            )) : <div className="text-sm text-white/55">No items yet.</div>}
+            )) : <div className="text-sm text-kx-muted">No items yet.</div>}
           </div>
         </div>
 
         <div className="kx-card p-5 md:col-span-2">
-          <div className="text-sm font-semibold">Bottom 5 items</div>
+          <div className="text-sm font-semibold text-kx-fg">Bottom 5 items</div>
           <div className="mt-3 space-y-2">
             {bottom5.length ? bottom5.map((x) => (
               <div key={x.name} className="flex items-center justify-between gap-3 text-sm">
-                <div className="truncate text-white/90">{x.name}</div>
-                <div className="text-white/60">{fmtZar(x.total)}</div>
+                <div className="truncate text-kx-fg">{x.name}</div>
+                <div className="text-kx-muted">{fmtZar(x.total)}</div>
               </div>
-            )) : <div className="text-sm text-white/55">No items yet.</div>}
+            )) : <div className="text-sm text-kx-muted">No items yet.</div>}
           </div>
         </div>
       </div>
-    </PosHeroShell>
+    </PageLayout>
   )
 }
