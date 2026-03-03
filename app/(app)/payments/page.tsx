@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import { Card } from '@/components/card'
+import { Page } from '@/components/ui/page'
 
 function fmtZar(v: number) {
   return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(v)
@@ -19,12 +20,7 @@ export default async function Page() {
     .limit(300)
 
   return (
-    <div className="space-y-4">
-      <div>
-        <div className="text-xl font-semibold">Payments</div>
-        <div className="text-sm kx-muted">All payments across invoices.</div>
-      </div>
-
+    <Page title="Payments" subtitle="All payments across invoices.">
       <Card>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -60,6 +56,6 @@ export default async function Page() {
           </table>
         </div>
       </Card>
-    </div>
+    </Page>
   )
 }

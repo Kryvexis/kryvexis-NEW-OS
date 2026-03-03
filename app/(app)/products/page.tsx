@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import ProductsUI from './ui'
 import ProductList from './ProductList'
+import { Page } from '@/components/ui/page'
 
 export default async function ProductsPage() {
   const supabase = await createClient()
@@ -16,17 +17,10 @@ export default async function ProductsPage() {
     .limit(500)
 
   return (
-    <div className="space-y-4">
-      <div>
-        <div className="text-xl font-semibold">Products</div>
-        <div className="text-sm kx-muted">Catalog of products and services.</div>
-      </div>
-
+    <Page title="Products" subtitle="Catalog of products and services.">
       <ProductsUI />
-
-      {error && <div className="text-sm text-red-200">{error.message}</div>}
-
+      {error && <div className="text-sm" style={{ color: 'rgb(220 38 38)' }}>{error.message}</div>}
       <ProductList products={(products as any) || []} />
-    </div>
+    </Page>
   )
 }

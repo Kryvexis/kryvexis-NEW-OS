@@ -2,8 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { requireCompanyId } from "@/lib/kx";
 import { fmtZar } from "@/lib/format";
-import { PosHeroShell } from "@/components/pos/hero-shell";
-import { RightRail } from "@/components/pos/right-rail";
+import { Page } from "@/components/ui/page";
+import { Card } from "@/components/card";
 
 export const dynamic = "force-dynamic";
 
@@ -61,25 +61,14 @@ export default async function AccountingDashboard() {
   const dbNeeds = [invErr, expErr, billErr].filter(Boolean).map((e: any) => e.message);
 
   return (
-    <PosHeroShell
+    <Page
       title="Accounting"
       subtitle="Fast, practical accounting for real operators. Capture expenses, track payables, and keep profit visible."
-      rail={
-        <RightRail
-          title="Quick actions"
-          actions={[
-            { label: "Add expense", href: "/accounting/expenses" },
-            { label: "Add supplier bill", href: "/accounting/payables" },
-          ]}
-          items={[
-            { label: "P&L", sub: "30-day + YTD view", href: "/accounting/pnl" },
-            { label: "Categories", sub: "Keep reports clean", href: "/accounting/categories" },
-          ]}
-        />
-      }
+      action={<Link className="kx-button kx-button-primary" href="/accounting/expenses">Add expense</Link>}
+      right={<Link className="kx-button kx-btn-ghost" href="/accounting/payables">Payables</Link>}
     >
       {dbNeeds.length ? (
-        <div className="kx-card p-5">
+        <Card>
           <div className="text-sm font-semibold">Database upgrade required</div>
           <div className="mt-2 text-sm kx-muted">
             Accounting upgrades require: <span className="font-mono">sql/upgrade_full.sql</span> and{" "}
@@ -90,37 +79,37 @@ export default async function AccountingDashboard() {
               <div key={i}>{m}</div>
             ))}
           </div>
-        </div>
+        </Card>
       ) : null}
 
       <div className="grid gap-4 md:grid-cols-4">
-        <div className="kx-card p-5">
-          <div className="text-xs text-white/55">Revenue (30d)</div>
+        <Card>
+          <div className="text-xs kx-muted2">Revenue (30d)</div>
           <div className="mt-2 text-2xl font-semibold">{fmtZar(revenue30)}</div>
-          <div className="mt-1 text-xs text-white/55">Invoices issued.</div>
-        </div>
+          <div className="mt-1 text-xs kx-muted2">Invoices issued.</div>
+        </Card>
 
-        <div className="kx-card p-5">
-          <div className="text-xs text-white/55">Expenses (30d)</div>
+        <Card>
+          <div className="text-xs kx-muted2">Expenses (30d)</div>
           <div className="mt-2 text-2xl font-semibold">{fmtZar(expenses30)}</div>
-          <div className="mt-1 text-xs text-white/55">Captured cash out.</div>
-        </div>
+          <div className="mt-1 text-xs kx-muted2">Captured cash out.</div>
+        </Card>
 
-        <div className="kx-card p-5">
-          <div className="text-xs text-white/55">Profit (30d)</div>
+        <Card>
+          <div className="text-xs kx-muted2">Profit (30d)</div>
           <div className="mt-2 text-2xl font-semibold">{fmtZar(profit30)}</div>
-          <div className="mt-1 text-xs text-white/55">Revenue minus expenses.</div>
-        </div>
+          <div className="mt-1 text-xs kx-muted2">Revenue minus expenses.</div>
+        </Card>
 
-        <div className="kx-card p-5">
-          <div className="text-xs text-white/55">Payables</div>
+        <Card>
+          <div className="text-xs kx-muted2">Payables</div>
           <div className="mt-2 text-2xl font-semibold">{fmtZar(openBillsTotal)}</div>
-          <div className="mt-1 text-xs text-white/55">{overdue ? `${overdue} overdue` : "No overdue bills"}</div>
-        </div>
+          <div className="mt-1 text-xs kx-muted2">{overdue ? `${overdue} overdue` : "No overdue bills"}</div>
+        </Card>
       </div>
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <div className="kx-card p-6">
+        <Card>
           <div className="text-sm font-semibold">New upgrades ✅</div>
           <div className="mt-2 text-sm kx-muted">
             These are now live in Accounting. Keep it simple and you’ll always know where money is going.
@@ -129,46 +118,46 @@ export default async function AccountingDashboard() {
           <div className="mt-4 grid gap-3">
             <Link className="kx-btn kx-btn-ghost justify-between" href="/accounting/expenses">
               <span>Expenses</span>
-              <span className="text-xs text-white/60">Fast capture</span>
+              <span className="text-xs kx-muted2">Fast capture</span>
             </Link>
 
             <Link className="kx-btn kx-btn-ghost justify-between" href="/accounting/payables">
               <span>Supplier bills</span>
-              <span className="text-xs text-white/60">Track payables</span>
+              <span className="text-xs kx-muted2">Track payables</span>
             </Link>
 
             <Link className="kx-btn kx-btn-ghost justify-between" href="/accounting/categories">
               <span>Categories</span>
-              <span className="text-xs text-white/60">Clean reporting</span>
+              <span className="text-xs kx-muted2">Clean reporting</span>
             </Link>
 
             <Link className="kx-btn kx-btn-ghost justify-between" href="/accounting/pnl">
               <span>Simple P&amp;L</span>
-              <span className="text-xs text-white/60">30d + YTD</span>
+              <span className="text-xs kx-muted2">30d + YTD</span>
             </Link>
           </div>
-        </div>
+        </Card>
 
-        <div className="kx-card p-6">
+        <Card>
           <div className="text-sm font-semibold">Operating rules</div>
           <div className="mt-2 text-sm kx-muted">The system stays “Apple-simple” when the rules are consistent:</div>
 
           <ul className="mt-4 space-y-2 text-sm">
             <li className="flex gap-2">
-              <span className="text-white/60">•</span>
-              <span className="text-white/80">Capture expenses as they happen.</span>
+              <span className="kx-muted2">•</span>
+              <span>Capture expenses as they happen.</span>
             </li>
             <li className="flex gap-2">
-              <span className="text-white/60">•</span>
-              <span className="text-white/80">Add supplier bills under Payables; mark paid when cash leaves.</span>
+              <span className="kx-muted2">•</span>
+              <span>Add supplier bills under Payables; mark paid when cash leaves.</span>
             </li>
             <li className="flex gap-2">
-              <span className="text-white/60">•</span>
-              <span className="text-white/80">Keep categories broad; P&amp;L stays readable.</span>
+              <span className="kx-muted2">•</span>
+              <span>Keep categories broad; P&amp;L stays readable.</span>
             </li>
           </ul>
-        </div>
+        </Card>
       </div>
-    </PosHeroShell>
+    </Page>
   );
 }

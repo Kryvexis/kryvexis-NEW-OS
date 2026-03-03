@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import ClientPicker from "@/components/clients/ClientPicker";
+import { Page } from "@/components/ui/page";
 
 export default async function ClientsPage() {
   const supabase = await createClient();
@@ -12,18 +13,12 @@ export default async function ClientsPage() {
     .limit(500);
 
   return (
-    <div className="grid gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="kx-h1">Clients</div>
-          <div className="kx-sub">Choose Account or Cash, then select a client.</div>
-        </div>
-        <div className="flex gap-2">
-          <Link className="kx-button" href="/clients/new">Add client</Link>
-        </div>
-      </div>
-
+    <Page
+      title="Clients"
+      subtitle="Choose Account or Cash, then select a client."
+      action={<Link className="kx-button kx-button-primary" href="/clients/new">New client</Link>}
+    >
       <ClientPicker clients={(clients as any) || []} />
-    </div>
+    </Page>
   );
 }

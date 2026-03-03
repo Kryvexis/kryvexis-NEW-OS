@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { requireCompanyId } from "@/lib/kx";
 import { recommendOrderQty } from "@/lib/buyers/recommend";
+import { Page } from "@/components/ui/page";
+import { Card } from "@/components/card";
 
 export const dynamic = "force-dynamic";
 
@@ -45,35 +47,29 @@ export default async function BuyersWebPage() {
   const rows = [...out, ...low.filter((p) => !out.find((o) => o.id === p.id))].slice(0, 200);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Buyers</h1>
-          <div className="text-sm text-zinc-500">Low stock + reorder suggestions (14-day velocity)</div>
-        </div>
-        <div className="flex gap-2">
-          <Link href="/operations/stock" className="rounded-xl border px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900">
-            Stock
-          </Link>
-          <Link href="/m/buyers" className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white">
-            Mobile view
-          </Link>
-        </div>
+    <Page
+      title="Buyers"
+      subtitle="Low stock + reorder suggestions (14-day velocity)"
+      action={<Link href="/operations/stock" className="kx-button kx-button-primary">Open stock</Link>}
+      // Keep mobile shortcut, but make it quiet.
+    >
+      <div className="flex items-center justify-end">
+        <Link href="/m/buyers" className="kx-button kx-btn-ghost">Open mobile view</Link>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-2xl border bg-white p-4 dark:bg-zinc-900">
-          <div className="text-sm text-zinc-500">Low stock</div>
+        <Card>
+          <div className="text-sm kx-muted">Low stock</div>
           <div className="mt-1 text-3xl font-semibold">{low.length}</div>
-        </div>
-        <div className="rounded-2xl border bg-white p-4 dark:bg-zinc-900">
-          <div className="text-sm text-zinc-500">Out of stock</div>
+        </Card>
+        <Card>
+          <div className="text-sm kx-muted">Out of stock</div>
           <div className="mt-1 text-3xl font-semibold">{out.length}</div>
-        </div>
+        </Card>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border bg-white dark:bg-zinc-900">
-        <div className="grid grid-cols-12 gap-2 border-b px-4 py-3 text-xs font-semibold text-zinc-500">
+      <Card className="p-0 overflow-hidden">
+        <div className="grid grid-cols-12 gap-2 px-4 py-3 text-xs font-semibold kx-muted2">
           <div className="col-span-6">Item</div>
           <div className="col-span-2 text-right">On hand</div>
           <div className="col-span-2 text-right">Reorder</div>
@@ -90,16 +86,18 @@ export default async function BuyersWebPage() {
             <Link
               key={p.id}
               href={`/buyers/${p.id}`}
-              className="grid grid-cols-12 gap-2 px-4 py-3 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-950/40"
+              className="grid grid-cols-12 gap-2 px-4 py-3 text-sm hover:bg-kx-surface2"
             >
               <div className="col-span-6 font-medium">{p.name}</div>
               <div className="col-span-2 text-right">{Number(p.stock_on_hand || 0)}</div>
               <div className="col-span-2 text-right">{Number(p.low_stock_threshold || 0)}</div>
-              <div className="col-span-2 text-right font-semibold text-blue-600">{rec.suggestedQty}</div>
+              <div className="col-span-2 text-right font-semibold" style={{ color: `rgb(var(--kx-accent))` }}>
+                {rec.suggestedQty}
+              </div>
             </Link>
           );
         })}
-      </div>
-    </div>
+      </Card>
+    </Page>
   );
 }
