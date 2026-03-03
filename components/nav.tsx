@@ -66,10 +66,11 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
 }
 
 export const navMainItems = [
-  { href: '/sales', label: 'Sales', icon: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[] },
-  { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[] },
-  { href: '/operations', label: 'Operations', icon: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
-  { href: '/insights', label: 'Insights', icon: 'insights' as const, roles: ['owner', 'manager'] as UserRole[] },
+  { href: '/sales', label: 'Sales', icon: 'sales' as const, module: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[] },
+  { href: '/buyers', label: 'Buyers', icon: 'operations' as const, module: 'procurement' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
+  { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, module: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[] },
+  { href: '/operations', label: 'Operations', icon: 'operations' as const, module: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
+  { href: '/insights', label: 'Insights', icon: 'insights' as const, module: 'insights' as const, roles: ['owner', 'manager'] as UserRole[] },
 ]
 
 // Bottom section: keep this near the footer. Import Center must be second-to-last.
@@ -80,8 +81,19 @@ export const navBottomItems = [
   { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
 ]
 
-export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string; workspaceName?: string; role: UserRole }) {
+export function Sidebar({
+  userEmail,
+  workspaceName,
+  role,
+  enabledModules,
+}: {
+  userEmail?: string
+  workspaceName?: string
+  role: UserRole
+  enabledModules?: string[]
+}) {
   const pathname = usePathname() || ''
+  const enabled = new Set((enabledModules || []).map(String))
 
   // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
   // We intentionally remove the collapsed mode to keep the layout clean and predictable.
@@ -124,6 +136,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
       <nav className={'px-3 pb-2 space-y-1 text-white/90'}>
         {navMainItems
           .filter((it) => it.roles.includes(role) || role === 'owner' || role === 'manager')
+          .filter((it) => role === 'owner' || role === 'manager' || !it.module || enabled.has(it.module))
           .map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
