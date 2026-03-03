@@ -8,6 +8,7 @@ import { Modal } from "@/components/ui/Modal";
 const NAV = [
   ["Dashboard", "/dashboard"],
   ["Clients", "/clients"],
+  ["Buyers", "/buyers"],
   ["Products", "/products"],
   ["Suppliers", "/suppliers"],
   ["Quotes", "/quotes"],
@@ -15,6 +16,7 @@ const NAV = [
   ["Payments", "/payments"],
   ["Accounts", "/accounts"],
   ["Reports", "/reports"],
+  ["Operations", "/operations"],
   ["Settings", "/settings"],
   ["Help", "/help"],
   ["Import Center", "/import-station"],
