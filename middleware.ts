@@ -63,6 +63,39 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(next)
   }
 
+
+  // Mobile/desktop experience split:
+  // - Mobile devices should use /m/* (compact UI)
+  // - Desktop should avoid /m/* (full system UI)
+  const ua = request.headers.get('user-agent') ?? ''
+  const isMobile = MOBILE_UA.test(ua)
+
+  // If a desktop user hits a mobile route, bounce them to the desktop home.
+  if (!isMobile && pathname.startsWith('/m')) {
+    const next = request.nextUrl.clone()
+    next.pathname = '/sales/overview'
+    return NextResponse.redirect(next)
+  }
+
+  // If a mobile user hits desktop pages, gently route to the equivalent mobile page.
+  if (isMobile && !pathname.startsWith('/m')) {
+    // Allow auth + public routes to pass through untouched
+    const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo']
+    if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
+      const next = request.nextUrl.clone()
+      if (pathname === '/sales/overview' || pathname === '/dashboard') next.pathname = '/m/home'
+      else if (pathname === '/clients') next.pathname = '/m/clients'
+      else if (pathname === '/buyers') next.pathname = '/m/buyers'
+      else if (pathname === '/settings') next.pathname = '/m/settings'
+      else if (pathname === '/invoices' || pathname === '/payments' || pathname === '/reports' || pathname === '/sales') next.pathname = '/m/transactions'
+      else {
+        // default: keep mobile users in the compact shell
+        next.pathname = '/m/home'
+      }
+      return NextResponse.redirect(next)
+    }
+  }
+
   return response
 }
 

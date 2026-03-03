@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Home, Package, LineChart, Settings, Plus } from "lucide-react";
+import { Home, Users, Receipt, Settings, Plus } from "lucide-react";
 import { useHideOnScroll } from "./hooks/useHideOnScroll";
 
 type Tab = {
@@ -14,8 +14,8 @@ type Tab = {
 
 const tabs: Tab[] = [
   { href: "/m/home", label: "Home", icon: <Home className="h-5 w-5" /> },
-  { href: "/m/buyers", label: "Buyers", icon: <Package className="h-5 w-5" /> },
-  { href: "/m/sales", label: "Sales", icon: <LineChart className="h-5 w-5" /> },
+  { href: "/m/clients", label: "Clients", icon: <Users className="h-5 w-5" /> },
+  { href: "/m/transactions", label: "Transactions", icon: <Receipt className="h-5 w-5" /> },
   { href: "/m/settings", label: "Settings", icon: <Settings className="h-5 w-5" /> },
 ];
 
@@ -35,9 +35,9 @@ export default function MobileTabBar() {
         <div className="relative rounded-2xl border border-black/5 bg-white/85 shadow-lg backdrop-blur dark:border-white/10 dark:bg-zinc-900/80">
           {/* Floating action */}
           <Link
-            href="/sales/pos"
-            className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600 p-3 shadow-lg ring-4 ring-white/70 dark:ring-zinc-900/60"
-            aria-label="New Sale"
+            href="/m/new"
+            className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-600 p-3 shadow-lg ring-4 ring-white/70 dark:ring-zinc-900/60"
+            aria-label="New"
           >
             <Plus className="h-6 w-6 text-white" />
           </Link>
@@ -50,20 +50,29 @@ export default function MobileTabBar() {
                   key={t.href}
                   href={t.href}
                   className={clsx(
-                    "flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-xs",
+                    "flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-medium",
                     active
-                      ? "text-blue-600"
-                      : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                      ? "text-emerald-700 dark:text-emerald-300"
+                      : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
                   )}
                 >
-                  <span className={clsx("rounded-lg p-1.5 transition", active ? "bg-blue-600/10" : "bg-transparent")}>
+                  <span
+                    className={clsx(
+                      "rounded-xl p-2",
+                      active
+                        ? "bg-emerald-600/10"
+                        : "bg-transparent"
+                    )}
+                  >
                     {t.icon}
                   </span>
-                  <span className={clsx(active ? "font-semibold" : "")}>{t.label}</span>
+                  {t.label}
                 </Link>
               );
             })}
           </nav>
+
+          <div className="h-3" />
         </div>
       </div>
     </div>
