@@ -26,7 +26,7 @@ const NAV = [
 
 type MobileNavProps = {
   userEmail?: string
-  role?: UserRole
+  role: UserRole
 }
 
 export default function MobileNav(props: MobileNavProps) {
@@ -41,9 +41,7 @@ export default function MobileNav(props: MobileNavProps) {
 
       <Modal open={open} title="Menu" onClose={() => setOpen(false)}>
         <div className="grid gap-2">
-          {(() => {
-          const role = props.role ?? 'manager'
-          return NAV.filter((it) => it.roles.includes(role) || role === 'owner' || role === 'manager').map((it) => {
+          {NAV.filter((it) => it.roles.includes(props.role) || props.role === 'owner' || props.role === 'manager').map((it) => {
             const active = pathname === it.href;
             return (
               <Link
@@ -60,8 +58,7 @@ export default function MobileNav(props: MobileNavProps) {
                 {it.label}
               </Link>
             );
-          })
-        })()}
+          })}
         </div>
       </Modal>
     </>

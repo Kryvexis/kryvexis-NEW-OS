@@ -27,8 +27,10 @@ function landingFor(role: string, isMobile: boolean) {
   if (role === 'buyer') return isMobile ? '/m/buyers' : '/buyers'
   if (role === 'accounts') return isMobile ? '/m/transactions' : '/accounting/dashboard'
   if (role === 'cashier') return isMobile ? '/m/home' : '/sales/pos'
-  // manager/owner/staff
-  return isMobile ? '/m/home' : '/sales/overview'
+  // manager/owner
+  if (role === 'owner' || role === 'manager') return isMobile ? '/m/home' : '/sales/overview'
+  // staff default → POS first
+  return isMobile ? '/m/home' : '/sales/pos'
 }
 
 function canAccess(role: string, pathname: string) {
@@ -118,7 +120,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(next)
     }
     if (ui === 'desktop') {
-      next.pathname = '/sales/overview'
+      next.pathname = landingFor(role, false)
       return NextResponse.redirect(next)
     }
 
@@ -138,7 +140,7 @@ export async function middleware(request: NextRequest) {
   // If a desktop user hits a mobile route, bounce them to the desktop home.
   if (!isMobile && pathname.startsWith('/m')) {
     const next = request.nextUrl.clone()
-    next.pathname = '/sales/overview'
+    next.pathname = landingFor(role, false)
     return NextResponse.redirect(next)
   }
 

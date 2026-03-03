@@ -2,7 +2,6 @@ import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 import { fmtZar } from '@/lib/format'
 import { PosHeroShell } from '@/components/pos/hero-shell'
-import { QuickStart } from '@/components/quickstart'
 
 function monthKey(d: string) {
   return String(d || '').slice(0, 7) // YYYY-MM
@@ -63,8 +62,6 @@ export default async function SalesOverview() {
 
   return (
     <PosHeroShell title="Overview" subtitle="Today’s sales, the last 6 months, and what’s moving.">
-      <QuickStart hasProducts={hasProducts} hasClients={hasClients} />
-
       <div className="grid gap-4 md:grid-cols-3">
         <div className="kx-card p-5 md:col-span-1">
           <div className="text-xs text-white/[0.55]">Today</div>

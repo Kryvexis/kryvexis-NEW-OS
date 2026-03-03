@@ -121,7 +121,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
       </div>
 
       {/* Main navigation */}
-      <nav className={'px-3 pb-2 space-y-1 text-white/80'}>
+      <nav className={'px-3 pb-2 space-y-1 text-white/90'}>
         {navMainItems
           .filter((it) => it.roles.includes(role) || role === 'owner' || role === 'manager')
           .map((it) => {
@@ -140,7 +140,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
               <span className={'ml-3 ' + (on ? 'text-white' : 'text-white/70 group-hover:text-white/90')}>
                 <NavIcon name={it.icon} />
               </span>
-              <span className="ml-2 tracking-tight">{it.label}</span>
+              <span className="ml-2 tracking-tight text-white/90">{it.label}</span>
               {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.9)' }} />}
             </Link>
           )
@@ -149,7 +149,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
 
       {/* Bottom navigation */}
       <div className="mt-auto" />
-      <nav className={'px-3 pt-2 pb-3 space-y-1 text-white/80'}>
+      <nav className={'px-3 pt-2 pb-3 space-y-1 text-white/90'}>
         {navBottomItems.map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
@@ -165,7 +165,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
               <span className={'ml-3 ' + (on ? 'text-white' : 'text-white/70 group-hover:text-white/90')}>
                 <NavIcon name={it.icon} />
               </span>
-              <span className="ml-2 tracking-tight">{it.label}</span>
+              <span className="ml-2 tracking-tight text-white/90">{it.label}</span>
               {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.9)' }} />}
             </Link>
           )
@@ -173,14 +173,14 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
       </nav>
 
       {userEmail && (
-        <div className="mt-auto px-5 py-4 text-white/80">
+        <div className="mt-auto px-5 py-4 text-white/90">
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="text-[11px] uppercase tracking-wider text-white/50">Signed in as</div>
-              <div className="mt-1 text-xs text-white/80 break-all">{userEmail}</div>
+              <div className="mt-1 text-xs text-white/90 break-all">{userEmail}</div>
             </div>
             {canManageUsers(role) && (
-              <span className="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/80" title="Manager access">
+              <span className="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/90" title="Manager access">
                 Admin
               </span>
             )}
