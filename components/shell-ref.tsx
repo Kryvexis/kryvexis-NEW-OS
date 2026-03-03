@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import CommandPalette from './command-palette'
 import LogoutButton from './logout-button'
 import MobileNav from './nav/MobileNav'
-import ThemeToggle from './theme/ThemeToggle'
+// Desktop UI is enforced LIGHT; remove dark-mode toggle.
 
 type TopTab = { href: string; label: string }
 const topTabs: TopTab[] = [
@@ -122,7 +122,7 @@ export default function ShellRef({ userEmail, children }: { userEmail: string; c
 
                 {/* Controls */}
                 <div className="flex items-center gap-2">
-                  <ThemeToggle />
+                  {/* theme toggle removed */}
                   <LogoutButton />
                 </div>
               </div>

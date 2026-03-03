@@ -7,7 +7,7 @@ import CommandPalette from './command-palette'
 import LogoutButton from './logout-button'
 import MobileNav from './nav/MobileNav'
 import { Sidebar } from './nav'
-import ThemeToggle from './theme/ThemeToggle'
+// Desktop UI is enforced LIGHT (clean reference UI). We remove the dark-mode toggle to avoid mismatched screens.
 
 function pageTitleFromPath(pathname: string) {
   const p = (pathname || '/dashboard').split('?')[0]
@@ -74,7 +74,6 @@ export default function Shell({ userEmail, children }: { userEmail: string; chil
 
               {/* Right controls */}
               <div className="flex items-center gap-2">
-                <ThemeToggle />
                 <div
                   className="hidden max-w-[260px] truncate rounded-full border bg-kx-surface/30 px-3 py-2 text-xs text-kx-fg/75 lg:block"
                   style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}

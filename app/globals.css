@@ -77,12 +77,37 @@ body { height: 100%; }
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
       "Segoe UI Emoji";
     color: rgb(var(--kx-fg));
+    /* Default background: keep subtle depth. The enforced LIGHT desktop mode overrides this below for a cleaner look. */
     background:
       radial-gradient(980px 760px at 18% -18%, var(--kx-bg-grad-1), transparent 64%),
       radial-gradient(980px 760px at 86% -18%, var(--kx-bg-grad-2), transparent 66%),
       radial-gradient(980px 760px at 52% 118%, var(--kx-bg-grad-3, rgb(var(--kx-accent) / 0.03)), transparent 66%),
       rgb(var(--kx-bg));
   }
+
+  /* Clean desktop look: light, flat background (matches the reference screenshots) */
+  html.kx-light body {
+    background: rgb(var(--kx-bg));
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Light-mode compatibility overrides                                      */
+  /* Some legacy screens used Tailwind "text-white/.." tokens assuming dark */
+  /* theme. We keep the code simple by remapping those tokens in light mode. */
+  /* ---------------------------------------------------------------------- */
+  html.kx-light .text-white\/90 { color: rgb(var(--kx-fg) / 0.92) !important; }
+  html.kx-light .text-white\/80 { color: rgb(var(--kx-fg) / 0.82) !important; }
+  html.kx-light .text-white\/70 { color: rgb(var(--kx-fg) / 0.74) !important; }
+  html.kx-light .text-white\/60 { color: rgb(var(--kx-muted) / 0.78) !important; }
+  html.kx-light .text-white\/55 { color: rgb(var(--kx-muted) / 0.74) !important; }
+  html.kx-light .text-white\/50 { color: rgb(var(--kx-muted) / 0.70) !important; }
+  html.kx-light .text-white\/40 { color: rgb(var(--kx-muted) / 0.62) !important; }
+  html.kx-light .text-white\/35 { color: rgb(var(--kx-muted) / 0.56) !important; }
+  html.kx-light .text-white\/30 { color: rgb(var(--kx-muted) / 0.50) !important; }
+
+  /* Bracket opacity variants used in a few components */
+  html.kx-light .text-white\/\[0\.55\] { color: rgb(var(--kx-muted) / 0.74) !important; }
+  html.kx-light .text-white\/\[0\.60\] { color: rgb(var(--kx-muted) / 0.78) !important; }
 
   a { color: inherit; text-decoration: none; }
   ::selection { background: rgb(var(--kx-accent) / 0.22); }
@@ -111,6 +136,10 @@ body { height: 100%; }
       radial-gradient(980px 760px at 86% -18%, var(--kx-bg-grad-2), transparent 66%),
       radial-gradient(980px 760px at 52% 118%, var(--kx-bg-grad-3, rgb(var(--kx-accent) / 0.03)), transparent 66%),
       rgb(var(--kx-bg));
+  }
+
+  html.kx-light .kx-shell {
+    background: rgb(var(--kx-bg));
   }
 
   /* Text */
@@ -150,6 +179,25 @@ body { height: 100%; }
     box-shadow: var(--kx-shadow-float);
   }
   .kx-btn:hover { background: rgb(var(--kx-surface) / 1); box-shadow: var(--kx-shadow-card); }
+
+  /* Button variants (keep pages consistent and reduce "too many loud buttons") */
+  .kx-btn-ghost {
+    background: transparent;
+    box-shadow: none;
+  }
+  .kx-btn-ghost:hover {
+    background: rgb(var(--kx-surface) / 0.72);
+    box-shadow: var(--kx-shadow-float);
+  }
+
+  .kx-btn-secondary {
+    background: rgb(var(--kx-surface-2) / 0.92);
+    box-shadow: var(--kx-shadow-float);
+  }
+  .kx-btn-secondary:hover {
+    background: rgb(var(--kx-surface) / 0.98);
+    box-shadow: var(--kx-shadow-card);
+  }
 
   .kx-btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-kx px-3.5 py-2 text-sm font-semibold transition;
@@ -217,9 +265,10 @@ body { height: 100%; }
 
 
 @layer components {
-  .kx-railItem { @apply rounded-xl px-3 py-2 bg-white/[0.05] hover:bg-white/[0.07] transition; }
-  .kx-railItemTitle { @apply text-sm font-medium text-white/[0.90] hover:text-white; }
-  .kx-railItemSub { @apply text-xs text-white/[0.55] mt-0.5; }
+  /* Right-rail items: quiet list rows (works in light desktop). */
+  .kx-railItem { @apply rounded-xl px-3 py-2 bg-kx-surface2 hover:bg-kx-surface transition; }
+  .kx-railItemTitle { @apply text-sm font-medium; color: rgb(var(--kx-fg) / 0.92); }
+  .kx-railItemSub { @apply text-xs mt-0.5; color: rgb(var(--kx-muted) / 0.72); }
 }
 
 /* -------------------------------------------------------------------------- */

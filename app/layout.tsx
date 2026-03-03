@@ -5,7 +5,8 @@ import InstallPrompt from "@/components/pwa/InstallPrompt";
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    // Default to LIGHT — matches the "simple clean" UI reference. Users can still toggle.
+    // Desktop should always be LIGHT (clean content area) like the reference UI.
+    // The sidebar stays dark via explicit styling in Sidebar.
     <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
@@ -17,18 +18,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    // Single source of truth is the "dark" class (Tailwind). We also set data-theme for debugging.
-    // Default: light (clean + airy). Persisted in localStorage once user toggles.
-    const themeRaw = localStorage.getItem('kx_theme') || 'light';
-    const theme = (themeRaw === 'light') ? 'light' : 'dark';
-
+    // Enforce LIGHT for desktop (clean UI reference). Avoid heavy dark dashboards.
     const root = document.documentElement;
-    root.dataset.theme = theme;
-    root.classList.toggle('dark', theme === 'dark');
-    root.classList.toggle('kx-light', theme === 'light');
+    root.dataset.theme = 'light';
+    root.classList.remove('dark');
+    root.classList.add('kx-light');
 
-    // Accent pairs power the subtle premium depth gradients.
-    // Default: green (matches the Kryvexis UI references).
+    // Accent pair (default green). Keep customizable via localStorage.
     const accent = localStorage.getItem('kx_accent') || 'green';
     const map = {
       indigo: { a: '99 102 241', b: '56 189 248' },
@@ -38,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       green: { a: '34 197 94', b: '34 211 238' },
       orange: { a: '249 115 22', b: '59 130 246' },
     };
-    const pair = map[accent] || map.indigo;
+    const pair = map[accent] || map.green;
     root.style.setProperty('--kx-accent', pair.a);
     root.style.setProperty('--kx-accent-2', pair.b);
   } catch {}
