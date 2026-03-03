@@ -27,23 +27,12 @@ const NAV = [
 type MobileNavProps = {
   userEmail?: string
   role?: UserRole
-  enabledModules?: string[]
-}
-
-function moduleForHref(href: string): string | null {
-  if (href.startsWith('/dashboard') || href.startsWith('/clients') || href.startsWith('/quotes') || href.startsWith('/invoices') || href.startsWith('/payments') || href.startsWith('/sales')) return 'sales'
-  if (href.startsWith('/buyers') || href.startsWith('/products') || href.startsWith('/suppliers')) return 'procurement'
-  if (href.startsWith('/accounting') || href.startsWith('/reports')) return 'accounting'
-  if (href.startsWith('/operations') || href.startsWith('/import-station')) return 'operations'
-  if (href.startsWith('/insights')) return 'insights'
-  return null
 }
 
 export default function MobileNav(props: MobileNavProps) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
   const role: UserRole = props.role ?? "staff";
-  const enabled = new Set((props.enabledModules || []).map(String))
 
   return (
     <>
@@ -53,10 +42,7 @@ export default function MobileNav(props: MobileNavProps) {
 
       <Modal open={open} title="Menu" onClose={() => setOpen(false)}>
         <div className="grid gap-2">
-          {NAV
-            .filter((it) => it.roles.includes(role) || role === "owner" || role === "manager")
-            .filter((it) => role === 'owner' || role === 'manager' || !moduleForHref(it.href) || enabled.has(moduleForHref(it.href) as string))
-            .map((it) => {
+          {NAV.filter((it) => it.roles.includes(role) || role === "owner" || role === "manager").map((it) => {
             const active = pathname === it.href;
             return (
               <Link
