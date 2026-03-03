@@ -51,6 +51,16 @@ function canAccess(role: string, pathname: string) {
   return p.startsWith('/sales') || p.startsWith('/clients')
 }
 
+function moduleForPath(pathname: string): string | null {
+  const p = pathname.split('?')[0]
+  if (p.startsWith('/sales') || p.startsWith('/clients') || p.startsWith('/quotes') || p.startsWith('/invoices') || p.startsWith('/payments')) return 'sales'
+  if (p.startsWith('/buyers') || p.startsWith('/products') || p.startsWith('/suppliers')) return 'procurement'
+  if (p.startsWith('/operations')) return 'operations'
+  if (p.startsWith('/accounting') || p.startsWith('/reports')) return 'accounting'
+  if (p.startsWith('/insights')) return 'insights'
+  return null
+}
+
 /**
  * Fixes Vercel ERR_TOO_MANY_REDIRECTS by ensuring signed-out users
  * never bounce back to '/', and by refreshing Supabase auth cookies
@@ -84,6 +94,7 @@ export async function middleware(request: NextRequest) {
 
   // Role lookup (best-effort). If we can't resolve role, default to staff.
   let role = 'staff'
+  let enabledModules: Set<string> | null = null
   if (user) {
     const companyId = readCompanyIdFromCookies(request)
     if (companyId) {
@@ -95,6 +106,16 @@ export async function middleware(request: NextRequest) {
           .eq('user_id', user.id)
           .maybeSingle()
         role = normalizeRole(r?.role)
+
+        // Pull role module visibility for non-admin roles (manager/owner always see everything).
+        if (role !== 'owner' && role !== 'manager') {
+          const { data: mods } = await supabase
+            .from('role_modules')
+            .select('module, enabled')
+            .eq('company_id', companyId)
+            .eq('role', role)
+          enabledModules = new Set((mods || []).filter((m: any) => m?.enabled).map((m: any) => String(m.module)))
+        }
       } catch {
         role = 'staff'
       }
@@ -102,6 +123,18 @@ export async function middleware(request: NextRequest) {
   }
 
   const { pathname, searchParams } = request.nextUrl
+
+  // Never run auth redirects for PWA/static metadata files.
+  // If middleware redirects these, Chrome fetches HTML instead of JSON and shows
+  // "manifest: Line 1, column 1, Syntax error".
+  if (
+    pathname === '/manifest.webmanifest' ||
+    pathname === '/sw.js' ||
+    pathname.startsWith('/workbox') ||
+    pathname.startsWith('/icons/')
+  ) {
+    return response
+  }
 
   // Root entry points routing
   if (pathname === '/' || pathname === '/home') {
@@ -172,6 +205,16 @@ export async function middleware(request: NextRequest) {
         const next = request.nextUrl.clone()
         next.pathname = landingFor(role, isMobile)
         return NextResponse.redirect(next)
+      }
+
+      // Enforce manager-configured module visibility.
+      if (!pathname.startsWith('/m') && enabledModules) {
+        const mod = moduleForPath(pathname)
+        if (mod && !enabledModules.has(mod)) {
+          const next = request.nextUrl.clone()
+          next.pathname = landingFor(role, isMobile)
+          return NextResponse.redirect(next)
+        }
       }
     }
   }

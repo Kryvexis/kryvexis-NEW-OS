@@ -66,10 +66,11 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
 }
 
 export const navMainItems = [
-  { href: '/sales', label: 'Sales', icon: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[] },
-  { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[] },
-  { href: '/operations', label: 'Operations', icon: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
-  { href: '/insights', label: 'Insights', icon: 'insights' as const, roles: ['owner', 'manager'] as UserRole[] },
+  { href: '/sales', label: 'Sales', icon: 'sales' as const, module: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[] },
+  { href: '/buyers', label: 'Buyers', icon: 'operations' as const, module: 'procurement' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
+  { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, module: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[] },
+  { href: '/operations', label: 'Operations', icon: 'operations' as const, module: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
+  { href: '/insights', label: 'Insights', icon: 'insights' as const, module: 'insights' as const, roles: ['owner', 'manager'] as UserRole[] },
 ]
 
 // Bottom section: keep this near the footer. Import Center must be second-to-last.
@@ -80,8 +81,19 @@ export const navBottomItems = [
   { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
 ]
 
-export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string; workspaceName?: string; role: UserRole }) {
+export function Sidebar({
+  userEmail,
+  workspaceName,
+  role,
+  enabledModules,
+}: {
+  userEmail?: string
+  workspaceName?: string
+  role: UserRole
+  enabledModules?: string[]
+}) {
   const pathname = usePathname() || ''
+  const enabled = new Set((enabledModules || []).map(String))
 
   // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
   // We intentionally remove the collapsed mode to keep the layout clean and predictable.
@@ -92,16 +104,12 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
     <aside
       className={'hidden md:flex md:flex-col ' + widthCls}
       style={{
-        // Accent-toned dark sidebar (your preference).
-        // Uses the global accent CSS variable so the sidebar hue matches the chosen accent
-        // while keeping contrast strong and readable.
-        background:
-          'linear-gradient(180deg, rgb(var(--kx-accent) / 0.24) 0%, rgb(var(--kx-accent) / 0.10) 18%, #0b1220 40%, #0a1628 70%, #081324 100%)',
+        // Always-dark sidebar (matches the reference UI) regardless of theme.
+        background: 'linear-gradient(180deg, #0b1220 0%, #0a1628 55%, #081324 100%)',
         boxShadow: 'var(--kx-shadow-sidebar)',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
       }}
     >
-      <div className={'px-5 pt-5 pb-3'} style={{ color: 'rgba(255,255,255,0.92)' }}>
+      <div className={'px-5 pt-5 pb-3 text-white'}>
         <div className={'flex items-start justify-between gap-3'}>
           <div className={'flex flex-col'}>
             {/* Compact brand (icon + name) */}
@@ -117,9 +125,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
               />
               <div>
                 <div className="text-sm font-semibold tracking-tight">Kryvexis OS</div>
-                <div className="text-[11px] leading-tight" style={{ color: 'rgba(255,255,255,0.62)' }}>
-                  {workspaceName ?? 'Workspace'}
-                </div>
+                <div className="text-[11px] text-white/60 leading-tight">{workspaceName ?? 'Workspace'}</div>
               </div>
             </div>
           </div>
@@ -127,9 +133,10 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
       </div>
 
       {/* Main navigation */}
-      <nav className={'px-3 pb-2 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
+      <nav className={'px-3 pb-2 space-y-1 text-white/90'}>
         {navMainItems
           .filter((it) => it.roles.includes(role) || role === 'owner' || role === 'manager')
+          .filter((it) => role === 'owner' || role === 'manager' || !it.module || enabled.has(it.module))
           .map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
@@ -139,28 +146,15 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
               data-tour={`nav-${it.icon}`}
               title={it.label}
               className={
-                'group relative flex items-center rounded-xl py-2 text-sm transition ' +
-                (on ? 'bg-white/10' : 'hover:bg-white/5')
+                'group flex items-center rounded-xl py-2 text-sm transition ' +
+                (on ? 'bg-white/10 text-white' : 'hover:bg-white/5')
               }
             >
-              {on && (
-                <span
-                  aria-hidden="true"
-                  className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
-                  style={{ background: 'rgb(var(--kx-accent))' }}
-                />
-              )}
-
-              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
+              <span className={'ml-3 ' + (on ? 'text-white' : 'text-white/70 group-hover:text-white/90')}>
                 <NavIcon name={it.icon} />
               </span>
-              <span
-                className="ml-2 tracking-tight"
-                style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
-              >
-                {it.label}
-              </span>
-              {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
+              <span className="ml-2 tracking-tight text-white/90">{it.label}</span>
+              {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.9)' }} />}
             </Link>
           )
         })}
@@ -168,7 +162,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
 
       {/* Bottom navigation */}
       <div className="mt-auto" />
-      <nav className={'px-3 pt-2 pb-3 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
+      <nav className={'px-3 pt-2 pb-3 space-y-1 text-white/90'}>
         {navBottomItems.map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
@@ -177,50 +171,29 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
               href={it.href}
               title={it.label}
               className={
-                'group relative flex items-center rounded-xl py-2 text-sm transition ' +
-                (on ? 'bg-white/10' : 'hover:bg-white/5')
+                'group flex items-center rounded-xl py-2 text-sm transition ' +
+                (on ? 'bg-white/10 text-white' : 'hover:bg-white/5')
               }
             >
-              {on && (
-                <span
-                  aria-hidden="true"
-                  className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
-                  style={{ background: 'rgb(var(--kx-accent))' }}
-                />
-              )}
-
-              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
+              <span className={'ml-3 ' + (on ? 'text-white' : 'text-white/70 group-hover:text-white/90')}>
                 <NavIcon name={it.icon} />
               </span>
-              <span
-                className="ml-2 tracking-tight"
-                style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
-              >
-                {it.label}
-              </span>
-              {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
+              <span className="ml-2 tracking-tight text-white/90">{it.label}</span>
+              {on && <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.9)' }} />}
             </Link>
           )
         })}
       </nav>
 
       {userEmail && (
-        <div className="mt-auto px-5 py-4" style={{ color: 'rgba(255,255,255,0.90)' }}>
+        <div className="mt-auto px-5 py-4 text-white/90">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <div className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.52)' }}>
-                Signed in as
-              </div>
-              <div className="mt-1 text-xs break-all" style={{ color: 'rgba(255,255,255,0.90)' }}>
-                {userEmail}
-              </div>
+              <div className="text-[11px] uppercase tracking-wider text-white/50">Signed in as</div>
+              <div className="mt-1 text-xs text-white/90 break-all">{userEmail}</div>
             </div>
             {canManageUsers(role) && (
-              <span
-                className="inline-flex items-center rounded-full px-2 py-0.5 text-xs"
-                style={{ background: 'rgb(var(--kx-accent) / 0.16)', color: 'rgba(255,255,255,0.92)', border: '1px solid rgb(var(--kx-accent) / 0.28)' }}
-                title="Manager access"
-              >
+              <span className="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/90" title="Manager access">
                 Admin
               </span>
             )}

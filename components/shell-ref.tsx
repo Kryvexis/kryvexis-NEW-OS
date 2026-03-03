@@ -23,7 +23,7 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + '/')
 }
 
-export default function ShellRef({ userEmail, children }: { userEmail: string; children: React.ReactNode }) {
+export default function ShellRef({ userEmail, role = 'staff', children }: { userEmail: string; role?: any; children: React.ReactNode }) {
   const pathname = usePathname() || '/sales'
 
   return (
@@ -87,7 +87,7 @@ export default function ShellRef({ userEmail, children }: { userEmail: string; c
               <div className="flex h-14 items-center gap-3">
                 {/* Mobile menu */}
                 <div className="md:hidden">
-                  <MobileNav userEmail={userEmail} />
+                  <MobileNav userEmail={userEmail} role={role} />
                 </div>
 
                 {/* Desktop tabs */}

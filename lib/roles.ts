@@ -8,13 +8,18 @@ export async function getCurrentUserRole(): Promise<UserRole> {
   const { data } = await supabase.auth.getUser()
   if (!data?.user) return 'staff'
 
-  const companyId = await requireCompanyId()
-  const { data: row } = await supabase
-    .from('company_users')
-    .select('role')
-    .eq('company_id', companyId)
-    .eq('user_id', data.user.id)
-    .maybeSingle()
+  try {
+    const companyId = await requireCompanyId()
+    const { data: row } = await supabase
+      .from('company_users')
+      .select('role')
+      .eq('company_id', companyId)
+      .eq('user_id', data.user.id)
+      .maybeSingle()
 
-  return normalizeRole(row?.role)
+    return normalizeRole(row?.role)
+  } catch {
+    // If RLS/policies aren't applied yet (or user has no company), do not crash the app.
+    return 'staff'
+  }
 }

@@ -47,7 +47,11 @@ export async function requireCompanyId() {
     .select('company_id, role, companies(name)')
     .eq('user_id', uid)
 
-  if (mErr) throw mErr
+  // If policies are not deployed yet and RLS blocks this read, fall back to cookie.
+  if (mErr) {
+    if (cookieCompanyId) return cookieCompanyId
+    throw mErr
+  }
 
   const memberCompanyIds = (memberships || [])
     .map((m: any) => m.company_id as string)
