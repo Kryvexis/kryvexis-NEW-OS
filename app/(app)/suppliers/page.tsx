@@ -3,7 +3,7 @@ import { requireCompanyId } from '@/lib/kx'
 import { Card } from '@/components/card'
 import { createSupplierAction } from './actions'
 import SupplierList from './SupplierList'
-import { Page } from '@/components/ui/page'
+import { Page as PageLayout } from '@/components/ui/page'
 
 export default async function Page() {
   const supabase = await createClient()
@@ -17,7 +17,7 @@ export default async function Page() {
     .limit(500)
 
   return (
-    <Page title="Suppliers" subtitle="Manage suppliers and catalog sources.">
+    <PageLayout title="Suppliers" subtitle="Manage suppliers and catalog sources.">
 
       <Card>
         <form
@@ -36,6 +36,6 @@ export default async function Page() {
       </Card>
 
       <SupplierList suppliers={(suppliers as any) || []} />
-    </Page>
+    </PageLayout>
   )
 }
