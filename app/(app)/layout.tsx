@@ -15,8 +15,8 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    // Home page is the login screen.
-    redirect("/");
+    // Redirect straight to auth route to avoid redirect loops (middleware routes '/' based on auth).
+    redirect("/login");
   }
 
   return <Shell userEmail={user.email ?? ""}>{children}</Shell>;
