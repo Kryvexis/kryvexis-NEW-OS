@@ -4,7 +4,6 @@ import { Card } from '@/components/card'
 import { getCurrentUserRole } from '@/lib/roles'
 import { canManageUsers, roleLabel, type UserRole } from '@/lib/roles/shared'
 import UsersClient from './users-client'
-import RoleModulesClient from './role-modules-client'
 
 export const dynamic = 'force-dynamic'
 
@@ -57,9 +56,6 @@ export default async function UsersPage() {
       </Card>
 
       <UsersClient initialMembers={rows} />
-
-      {/* Role module visibility matrix */}
-      <RoleModulesClient />
     </div>
   )
 }
