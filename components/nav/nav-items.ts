@@ -1,30 +1,31 @@
-import type { UserRole } from "@/lib/roles/shared";
-import type { AppModule } from "@/lib/rbac-shared";
+import type { UserRole } from '@/lib/roles/shared';
+import type { AppModule } from '@/lib/rbac';
 
 export type NavItem = {
-  label: string;
   href: string;
-  icon: "dashboard" | "pos" | "invoices" | "quotes" | "clients" | "products" | "suppliers" | "buyers" | "accounting" | "operations" | "reports" | "settings";
-  roles: UserRole[];
+  label: string;
+  icon?: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload';
+  roles?: UserRole[];
   modules?: AppModule[];
 };
 
-export const NAV: readonly NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: "dashboard", roles: ["owner", "manager"], modules: ["sales", "insights"] },
-  { label: "POS", href: "/sales/pos", icon: "pos", roles: ["owner", "manager", "cashier", "staff"], modules: ["sales"] },
+// Main navigation (top)
+export const navMainItems: readonly NavItem[] = [
+  { href: '/sales', label: 'Sales', icon: 'sales', roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'], modules: ['sales'] },
+  { href: '/buyers', label: 'Procurement', icon: 'operations', roles: ['owner', 'manager', 'buyer'], modules: ['procurement'] },
+  { href: '/accounting', label: 'Accounting', icon: 'accounting', roles: ['owner', 'manager', 'accounts'], modules: ['accounting'] },
+  { href: '/operations', label: 'Operations', icon: 'operations', roles: ['owner', 'manager', 'buyer'], modules: ['operations'] },
+  { href: '/insights', label: 'Insights', icon: 'insights', roles: ['owner', 'manager'], modules: ['insights'] },
+];
 
-  { label: "Invoices", href: "/invoices", icon: "invoices", roles: ["owner", "manager", "cashier", "staff", "accounts"], modules: ["sales", "accounting"] },
-  { label: "Quotes", href: "/quotes", icon: "quotes", roles: ["owner", "manager", "cashier", "staff"], modules: ["sales"] },
-  { label: "Clients", href: "/clients", icon: "clients", roles: ["owner", "manager", "cashier", "staff"], modules: ["sales"] },
+// Bottom navigation (footer)
+export const navBottomItems: readonly NavItem[] = [
+  // Settings is controlled by the 'settings' module when enabled by manager/owner.
+  { href: '/settings', label: 'Settings', icon: 'settings', roles: ['owner', 'manager'], modules: ['settings'] },
+  { href: '/help', label: 'Help', icon: 'help' },
+  { href: '/import-station', label: 'Import Center', icon: 'upload', roles: ['owner', 'manager'], modules: ['operations'] },
+  { href: '/account-center', label: 'Account Center', icon: 'accountCenter' },
+];
 
-  { label: "Products", href: "/products", icon: "products", roles: ["owner", "manager", "staff"], modules: ["operations"] },
-  { label: "Suppliers", href: "/suppliers", icon: "suppliers", roles: ["owner", "manager", "buyer", "staff"], modules: ["procurement", "operations"] },
-  { label: "Buyers", href: "/buyers", icon: "buyers", roles: ["owner", "manager", "buyer"], modules: ["procurement"] },
-
-  { label: "Accounting", href: "/accounting/dashboard", icon: "accounting", roles: ["owner", "manager", "accounts"], modules: ["accounting"] },
-  { label: "Operations", href: "/operations", icon: "operations", roles: ["owner", "manager", "staff"], modules: ["operations"] },
-  { label: "Reports", href: "/reports", icon: "reports", roles: ["owner", "manager", "accounts"], modules: ["insights", "accounting"] },
-
-  // Settings can be visible when modules includes settings, but we keep it optional to avoid typing issues.
-  { label: "Settings", href: "/settings", icon: "settings", roles: ["owner", "manager"], modules: ["settings"] },
-] as const;
+// Optional unified list used by other nav UIs
+export const NAV: readonly NavItem[] = [...navMainItems, ...navBottomItems];
