@@ -101,7 +101,29 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const { pathname, searchParams } = request.nextUrl
+    const { pathname, searchParams } = request.nextUrl
+
+  // ✅ Always allow PWA + static/public assets (must NEVER be auth-gated)
+  const PUBLIC_FILE = /\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|map)$/i
+  const PUBLIC_ASSET_PREFIXES = [
+    '/_next',
+    '/api',
+    '/icons',
+    '/images',
+    '/favicon.ico',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/manifest.webmanifest',
+    '/manifest.json',
+    '/sw.js',
+    '/workbox',
+    '/share',
+    '/demo',
+  ]
+  if (PUBLIC_ASSET_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/')) || PUBLIC_FILE.test(pathname)) {
+    return response
+  }
+
 
   // Root entry points routing
   if (pathname === '/' || pathname === '/home') {
@@ -130,6 +152,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(next)
   }
 
+
+
+  // ✅ Signed-out users: protect app routes to avoid Server Component crashes (RLS/session errors).
+  // Allow only auth/public routes when there is no Supabase user.
+  if (!user) {
+    const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo', '/manifest.webmanifest', '/sw.js', '/workbox', '/icons', '/favicon.ico', '/robots.txt', '/sitemap.xml']
+    if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
+      const next = request.nextUrl.clone()
+      next.pathname = '/login'
+      return NextResponse.redirect(next)
+    }
+  }
 
   // Mobile/desktop experience split:
   // - Mobile devices should use /m/* (compact UI)
@@ -181,7 +215,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run on everything except Next internals and static assets
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    // Run middleware on everything EXCEPT Next internals and public assets that must never be auth-gated.
+    '/((?!_next/static|_next/image|favicon\.ico|robots\.txt|sitemap\.xml|manifest\.webmanifest|manifest\.json|sw\.js|workbox.*|icons/.*|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|map)$).*)',
   ],
 }
