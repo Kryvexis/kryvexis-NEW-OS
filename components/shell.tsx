@@ -7,8 +7,12 @@ import CommandPalette from './command-palette'
 import LogoutButton from './logout-button'
 import MobileNav from './nav/MobileNav'
 import { Sidebar } from './nav'
+<<<<<<< HEAD
 import type { UserRole } from '@/lib/roles/shared'
 import type { AppModule } from '@/lib/rbac-shared'
+=======
+import type { AppModule, UserRole } from '@/lib/roles/shared'
+>>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
 import { roleLabel } from '@/lib/roles/shared'
 // Desktop UI is enforced LIGHT (clean reference UI). We remove the dark-mode toggle to avoid mismatched screens.
 
@@ -32,7 +36,21 @@ function pageTitleFromPath(pathname: string) {
   return 'Kryvexis OS'
 }
 
+<<<<<<< HEAD
 export default function Shell({ userEmail, role, modules, children }: { userEmail: string; role: UserRole; modules: AppModule[]; children: React.ReactNode }) {
+=======
+export default function Shell({
+  userEmail,
+  role,
+  modules,
+  children,
+}: {
+  userEmail: string
+  role: UserRole
+  modules: AppModule[]
+  children: React.ReactNode
+}) {
+>>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
   const pathname = usePathname() || '/dashboard'
   const title = pageTitleFromPath(pathname)
 
@@ -57,6 +75,11 @@ export default function Shell({ userEmail, role, modules, children }: { userEmai
               {/* Mobile menu */}
               <div className="md:hidden">
                 <MobileNav userEmail={userEmail} role={role} modules={modules} />
+<<<<<<< HEAD
+=======
+                {/* Mobile nav is filtered server-side via RBAC modules */}
+                
+>>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
               </div>
 
               {/* Title */}

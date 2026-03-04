@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeRole, type UserRole } from '@/lib/roles/shared'
@@ -6,10 +7,32 @@ import { MODULES, type AppModule } from '@/lib/rbac-shared'
 export type AccessContext = {
   userId: string | null
   companyId: string | null
+=======
+import 'server-only'
+
+import { createClient } from '@/lib/supabase/server'
+import { requireCompanyId } from '@/lib/kx'
+import { normalizeRole, type AppModule, type UserRole } from '@/lib/roles/shared'
+
+export const ALL_MODULES: readonly AppModule[] = ['sales', 'procurement', 'accounting', 'operations', 'insights', 'settings'] as const
+
+export function defaultModulesForRole(role: UserRole): AppModule[] {
+  if (role === 'owner' || role === 'manager') return [...ALL_MODULES]
+  if (role === 'accounts') return ['accounting', 'sales', 'settings']
+  if (role === 'buyer') return ['procurement', 'operations', 'settings']
+  if (role === 'cashier') return ['sales']
+  // staff default
+  return ['sales']
+}
+
+export type CurrentAccess = {
+  companyId: string
+>>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
   role: UserRole
   modules: AppModule[]
 }
 
+<<<<<<< HEAD
 const COOKIE_KEYS = ['kx_active_company_id', 'kx_active_company', 'active_company_id', 'ACTIVE_COMPANY_ID']
 
 function defaultModulesForRole(role: UserRole): AppModule[] {
@@ -65,11 +88,44 @@ export async function getAccessContext(): Promise<AccessContext> {
   const role = normalizeRole(myMembership?.role)
 
   const { data: moduleRows } = await supabase
+=======
+/**
+ * Resolve the signed-in user's role + enabled modules for the active company.
+ * Safe defaults:
+ * - missing membership → role=staff, modules=sales
+ * - missing role_modules rows → fall back to defaults per role
+ */
+export async function getCurrentAccess(): Promise<CurrentAccess> {
+  const supabase = await createClient()
+  const { data: u, error: uErr } = await supabase.auth.getUser()
+  if (uErr || !u?.user) {
+    // Caller decides where to redirect.
+    throw new Error('Not authenticated')
+  }
+
+  const companyId = await requireCompanyId()
+
+  const { data: me } = await supabase
+    .from('company_users')
+    .select('role')
+    .eq('company_id', companyId)
+    .eq('user_id', u.user.id)
+    .maybeSingle()
+
+  const role = normalizeRole(me?.role)
+
+  if (role === 'owner' || role === 'manager') {
+    return { companyId, role, modules: [...ALL_MODULES] }
+  }
+
+  const { data: rows } = await supabase
+>>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
     .from('role_modules')
     .select('module, enabled')
     .eq('company_id', companyId)
     .eq('role', role)
 
+<<<<<<< HEAD
   const enabled = (moduleRows || [])
     .filter((r: any) => !!r.enabled)
     .map((r: any) => String(r.module))
@@ -83,3 +139,13 @@ export async function getAccessContext(): Promise<AccessContext> {
   }
 }
 
+=======
+  const enabled = (rows || [])
+    .filter((r: any) => r?.enabled)
+    .map((r: any) => String(r.module).toLowerCase())
+    .filter(Boolean)
+
+  const modules = enabled.length ? (enabled as AppModule[]) : defaultModulesForRole(role)
+  return { companyId, role, modules }
+}
+>>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
