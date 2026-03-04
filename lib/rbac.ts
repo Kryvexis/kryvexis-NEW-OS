@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
-import { normalizeRole, type UserRole } from '@/lib/roles/shared'
-import { MODULES, type AppModule } from '@/lib/rbac-shared'
-
-export type AccessContext = {
-  userId: string | null
-  companyId: string | null
-=======
 import 'server-only'
 
 import { createClient } from '@/lib/supabase/server'
@@ -21,131 +11,64 @@ export function defaultModulesForRole(role: UserRole): AppModule[] {
   if (role === 'accounts') return ['accounting', 'sales', 'settings']
   if (role === 'buyer') return ['procurement', 'operations', 'settings']
   if (role === 'cashier') return ['sales']
-  // staff default
   return ['sales']
 }
 
-export type CurrentAccess = {
-  companyId: string
->>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
+export type AccessContext = {
+  userId: string | null
+  companyId: string | null
   role: UserRole
   modules: AppModule[]
 }
 
-<<<<<<< HEAD
-const COOKIE_KEYS = ['kx_active_company_id', 'kx_active_company', 'active_company_id', 'ACTIVE_COMPANY_ID']
-
-function defaultModulesForRole(role: UserRole): AppModule[] {
-  if (role === 'owner' || role === 'manager') return [...MODULES]
-  if (role === 'cashier' || role === 'staff') return ['sales', 'settings']
-  if (role === 'buyer') return ['procurement', 'operations', 'settings']
-  if (role === 'accounts') return ['accounting', 'settings']
-  return ['sales', 'settings']
-}
-
-async function readCookieCompanyId() {
-  const store = await cookies()
-  for (const key of COOKIE_KEYS) {
-    const value = store.get(key)?.value
-    if (value) return value
-  }
-  return null
-}
-
+/**
+ * Resolve the signed-in user's role + enabled modules for the active company.
+ *
+ * Safe defaults:
+ * - signed out → role=staff, modules=['sales']
+ * - missing membership → role=staff, modules=['sales']
+ * - missing role_modules rows → defaultModulesForRole(role)
+ */
 export async function getAccessContext(): Promise<AccessContext> {
   const supabase = await createClient()
-  const { data: userData } = await supabase.auth.getUser()
-  const user = userData?.user
+  const { data: u } = await supabase.auth.getUser()
+  const user = u?.user
   if (!user) {
-    return { userId: null, companyId: null, role: 'staff', modules: defaultModulesForRole('staff') }
+    return { userId: null, companyId: null, role: 'staff', modules: ['sales'] }
   }
 
   let companyId: string | null = null
-  const cookieCompanyId = await readCookieCompanyId()
-
-  const { data: memberships } = await supabase
-    .from('company_users')
-    .select('company_id, role')
-    .eq('user_id', user.id)
-
-  if (memberships && memberships.length > 0) {
-    const validCompanyIds = memberships.map((m: any) => m.company_id as string).filter(Boolean)
-    companyId = cookieCompanyId && validCompanyIds.includes(cookieCompanyId) ? cookieCompanyId : validCompanyIds[0]
-  } else {
-    // Auto-join single-tenant workspace fallback.
-    const { data: companies } = await supabase.from('companies').select('id').limit(2)
-    if (companies && companies.length === 1) {
-      companyId = companies[0].id as string
-      await supabase.from('company_users').upsert({ company_id: companyId, user_id: user.id, role: 'staff' }, { onConflict: 'company_id,user_id' })
-    }
+  try {
+    companyId = await requireCompanyId()
+  } catch {
+    // No valid company cookie/membership; leave null and fall back.
+    return { userId: user.id, companyId: null, role: 'staff', modules: ['sales'] }
   }
-
-  if (!companyId) {
-    return { userId: user.id, companyId: null, role: 'staff', modules: defaultModulesForRole('staff') }
-  }
-
-  const myMembership = (memberships || []).find((m: any) => m.company_id === companyId)
-  const role = normalizeRole(myMembership?.role)
-
-  const { data: moduleRows } = await supabase
-=======
-/**
- * Resolve the signed-in user's role + enabled modules for the active company.
- * Safe defaults:
- * - missing membership → role=staff, modules=sales
- * - missing role_modules rows → fall back to defaults per role
- */
-export async function getCurrentAccess(): Promise<CurrentAccess> {
-  const supabase = await createClient()
-  const { data: u, error: uErr } = await supabase.auth.getUser()
-  if (uErr || !u?.user) {
-    // Caller decides where to redirect.
-    throw new Error('Not authenticated')
-  }
-
-  const companyId = await requireCompanyId()
 
   const { data: me } = await supabase
     .from('company_users')
     .select('role')
     .eq('company_id', companyId)
-    .eq('user_id', u.user.id)
+    .eq('user_id', user.id)
     .maybeSingle()
 
   const role = normalizeRole(me?.role)
 
   if (role === 'owner' || role === 'manager') {
-    return { companyId, role, modules: [...ALL_MODULES] }
+    return { userId: user.id, companyId, role, modules: [...ALL_MODULES] }
   }
 
   const { data: rows } = await supabase
->>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
     .from('role_modules')
     .select('module, enabled')
     .eq('company_id', companyId)
     .eq('role', role)
 
-<<<<<<< HEAD
-  const enabled = (moduleRows || [])
-    .filter((r: any) => !!r.enabled)
-    .map((r: any) => String(r.module))
-    .filter((x): x is AppModule => (MODULES as readonly string[]).includes(x))
-
-  return {
-    userId: user.id,
-    companyId,
-    role,
-    modules: enabled.length ? enabled : defaultModulesForRole(role),
-  }
-}
-
-=======
   const enabled = (rows || [])
     .filter((r: any) => r?.enabled)
     .map((r: any) => String(r.module).toLowerCase())
-    .filter(Boolean)
+    .filter(Boolean) as AppModule[]
 
-  const modules = enabled.length ? (enabled as AppModule[]) : defaultModulesForRole(role)
-  return { companyId, role, modules }
+  const modules = enabled.length ? enabled : defaultModulesForRole(role)
+  return { userId: user.id, companyId, role, modules }
 }
->>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)

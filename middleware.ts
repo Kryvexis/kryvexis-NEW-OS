@@ -17,63 +17,24 @@ function readCompanyIdFromCookies(req: NextRequest): string | null {
 function defaultModules(role: string): AppModule[] {
   if (role === 'owner' || role === 'manager') return ['sales', 'procurement', 'accounting', 'operations', 'insights', 'settings']
   if (role === 'buyer') return ['procurement', 'operations', 'settings']
-  if (role === 'accounts') return ['accounting', 'settings']
-  return ['sales', 'settings']
-}
-
-<<<<<<< HEAD
-=======
-type AppModule = 'sales' | 'procurement' | 'accounting' | 'operations' | 'insights' | 'settings'
-const ALL_MODULES: readonly AppModule[] = ['sales', 'procurement', 'accounting', 'operations', 'insights', 'settings'] as const
-
-function defaultModulesForRole(role: string): AppModule[] {
-  if (role === 'owner' || role === 'manager') return [...ALL_MODULES]
   if (role === 'accounts') return ['accounting', 'sales', 'settings']
-  if (role === 'buyer') return ['procurement', 'operations', 'settings']
   if (role === 'cashier') return ['sales']
   return ['sales']
 }
 
-function moduleForPath(pathname: string): AppModule | null {
-  const p = pathname.split('?')[0]
-  if (p === '/dashboard' || p.startsWith('/sales') || p.startsWith('/clients') || p.startsWith('/quotes') || p.startsWith('/invoices') || p.startsWith('/payments')) return 'sales'
-  if (p.startsWith('/buyers') || p.startsWith('/suppliers')) return 'procurement'
-  if (p.startsWith('/products') || p.startsWith('/operations') || p.startsWith('/import-station')) return 'operations'
-  if (p.startsWith('/accounting') || p.startsWith('/reports')) return 'accounting'
-  if (p.startsWith('/insights')) return 'insights'
-  if (p.startsWith('/settings') || p.startsWith('/account-center') || p.startsWith('/accounts')) return 'settings'
-  return null
-}
+// Static/PWA endpoints must never be redirected or gated.
+const STATIC_ALLOW_PREFIXES = ['/manifest.webmanifest', '/sw.js', '/workbox', '/icons', '/favicon.ico', '/robots.txt', '/sitemap.xml']
 
-function landingFor(role: string, isMobile: boolean) {
-  if (role === 'buyer') return isMobile ? '/m/buyers' : '/buyers'
-  if (role === 'accounts') return isMobile ? '/m/transactions' : '/accounting/dashboard'
-  if (role === 'cashier') return isMobile ? '/m/home' : '/sales/pos'
-  // manager/owner
-  if (role === 'owner' || role === 'manager') return isMobile ? '/m/home' : '/sales/overview'
-  // staff default → POS first
-  return isMobile ? '/m/home' : '/sales/pos'
-}
+const PUBLIC_PREFIXES = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo', ...STATIC_ALLOW_PREFIXES]
 
-function canAccess(role: string, pathname: string, moduleSet: Set<AppModule>) {
-  if (role === 'owner' || role === 'manager') return true
-  const p = pathname.split('?')[0]
-  // Always allow help + auth utilities.
-  if (p === '/help' || p.startsWith('/help/')) return true
-  const mod = moduleForPath(p)
-  if (!mod) return true
-  return moduleSet.has(mod)
-}
-
-/**
- * Fixes Vercel ERR_TOO_MANY_REDIRECTS by ensuring signed-out users
- * never bounce back to '/', and by refreshing Supabase auth cookies
- * in middleware so Server Components can read the session.
- */
->>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
   const { pathname, searchParams } = request.nextUrl
+
+  // Allow static endpoints early (no auth redirects).
+  if (STATIC_ALLOW_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
+    return response
+  }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -97,13 +58,21 @@ export async function middleware(request: NextRequest) {
   const ua = request.headers.get('user-agent') ?? ''
   const isMobile = MOBILE_UA.test(ua)
 
-  let role = 'staff'
-<<<<<<< HEAD
-  let modules = defaultModules('staff')
+  // Public routes pass through.
+  if (PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) return response
 
-  if (user) {
-    const companyId = readCompanyIdFromCookies(request)
-    if (companyId) {
+  if (!user) {
+    const next = request.nextUrl.clone()
+    next.pathname = '/login'
+    return NextResponse.redirect(next)
+  }
+
+  // Determine role + enabled modules (best effort; safe defaults if anything fails).
+  let role = 'staff'
+  let modules = defaultModules('staff')
+  const companyId = readCompanyIdFromCookies(request)
+  if (companyId) {
+    try {
       const { data: membership } = await supabase
         .from('company_users')
         .select('role')
@@ -112,78 +81,27 @@ export async function middleware(request: NextRequest) {
         .maybeSingle()
       role = normalizeRole(membership?.role)
 
-      const { data: rows } = await supabase
-        .from('role_modules')
-        .select('module,enabled')
-        .eq('company_id', companyId)
-        .eq('role', role)
-      const enabled = (rows || []).filter((r: any) => !!r.enabled).map((r: any) => r.module as AppModule)
-      modules = enabled.length ? enabled : defaultModules(role)
-    }
-  }
-
-=======
-  let modules: AppModule[] = ['sales']
-  if (user) {
-    const companyId = readCompanyIdFromCookies(request)
-    if (companyId) {
-      try {
-        const { data: r } = await supabase
-          .from('company_users')
-          .select('role')
+      if (role === 'owner' || role === 'manager') {
+        modules = defaultModules(role)
+      } else {
+        const { data: rows } = await supabase
+          .from('role_modules')
+          .select('module,enabled')
           .eq('company_id', companyId)
-          .eq('user_id', user.id)
-          .maybeSingle()
-        role = normalizeRole(r?.role)
+          .eq('role', role)
 
-        // Fetch enabled modules for this role (DB-backed).
-        if (role === 'owner' || role === 'manager') {
-          modules = [...ALL_MODULES]
-        } else {
-          const { data: rm } = await supabase
-            .from('role_modules')
-            .select('module, enabled')
-            .eq('company_id', companyId)
-            .eq('role', role)
-          const enabled = (rm || [])
-            .filter((x: any) => x?.enabled)
-            .map((x: any) => String(x.module).toLowerCase())
-            .filter(Boolean)
-          modules = enabled.length ? (enabled as AppModule[]) : defaultModulesForRole(role)
-        }
-      } catch {
-        role = 'staff'
-        modules = ['sales']
+        const enabled = (rows || []).filter((r: any) => !!r.enabled).map((r: any) => String(r.module).toLowerCase()) as AppModule[]
+        modules = enabled.length ? enabled : defaultModules(role)
       }
+    } catch {
+      role = 'staff'
+      modules = defaultModules('staff')
     }
   }
 
-  const moduleSet = new Set<AppModule>(modules)
-
-  const { pathname, searchParams } = request.nextUrl
-
-  // Never redirect or gate static/PWA endpoints.
-  const STATIC_ALLOW = [
-    '/manifest.webmanifest',
-    '/sw.js',
-    '/workbox',
-    '/icons',
-    '/favicon.ico',
-    '/robots.txt',
-    '/sitemap.xml',
-  ]
-  if (STATIC_ALLOW.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
-    return response
-  }
-
-  // Root entry points routing
->>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
+  // Root entry points routing (after we know role).
   if (pathname === '/' || pathname === '/home') {
     const next = request.nextUrl.clone()
-    if (!user) {
-      next.pathname = '/login'
-      return NextResponse.redirect(next)
-    }
     const ui = searchParams.get('ui')
     if (ui === 'mobile') next.pathname = '/m/home'
     else if (ui === 'desktop') next.pathname = landingForRole(role as any, false)
@@ -191,9 +109,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(next)
   }
 
-  const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo', '/icons', '/manifest.webmanifest', '/sw.js', '/workbox', '/favicon.ico', '/robots.txt', '/sitemap.xml']
-  if (publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) return response
-
+  // Mobile/desktop boundary
   if (!isMobile && pathname.startsWith('/m')) {
     const next = request.nextUrl.clone()
     next.pathname = landingForRole(role as any, false)
@@ -201,50 +117,18 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isMobile && !pathname.startsWith('/m')) {
-<<<<<<< HEAD
     const next = request.nextUrl.clone()
-    if (pathname.startsWith('/buyers')) next.pathname = '/m/buyers'
-    else if (pathname.startsWith('/settings')) next.pathname = '/m/settings'
-    else if (pathname.startsWith('/clients')) next.pathname = '/m/clients'
-    else next.pathname = '/m/home'
+    next.pathname = '/m/home'
     return NextResponse.redirect(next)
   }
 
-  if (user && !pathname.startsWith('/m')) {
-    const module = moduleForPath(pathname)
-    if (module && role !== 'owner' && role !== 'manager' && !modules.includes(module)) {
+  // Server-side gating for desktop routes
+  if (!pathname.startsWith('/m')) {
+    const mod = moduleForPath(pathname)
+    if (mod && role !== 'owner' && role !== 'manager' && !modules.includes(mod)) {
       const next = request.nextUrl.clone()
       next.pathname = landingForRole(role as any, isMobile)
       return NextResponse.redirect(next)
-=======
-    // Allow auth + public routes to pass through untouched
-    const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo', '/manifest.webmanifest', '/sw.js', '/workbox', '/icons', '/favicon.ico', '/robots.txt', '/sitemap.xml']
-    if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
-      const next = request.nextUrl.clone()
-      if (pathname === '/sales/overview' || pathname === '/dashboard') next.pathname = '/m/home'
-      else if (pathname === '/clients') next.pathname = '/m/clients'
-      else if (pathname === '/buyers') next.pathname = '/m/buyers'
-      else if (pathname === '/settings') next.pathname = '/m/settings'
-      else if (pathname === '/invoices' || pathname === '/payments' || pathname === '/reports' || pathname === '/sales') next.pathname = '/m/transactions'
-      else {
-        // default: keep mobile users in the compact shell
-        next.pathname = '/m/home'
-      }
-      return NextResponse.redirect(next)
-    }
-  }
-
-  // Role-based gating (desktop routes). If user tries to open a module they don't need, redirect them.
-  if (user) {
-    const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo', '/manifest.webmanifest', '/sw.js', '/workbox', '/icons', '/favicon.ico', '/robots.txt', '/sitemap.xml']
-    if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
-      // Only gate non-mobile routes here; /m pages are compact and already simplified.
-      if (!pathname.startsWith('/m') && !canAccess(role, pathname, moduleSet)) {
-        const next = request.nextUrl.clone()
-        next.pathname = landingFor(role, isMobile)
-        return NextResponse.redirect(next)
-      }
->>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
     }
   }
 
@@ -252,12 +136,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-<<<<<<< HEAD
-  matcher: ['/((?!_next/static|_next/image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|webmanifest|json|txt|xml|js|css|map)$).*)'],
-=======
   matcher: [
-    // Run on everything except Next internals and static assets
-    '/((?!_next/static|_next/image|favicon.ico|manifest\\.webmanifest|sw\\.js|workbox.*|icons/.*|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|manifest\.webmanifest|sw\.js|workbox.*|icons/.*|robots\.txt|sitemap\.xml|.*\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
->>>>>>> 580a72d (RBAC modules + sidebar/nav filtering + middleware PWA exclusions + safer company routing)
 }
