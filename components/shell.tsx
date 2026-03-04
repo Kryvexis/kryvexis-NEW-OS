@@ -9,6 +9,7 @@ import MobileNav from './nav/MobileNav'
 import { Sidebar } from './nav'
 import type { UserRole } from '@/lib/roles/shared'
 import { roleLabel } from '@/lib/roles/shared'
+import type { AppModule } from '@/lib/roles/shared'
 // Desktop UI is enforced LIGHT (clean reference UI). We remove the dark-mode toggle to avoid mismatched screens.
 
 function pageTitleFromPath(pathname: string) {
@@ -31,7 +32,7 @@ function pageTitleFromPath(pathname: string) {
   return 'Kryvexis OS'
 }
 
-export default function Shell({ userEmail, role, children }: { userEmail: string; role: UserRole; children: React.ReactNode }) {
+export default function Shell({ userEmail, role, enabledModules, children }: { userEmail: string; role: UserRole; enabledModules: AppModule[]; children: React.ReactNode }) {
   const pathname = usePathname() || '/dashboard'
   const title = pageTitleFromPath(pathname)
 
@@ -41,7 +42,7 @@ export default function Shell({ userEmail, role, children }: { userEmail: string
 
       <div className="flex min-h-screen">
         {/* Desktop sidebar (A) + hidden on small screens (C) */}
-        <Sidebar userEmail={userEmail} workspaceName="Kryvexis" role={role} />
+        <Sidebar userEmail={userEmail} workspaceName="Kryvexis" role={role} enabledModules={enabledModules} />
 
         {/* Main area */}
         <div className="flex min-w-0 flex-1 flex-col">
@@ -55,7 +56,7 @@ export default function Shell({ userEmail, role, children }: { userEmail: string
               <div className="flex h-14 w-full max-w-[1280px] items-center gap-3">
               {/* Mobile menu */}
               <div className="md:hidden">
-                <MobileNav userEmail={userEmail} role={role} />
+                <MobileNav userEmail={userEmail} role={role} enabledModules={enabledModules} />
               </div>
 
               {/* Title */}
