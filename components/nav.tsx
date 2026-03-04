@@ -5,6 +5,24 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import type { UserRole } from '@/lib/roles/shared'
 import { canManageUsers } from '@/lib/roles/shared'
+import type { AppModule } from '@/components/nav/nav-items'
+
+type SidebarNavIcon = 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload'
+
+type SidebarMainNavItem = {
+  href: string
+  label: string
+  icon: SidebarNavIcon
+  roles: UserRole[]
+  modules?: AppModule[]
+}
+
+type SidebarBottomNavItem = {
+  href: string
+  label: string
+  icon: SidebarNavIcon
+  modules?: AppModule[]
+}
 
 export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
   const common = 'h-4 w-4'
@@ -65,7 +83,7 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
   }
 }
 
-export const navMainItems = [
+export const navMainItems: readonly SidebarMainNavItem[] = [
   { href: '/sales', label: 'Sales', icon: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[] },
   { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[] },
   { href: '/operations', label: 'Operations', icon: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
@@ -73,7 +91,7 @@ export const navMainItems = [
 ]
 
 // Bottom section: keep this near the footer. Import Center must be second-to-last.
-export const navBottomItems = [
+export const navBottomItems: readonly SidebarBottomNavItem[] = [
   { href: '/settings', label: 'Settings', icon: 'settings' as const },
   { href: '/help', label: 'Help', icon: 'help' as const },
   { href: '/import-station', label: 'Import Center', icon: 'upload' as const },
