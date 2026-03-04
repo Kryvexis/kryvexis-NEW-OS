@@ -147,7 +147,7 @@ export async function middleware(request: NextRequest) {
   // If a mobile user hits desktop pages, gently route to the equivalent mobile page.
   if (isMobile && !pathname.startsWith('/m')) {
     // Allow auth + public routes to pass through untouched
-    const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo']
+    const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo', '/icons']
     if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
       const next = request.nextUrl.clone()
       if (pathname === '/sales/overview' || pathname === '/dashboard') next.pathname = '/m/home'
@@ -165,7 +165,7 @@ export async function middleware(request: NextRequest) {
 
   // Role-based gating (desktop routes). If user tries to open a module they don't need, redirect them.
   if (user) {
-    const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo']
+    const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo', '/icons']
     if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
       // Only gate non-mobile routes here; /m pages are compact and already simplified.
       if (!pathname.startsWith('/m') && !canAccess(role, pathname)) {
@@ -182,6 +182,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Run on everything except Next internals and static assets
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|manifest.json|site.webmanifest|robots.txt|sitemap.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|webmanifest|json|txt|xml)$).*)',
   ],
 }
