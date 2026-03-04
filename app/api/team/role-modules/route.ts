@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { requireCompanyId } from '@/lib/kx'
 
 const ROLES = ['owner', 'manager', 'accounts', 'cashier', 'buyer', 'staff'] as const
-const MODULES = ['sales', 'procurement', 'accounting', 'operations', 'insights', 'settings'] as const
+const MODULES = ['sales', 'procurement', 'accounting', 'operations', 'insights'] as const
 
 type Role = (typeof ROLES)[number]
 type Module = (typeof MODULES)[number]

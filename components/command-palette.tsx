@@ -3,8 +3,7 @@
 import { Command } from 'cmdk'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { navBottomItems, navMainItems } from './nav'
-
+import { navBottomItems, navMainItems } from './nav-items'
 // Lightweight fuzzy scorer (no deps): returns 0..1. Higher is better.
 function fuzzyScore(text: string, query: string) {
   const t = text.toLowerCase()

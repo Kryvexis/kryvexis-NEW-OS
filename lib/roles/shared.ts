@@ -1,14 +1,10 @@
-export type UserRole = 'owner' | 'manager' | 'cashier' | 'staff' | 'buyer' | 'accounts'
-
-// App modules (used for DB-backed RBAC).
-export type AppModule = 'sales' | 'procurement' | 'accounting' | 'operations' | 'insights' | 'settings'
+export type UserRole = 'owner' | 'manager' | 'cashier' | 'buyer' | 'accounts' | 'staff'
 
 export function normalizeRole(role: any): UserRole {
   const r = String(role || 'staff').toLowerCase()
   if (r === 'owner') return 'owner'
   if (r === 'manager') return 'manager'
   if (r === 'cashier') return 'cashier'
-  if (r === 'staff') return 'staff'
   if (r === 'buyer') return 'buyer'
   if (r === 'accounts') return 'accounts'
   return 'staff'

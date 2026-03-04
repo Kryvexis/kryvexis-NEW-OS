@@ -1,8 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { navBottomItems, navMainItems } from './nav'
-
+import { navBottomItems, navMainItems } from './nav-items'
 export default function Topbar() {
   const [q, setQ] = useState('')
   const placeholder = useMemo(() => {

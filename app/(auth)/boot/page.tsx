@@ -76,8 +76,7 @@ export default function BootPage() {
       if (!alive) return;
 
       if (!data?.user) router.replace("/login");
-      // Let middleware choose the correct landing page based on role.
-      else router.replace("/");
+      else router.replace("/dashboard");
     })();
 
     return () => {

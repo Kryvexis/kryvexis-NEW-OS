@@ -4,88 +4,217 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import type { UserRole } from '@/lib/roles/shared'
-import type { AppModule } from '@/lib/rbac-shared'
-import { NAV } from '@/components/nav/nav-items'
+import { canManageUsers } from '@/lib/roles/shared'
+import { navBottomItems, navMainItems } from './nav-items'
 
-function isAllowedByRole(itemRoles: UserRole[], role: UserRole) {
-  return itemRoles.includes(role) || role === 'owner' || role === 'manager'
-}
+export { navMainItems, navBottomItems }
 
-function iconFor(name: (typeof NAV)[number]['icon']) {
-  // Minimal inline icons to avoid extra deps; replace with lucide if you want.
-  // Using SVG keeps it stable for Vercel builds.
-  const cls = 'h-4 w-4 opacity-90'
+export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
+  const common = 'h-4 w-4'
   switch (name) {
-    case 'dashboard':
+    case 'sales':
       return (
-        <svg className={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 13h7V4H4v9Zm9 7h7V11h-7v9ZM4 20h7v-5H4v5Zm9-11h7V4h-7v5Z" fill="currentColor" />
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 19V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
+          <path d="M7 15l3-3 3 2 4-5" stroke="currentColor" strokeWidth="1.6" opacity="0.9" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       )
-    case 'pos':
+    case 'accounting':
       return (
-        <svg className={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M7 4h10a2 2 0 0 1 2 2v3H5V6a2 2 0 0 1 2-2Zm-2 7h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm3 2v2h3v-2H8Zm0 3v2h3v-2H8Zm5-3v2h3v-2h-3Zm0 3v2h3v-2h-3Z" fill="currentColor" />
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 4h12v16H6V4Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+          <path d="M8.5 8h7M8.5 12h7M8.5 16h4" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
         </svg>
       )
-    default:
+    case 'operations':
       return (
-        <svg className={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6 6h12v12H6z" fill="currentColor" />
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7 7h10v10H7V7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+          <path d="M9 3h6v4H9V3Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+        </svg>
+      )
+    case 'insights':
+      return (
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 20V4" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
+          <path d="M5 18h15" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
+          <path d="M8 16v-5M12 16v-8M16 16v-3" stroke="currentColor" strokeWidth="1.6" opacity="0.9" strokeLinecap="round" />
+        </svg>
+      )
+    case 'accountCenter':
+      return (
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+          <path d="M4 22a8 8 0 0 1 16 0" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
+        </svg>
+      )
+    case 'upload':
+      return '⬆️'
+    case 'help':
+      return (
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 18h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <path d="M9.2 9a3 3 0 1 1 5.1 2c-.8.7-1.3 1.1-1.3 2.5" stroke="currentColor" strokeWidth="1.5" opacity="0.9" strokeLinecap="round"/>
+          <path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10Z" stroke="currentColor" strokeWidth="1.5" opacity="0.35"/>
+        </svg>
+      )
+    case 'settings':
+      return (
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+          <path d="M19.4 15a7.9 7.9 0 0 0 .1-2l2-1.1-2-3.4-2.3.6a8 8 0 0 0-1.7-1l-.3-2.4H9l-.3 2.4a8 8 0 0 0-1.7 1l-2.3-.6-2 3.4 2 1.1a7.9 7.9 0 0 0 .1 2l-2 1.1 2 3.4 2.3-.6a8 8 0 0 0 1.7 1l.3 2.4h6l.3-2.4a8 8 0 0 0 1.7-1l2.3.6 2-3.4-2-1.1Z" stroke="currentColor" strokeWidth="1.2" opacity="0.35" />
         </svg>
       )
   }
 }
 
-export function Sidebar({ role, modules }: { role: UserRole; modules: AppModule[] }) {
-  const pathname = usePathname() || '/dashboard'
-  const moduleSet = new Set(modules || [])
+export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string; workspaceName?: string; role: UserRole }) {
+  const pathname = usePathname() || ''
 
-  const items = NAV.filter((it) => {
-    const canByRole = isAllowedByRole(it.roles, role)
-    const canByModule = !it.modules || it.modules.some((m) => moduleSet.has(m))
-    return canByRole && canByModule
-  })
+  // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
+  // We intentionally remove the collapsed mode to keep the layout clean and predictable.
+  // Slightly wider so the brand area + nav labels breathe.
+  const widthCls = 'md:w-[276px]'
 
   return (
     <aside
-      className="hidden md:flex md:w-[260px] md:flex-col md:gap-2 md:px-3 md:py-4"
+      className={'hidden md:flex md:flex-col ' + widthCls}
       style={{
+        // Accent-toned dark sidebar (your preference).
+        // Uses the global accent CSS variable so the sidebar hue matches the chosen accent
+        // while keeping contrast strong and readable.
         background:
-          'linear-gradient(180deg, rgba(19,22,32,1) 0%, rgba(14,18,27,1) 55%, rgba(11,14,22,1) 100%)',
+          'linear-gradient(180deg, rgb(var(--kx-accent) / 0.24) 0%, rgb(var(--kx-accent) / 0.10) 18%, #0b1220 40%, #0a1628 70%, #081324 100%)',
+        boxShadow: 'var(--kx-shadow-sidebar)',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
       }}
     >
-      <div className="px-2 pb-2">
-        <Link href="/dashboard" className="flex items-center gap-2 rounded-xl px-2 py-2 text-white/95 hover:bg-white/5">
-          <Image src="/icons/icon-192.png" width={22} height={22} alt="Kryvexis OS" className="rounded-md" />
-          <div className="leading-tight">
-            <div className="text-sm font-semibold tracking-tight">Kryvexis OS</div>
-            <div className="text-[11px] text-white/60">Business command center</div>
+      <div className={'px-5 pt-5 pb-3'} style={{ color: 'rgba(255,255,255,0.92)' }}>
+        <div className={'flex items-start justify-between gap-3'}>
+          <div className={'flex flex-col'}>
+            {/* Compact brand (icon + name) */}
+            <div className="flex items-center gap-2">
+              <Image
+                src="/kryvexis-logo.png"
+                alt="Kryvexis"
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain"
+                style={{ filter: 'drop-shadow(0 10px 22px rgba(0,0,0,.35))' }}
+                priority
+              />
+              <div>
+                <div className="text-sm font-semibold tracking-tight">Kryvexis OS</div>
+                <div className="text-[11px] leading-tight" style={{ color: 'rgba(255,255,255,0.62)' }}>
+                  {workspaceName ?? 'Workspace'}
+                </div>
+              </div>
+            </div>
           </div>
-        </Link>
+        </div>
       </div>
 
-      <nav className="flex-1 space-y-1 px-1">
-        {items.map((it) => {
-          const active = pathname === it.href || (it.href !== '/dashboard' && pathname.startsWith(it.href))
+      {/* Main navigation */}
+      <nav className={'px-3 pb-2 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
+        {navMainItems
+          .filter((it) => it.roles.includes(role) || role === 'owner' || role === 'manager')
+          .map((it) => {
+          const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
             <Link
               key={it.href}
               href={it.href}
-              className={[
-                'group flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium',
-                active ? 'bg-white/10 text-white' : 'text-white/80 hover:bg-white/5 hover:text-white',
-              ].join(' ')}
+              data-tour={`nav-${it.icon}`}
+              title={it.label}
+              className={
+                'group relative flex items-center rounded-xl py-2 text-sm transition ' +
+                (on ? 'bg-white/10' : 'hover:bg-white/5')
+              }
             >
-              <span className={active ? 'text-white' : 'text-white/70 group-hover:text-white'}>{iconFor(it.icon)}</span>
-              <span className="flex-1 truncate">{it.label}</span>
-              {active ? <span className="h-2 w-2 rounded-full bg-white/90" /> : null}
+              {on && (
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
+                  style={{ background: 'rgb(var(--kx-accent))' }}
+                />
+              )}
+
+              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
+                <NavIcon name={it.icon} />
+              </span>
+              <span
+                className="ml-2 tracking-tight"
+                style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
+              >
+                {it.label}
+              </span>
+              {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
             </Link>
           )
         })}
       </nav>
 
-      <div className="px-3 pt-2 text-[11px] text-white/45">© {new Date().getFullYear()} Kryvexis</div>
+      {/* Bottom navigation */}
+      <div className="mt-auto" />
+      <nav className={'px-3 pt-2 pb-3 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
+        {navBottomItems.map((it) => {
+          const on = pathname === it.href || pathname.startsWith(it.href + '/')
+          return (
+            <Link
+              key={it.href}
+              href={it.href}
+              title={it.label}
+              className={
+                'group relative flex items-center rounded-xl py-2 text-sm transition ' +
+                (on ? 'bg-white/10' : 'hover:bg-white/5')
+              }
+            >
+              {on && (
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
+                  style={{ background: 'rgb(var(--kx-accent))' }}
+                />
+              )}
+
+              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
+                <NavIcon name={it.icon} />
+              </span>
+              <span
+                className="ml-2 tracking-tight"
+                style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
+              >
+                {it.label}
+              </span>
+              {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
+            </Link>
+          )
+        })}
+      </nav>
+
+      {userEmail && (
+        <div className="mt-auto px-5 py-4" style={{ color: 'rgba(255,255,255,0.90)' }}>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.52)' }}>
+                Signed in as
+              </div>
+              <div className="mt-1 text-xs break-all" style={{ color: 'rgba(255,255,255,0.90)' }}>
+                {userEmail}
+              </div>
+            </div>
+            {canManageUsers(role) && (
+              <span
+                className="inline-flex items-center rounded-full px-2 py-0.5 text-xs"
+                style={{ background: 'rgb(var(--kx-accent) / 0.16)', color: 'rgba(255,255,255,0.92)', border: '1px solid rgb(var(--kx-accent) / 0.28)' }}
+                title="Manager access"
+              >
+                Admin
+              </span>
+            )}
+          </div>
+        </div>
+      )}
     </aside>
   )
 }

@@ -1,9 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-import { normalizeRole } from '@/lib/roles/shared'
-import { landingForRole, moduleForPath, type AppModule } from '@/lib/rbac-shared'
 
 const MOBILE_UA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+
 const COMPANY_COOKIE_KEYS = ['kx_active_company_id', 'kx_active_company', 'active_company_id', 'ACTIVE_COMPANY_ID']
 
 function readCompanyIdFromCookies(req: NextRequest): string | null {
@@ -14,30 +13,56 @@ function readCompanyIdFromCookies(req: NextRequest): string | null {
   return null
 }
 
-function defaultModules(role: string): AppModule[] {
-  if (role === 'owner' || role === 'manager') return ['sales', 'procurement', 'accounting', 'operations', 'insights', 'settings']
-  if (role === 'buyer') return ['procurement', 'operations', 'settings']
-  if (role === 'accounts') return ['accounting', 'sales', 'settings']
-  if (role === 'cashier') return ['sales']
-  return ['sales']
+function normalizeRole(role: any) {
+  const r = String(role || 'staff').toLowerCase()
+  if (r === 'owner') return 'owner'
+  if (r === 'manager') return 'manager'
+  if (r === 'cashier') return 'cashier'
+  if (r === 'buyer') return 'buyer'
+  if (r === 'accounts') return 'accounts'
+  return 'staff'
 }
 
-// Static/PWA endpoints must never be redirected or gated.
-const STATIC_ALLOW_PREFIXES = ['/manifest.webmanifest', '/sw.js', '/workbox', '/icons', '/favicon.ico', '/robots.txt', '/sitemap.xml']
+function landingFor(role: string, isMobile: boolean) {
+  if (role === 'buyer') return isMobile ? '/m/buyers' : '/buyers'
+  if (role === 'accounts') return isMobile ? '/m/transactions' : '/accounting/dashboard'
+  if (role === 'cashier') return isMobile ? '/m/home' : '/sales/pos'
+  // manager/owner
+  if (role === 'owner' || role === 'manager') return isMobile ? '/m/home' : '/sales/overview'
+  // staff default → POS first
+  return isMobile ? '/m/home' : '/sales/pos'
+}
 
-const PUBLIC_PREFIXES = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo', ...STATIC_ALLOW_PREFIXES]
+function canAccess(role: string, pathname: string) {
+  if (role === 'owner' || role === 'manager') return true
+  const p = pathname.split('?')[0]
+  const safe = ['/help', '/settings', '/account-center', '/import-station']
+  if (safe.some((x) => p === x || p.startsWith(x + '/'))) return true
 
+  if (role === 'cashier') {
+    return p.startsWith('/sales') || p.startsWith('/clients') || p.startsWith('/quotes') || p.startsWith('/invoices') || p.startsWith('/payments')
+  }
+  if (role === 'buyer') {
+    return p.startsWith('/buyers') || p.startsWith('/operations') || p.startsWith('/products') || p.startsWith('/suppliers')
+  }
+  if (role === 'accounts') {
+    return p.startsWith('/accounting') || p.startsWith('/payments') || p.startsWith('/clients') || p.startsWith('/reports')
+  }
+  return p.startsWith('/sales') || p.startsWith('/clients')
+}
+
+/**
+ * Fixes Vercel ERR_TOO_MANY_REDIRECTS by ensuring signed-out users
+ * never bounce back to '/', and by refreshing Supabase auth cookies
+ * in middleware so Server Components can read the session.
+ */
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
-  const { pathname, searchParams } = request.nextUrl
-
-  // Allow static endpoints early (no auth redirects).
-  if (STATIC_ALLOW_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
-    return response
-  }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // If env is missing, do not block the app — just skip auth-aware redirects.
   if (!url || !anon) return response
 
   const supabase = createServerClient(url, anon, {
@@ -53,82 +78,101 @@ export async function middleware(request: NextRequest) {
     },
   })
 
+  // IMPORTANT: Use getUser() (not getSession()) in middleware.
   const { data } = await supabase.auth.getUser()
   const user = data?.user
-  const ua = request.headers.get('user-agent') ?? ''
-  const isMobile = MOBILE_UA.test(ua)
 
-  // Public routes pass through.
-  if (PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) return response
-
-  if (!user) {
-    const next = request.nextUrl.clone()
-    next.pathname = '/login'
-    return NextResponse.redirect(next)
-  }
-
-  // Determine role + enabled modules (best effort; safe defaults if anything fails).
+  // Role lookup (best-effort). If we can't resolve role, default to staff.
   let role = 'staff'
-  let modules = defaultModules('staff')
-  const companyId = readCompanyIdFromCookies(request)
-  if (companyId) {
-    try {
-      const { data: membership } = await supabase
-        .from('company_users')
-        .select('role')
-        .eq('company_id', companyId)
-        .eq('user_id', user.id)
-        .maybeSingle()
-      role = normalizeRole(membership?.role)
-
-      if (role === 'owner' || role === 'manager') {
-        modules = defaultModules(role)
-      } else {
-        const { data: rows } = await supabase
-          .from('role_modules')
-          .select('module,enabled')
+  if (user) {
+    const companyId = readCompanyIdFromCookies(request)
+    if (companyId) {
+      try {
+        const { data: r } = await supabase
+          .from('company_users')
+          .select('role')
           .eq('company_id', companyId)
-          .eq('role', role)
-
-        const enabled = (rows || []).filter((r: any) => !!r.enabled).map((r: any) => String(r.module).toLowerCase()) as AppModule[]
-        modules = enabled.length ? enabled : defaultModules(role)
+          .eq('user_id', user.id)
+          .maybeSingle()
+        role = normalizeRole(r?.role)
+      } catch {
+        role = 'staff'
       }
-    } catch {
-      role = 'staff'
-      modules = defaultModules('staff')
     }
   }
 
-  // Root entry points routing (after we know role).
+  const { pathname, searchParams } = request.nextUrl
+
+  // Root entry points routing
   if (pathname === '/' || pathname === '/home') {
     const next = request.nextUrl.clone()
+
+    // Signed out → always go to /login (prevents redirect loop with /(app) layout).
+    if (!user) {
+      next.pathname = '/login'
+      return NextResponse.redirect(next)
+    }
+
+    // Signed in → choose UI
     const ui = searchParams.get('ui')
-    if (ui === 'mobile') next.pathname = '/m/home'
-    else if (ui === 'desktop') next.pathname = landingForRole(role as any, false)
-    else next.pathname = landingForRole(role as any, isMobile)
+    if (ui === 'mobile') {
+      next.pathname = '/m/home'
+      return NextResponse.redirect(next)
+    }
+    if (ui === 'desktop') {
+      next.pathname = landingFor(role, false)
+      return NextResponse.redirect(next)
+    }
+
+    const ua = request.headers.get('user-agent') ?? ''
+    const isMobile = MOBILE_UA.test(ua)
+    next.pathname = landingFor(role, isMobile)
     return NextResponse.redirect(next)
   }
 
-  // Mobile/desktop boundary
+
+  // Mobile/desktop experience split:
+  // - Mobile devices should use /m/* (compact UI)
+  // - Desktop should avoid /m/* (full system UI)
+  const ua = request.headers.get('user-agent') ?? ''
+  const isMobile = MOBILE_UA.test(ua)
+
+  // If a desktop user hits a mobile route, bounce them to the desktop home.
   if (!isMobile && pathname.startsWith('/m')) {
     const next = request.nextUrl.clone()
-    next.pathname = landingForRole(role as any, false)
+    next.pathname = landingFor(role, false)
     return NextResponse.redirect(next)
   }
 
+  // If a mobile user hits desktop pages, gently route to the equivalent mobile page.
   if (isMobile && !pathname.startsWith('/m')) {
-    const next = request.nextUrl.clone()
-    next.pathname = '/m/home'
-    return NextResponse.redirect(next)
+    // Allow auth + public routes to pass through untouched
+    const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo']
+    if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
+      const next = request.nextUrl.clone()
+      if (pathname === '/sales/overview' || pathname === '/dashboard') next.pathname = '/m/home'
+      else if (pathname === '/clients') next.pathname = '/m/clients'
+      else if (pathname === '/buyers') next.pathname = '/m/buyers'
+      else if (pathname === '/settings') next.pathname = '/m/settings'
+      else if (pathname === '/invoices' || pathname === '/payments' || pathname === '/reports' || pathname === '/sales') next.pathname = '/m/transactions'
+      else {
+        // default: keep mobile users in the compact shell
+        next.pathname = '/m/home'
+      }
+      return NextResponse.redirect(next)
+    }
   }
 
-  // Server-side gating for desktop routes
-  if (!pathname.startsWith('/m')) {
-    const mod = moduleForPath(pathname)
-    if (mod && role !== 'owner' && role !== 'manager' && !modules.includes(mod)) {
-      const next = request.nextUrl.clone()
-      next.pathname = landingForRole(role as any, isMobile)
-      return NextResponse.redirect(next)
+  // Role-based gating (desktop routes). If user tries to open a module they don't need, redirect them.
+  if (user) {
+    const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo']
+    if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
+      // Only gate non-mobile routes here; /m pages are compact and already simplified.
+      if (!pathname.startsWith('/m') && !canAccess(role, pathname)) {
+        const next = request.nextUrl.clone()
+        next.pathname = landingFor(role, isMobile)
+        return NextResponse.redirect(next)
+      }
     }
   }
 
@@ -137,6 +181,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|manifest\.webmanifest|sw\.js|workbox.*|icons/.*|robots\.txt|sitemap\.xml|.*\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    // Run on everything except Next internals and static assets
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 }
