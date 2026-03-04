@@ -31,7 +31,7 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
   }
 }
 
-const navMainItems = [
+export const navMainItems = [
   { href: '/sales', label: 'Sales', icon: 'sales' as const, module: 'sales' as AppModule },
   { href: '/buyers', label: 'Procurement', icon: 'procurement' as const, module: 'procurement' as AppModule },
   { href: '/accounting/dashboard', label: 'Accounting', icon: 'accounting' as const, module: 'accounting' as AppModule },
@@ -39,7 +39,7 @@ const navMainItems = [
   { href: '/insights', label: 'Insights', icon: 'insights' as const, module: 'insights' as AppModule },
 ]
 
-const navBottomItems = [
+export const navBottomItems = [
   { href: '/settings', label: 'Settings', icon: 'settings' as const, module: 'settings' as AppModule },
   { href: '/help', label: 'Help', icon: 'help' as const, module: 'settings' as AppModule },
   { href: '/import-station', label: 'Import Center', icon: 'upload' as const, module: 'operations' as AppModule },

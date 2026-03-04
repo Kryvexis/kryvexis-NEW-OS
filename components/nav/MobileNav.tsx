@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import type { UserRole } from "@/lib/roles/shared";
-import type { AppModule } from "@/lib/rbac";
+import type { AppModule } from "@/lib/rbac-shared";
 
 const NAV = [
   { label: "Sales", href: "/sales/pos", module: "sales" as AppModule },
