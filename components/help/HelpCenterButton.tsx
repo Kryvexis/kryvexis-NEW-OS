@@ -26,17 +26,7 @@ export default function HelpCenterButton() {
 
       <Modal open={open} title="Help Center" onClose={() => setOpen(false)}>
         <div className="grid gap-6">
-          <section className="grid gap-2">
-            <div className="text-sm font-semibold text-[rgba(var(--kx-fg),.92)]/90">Quick start</div>
-            <ol className="list-decimal pl-5 text-sm kx-muted space-y-1">
-              <li>
-                Add <span className="text-[rgba(var(--kx-fg),.92)]">Clients</span>, <span className="text-[rgba(var(--kx-fg),.92)]">Suppliers</span>, and{' '}
-                <span className="text-[rgba(var(--kx-fg),.92)]">Products</span>
-              </li>
-              <li>Create a Quote → convert to Invoice</li>
-              <li>Record a Payment and keep accounts clean</li>
-            </ol>
-          </section>
+          
 
           <section className="grid gap-2">
             <div className="text-sm font-semibold text-[rgba(var(--kx-fg),.92)]/90">Guides</div>
