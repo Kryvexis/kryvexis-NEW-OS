@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import type { UserRole } from '@/lib/roles/shared'
+import type { AppModule, UserRole } from '@/lib/roles/shared'
 import { canManageUsers } from '@/lib/roles/shared'
 
 export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
@@ -66,10 +66,10 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
 }
 
 export const navMainItems = [
-  { href: '/sales', label: 'Sales', icon: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[] },
-  { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[] },
-  { href: '/operations', label: 'Operations', icon: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
-  { href: '/insights', label: 'Insights', icon: 'insights' as const, roles: ['owner', 'manager'] as UserRole[] },
+  { href: '/sales', label: 'Sales', icon: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[], modules: ['sales'] as AppModule[] },
+  { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[], modules: ['accounting'] as AppModule[] },
+  { href: '/operations', label: 'Operations', icon: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[], modules: ['procurement', 'operations'] as AppModule[] },
+  { href: '/insights', label: 'Insights', icon: 'insights' as const, roles: ['owner', 'manager'] as UserRole[], modules: ['insights'] as AppModule[] },
 ]
 
 // Bottom section: keep this near the footer. Import Center must be second-to-last.
@@ -80,8 +80,9 @@ export const navBottomItems = [
   { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
 ]
 
-export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string; workspaceName?: string; role: UserRole }) {
+export function Sidebar({ userEmail, workspaceName, role, enabledModules }: { userEmail?: string; workspaceName?: string; role: UserRole; enabledModules: AppModule[] }) {
   const pathname = usePathname() || ''
+  const moduleSet = new Set(enabledModules)
 
   // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
   // We intentionally remove the collapsed mode to keep the layout clean and predictable.
@@ -129,7 +130,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
       {/* Main navigation */}
       <nav className={'px-3 pb-2 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
         {navMainItems
-          .filter((it) => it.roles.includes(role) || role === 'owner' || role === 'manager')
+          .filter((it) => (it.roles.includes(role) || role === 'owner' || role === 'manager') && it.modules.some((m) => moduleSet.has(m)))
           .map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (

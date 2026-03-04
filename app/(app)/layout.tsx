@@ -1,6 +1,6 @@
 import Shell from "@/components/shell";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentUserRole } from "@/lib/roles";
+import { getCurrentUserModules, getCurrentUserRole } from "@/lib/roles";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -21,8 +21,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   }
 
   const role = await getCurrentUserRole();
+  const enabledModules = await getCurrentUserModules(role);
   return (
-    <Shell userEmail={user.email ?? ""} role={role}>
+    <Shell userEmail={user.email ?? ""} role={role} enabledModules={enabledModules}>
       {children}
     </Shell>
   );

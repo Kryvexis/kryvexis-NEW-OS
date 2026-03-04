@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { canAccessPath, normalizeRole, resolveEnabledModules, type UserRole } from '@/lib/roles/shared'
 
 const MOBILE_UA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
 
@@ -13,16 +14,6 @@ function readCompanyIdFromCookies(req: NextRequest): string | null {
   return null
 }
 
-function normalizeRole(role: any) {
-  const r = String(role || 'staff').toLowerCase()
-  if (r === 'owner') return 'owner'
-  if (r === 'manager') return 'manager'
-  if (r === 'cashier') return 'cashier'
-  if (r === 'buyer') return 'buyer'
-  if (r === 'accounts') return 'accounts'
-  return 'staff'
-}
-
 function landingFor(role: string, isMobile: boolean) {
   if (role === 'buyer') return isMobile ? '/m/buyers' : '/buyers'
   if (role === 'accounts') return isMobile ? '/m/transactions' : '/accounting/dashboard'
@@ -31,24 +22,6 @@ function landingFor(role: string, isMobile: boolean) {
   if (role === 'owner' || role === 'manager') return isMobile ? '/m/home' : '/sales/overview'
   // staff default → POS first
   return isMobile ? '/m/home' : '/sales/pos'
-}
-
-function canAccess(role: string, pathname: string) {
-  if (role === 'owner' || role === 'manager') return true
-  const p = pathname.split('?')[0]
-  const safe = ['/help', '/settings', '/account-center', '/import-station']
-  if (safe.some((x) => p === x || p.startsWith(x + '/'))) return true
-
-  if (role === 'cashier') {
-    return p.startsWith('/sales') || p.startsWith('/clients') || p.startsWith('/quotes') || p.startsWith('/invoices') || p.startsWith('/payments')
-  }
-  if (role === 'buyer') {
-    return p.startsWith('/buyers') || p.startsWith('/operations') || p.startsWith('/products') || p.startsWith('/suppliers')
-  }
-  if (role === 'accounts') {
-    return p.startsWith('/accounting') || p.startsWith('/payments') || p.startsWith('/clients') || p.startsWith('/reports')
-  }
-  return p.startsWith('/sales') || p.startsWith('/clients')
 }
 
 /**
@@ -83,7 +56,8 @@ export async function middleware(request: NextRequest) {
   const user = data?.user
 
   // Role lookup (best-effort). If we can't resolve role, default to staff.
-  let role = 'staff'
+  let role: UserRole = 'staff'
+  let enabledModules = resolveEnabledModules(role)
   if (user) {
     const companyId = readCompanyIdFromCookies(request)
     if (companyId) {
@@ -95,8 +69,15 @@ export async function middleware(request: NextRequest) {
           .eq('user_id', user.id)
           .maybeSingle()
         role = normalizeRole(r?.role)
+        const { data: moduleRows } = await supabase
+          .from('role_modules')
+          .select('module, enabled')
+          .eq('company_id', companyId)
+          .eq('role', role)
+        enabledModules = resolveEnabledModules(role, moduleRows || [])
       } catch {
         role = 'staff'
+        enabledModules = resolveEnabledModules(role)
       }
     }
   }
@@ -168,7 +149,7 @@ export async function middleware(request: NextRequest) {
     const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo']
     if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
       // Only gate non-mobile routes here; /m pages are compact and already simplified.
-      if (!pathname.startsWith('/m') && !canAccess(role, pathname)) {
+      if (!pathname.startsWith('/m') && !canAccessPath(role, pathname, enabledModules)) {
         const next = request.nextUrl.clone()
         next.pathname = landingFor(role, isMobile)
         return NextResponse.redirect(next)
