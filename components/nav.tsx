@@ -3,169 +3,89 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import type { AppModule, UserRole } from '@/lib/roles/shared'
-import { canManageUsers } from '@/lib/roles/shared'
+import type { UserRole } from '@/lib/roles/shared'
+import type { AppModule } from '@/lib/rbac-shared'
+import { NAV } from '@/components/nav/nav-items'
 
-export function NavIcon({
-  name,
-}: {
-  name:
-    | 'sales'
-    | 'accounting'
-    | 'operations'
-    | 'insights'
-    | 'settings'
-    | 'help'
-    | 'accountCenter'
-    | 'upload'
-    | 'procurement'
-}) {
-  const common = 'h-4 w-4'
+function isAllowedByRole(itemRoles: UserRole[], role: UserRole) {
+  return itemRoles.includes(role) || role === 'owner' || role === 'manager'
+}
+
+function iconFor(name: (typeof NAV)[number]['icon']) {
+  // Minimal inline icons to avoid extra deps; replace with lucide if you want.
+  // Using SVG keeps it stable for Vercel builds.
+  const cls = 'h-4 w-4 opacity-90'
   switch (name) {
-    case 'procurement':
-      return <span className={common}>🛒</span>
-    case 'sales':
-      return <span className={common}>📈</span>
-    case 'accounting':
-      return <span className={common}>🧾</span>
-    case 'operations':
-      return <span className={common}>📦</span>
-    case 'insights':
-      return <span className={common}>📊</span>
-    case 'accountCenter':
-      return <span className={common}>👤</span>
-    case 'upload':
-      return <span className={common}>⬆️</span>
-    case 'help':
-      return <span className={common}>❓</span>
-    case 'settings':
-      return <span className={common}>⚙️</span>
+    case 'dashboard':
+      return (
+        <svg className={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 13h7V4H4v9Zm9 7h7V11h-7v9ZM4 20h7v-5H4v5Zm9-11h7V4h-7v5Z" fill="currentColor" />
+        </svg>
+      )
+    case 'pos':
+      return (
+        <svg className={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7 4h10a2 2 0 0 1 2 2v3H5V6a2 2 0 0 1 2-2Zm-2 7h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm3 2v2h3v-2H8Zm0 3v2h3v-2H8Zm5-3v2h3v-2h-3Zm0 3v2h3v-2h-3Z" fill="currentColor" />
+        </svg>
+      )
+    default:
+      return (
+        <svg className={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 6h12v12H6z" fill="currentColor" />
+        </svg>
+      )
   }
 }
 
-type SidebarItem = {
-  href: string
-  label: string
-  icon: Parameters<typeof NavIcon>[0]['name']
-  roles?: UserRole[]
-  modules?: AppModule[]
-}
+export function Sidebar({ role, modules }: { role: UserRole; modules: AppModule[] }) {
+  const pathname = usePathname() || '/dashboard'
+  const moduleSet = new Set(modules || [])
 
-export const navMainItems: readonly SidebarItem[] = [
-  { href: '/sales', label: 'Sales', icon: 'sales', roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'], modules: ['sales'] },
-  { href: '/buyers', label: 'Procurement', icon: 'procurement', roles: ['owner', 'manager', 'buyer'], modules: ['procurement'] },
-  { href: '/accounting', label: 'Accounting', icon: 'accounting', roles: ['owner', 'manager', 'accounts'], modules: ['accounting'] },
-  { href: '/operations', label: 'Operations', icon: 'operations', roles: ['owner', 'manager', 'buyer'], modules: ['operations'] },
-  { href: '/insights', label: 'Insights', icon: 'insights', roles: ['owner', 'manager'], modules: ['insights'] },
-]
-
-export const navBottomItems: readonly SidebarItem[] = [
-  { href: '/settings', label: 'Settings', icon: 'settings', modules: ['settings'] },
-  { href: '/help', label: 'Help', icon: 'help' },
-  { href: '/import-station', label: 'Import Center', icon: 'upload', modules: ['operations'] },
-  { href: '/account-center', label: 'Account Center', icon: 'accountCenter', modules: ['settings'] },
-]
-
-export function Sidebar({
-  userEmail,
-  workspaceName,
-  role,
-  modules,
-}: {
-  userEmail?: string
-  workspaceName?: string
-  role: UserRole
-  modules: AppModule[]
-}) {
-  const pathname = usePathname() || ''
-  const moduleSet = new Set<AppModule>(modules || [])
+  const items = NAV.filter((it) => {
+    const canByRole = isAllowedByRole(it.roles, role)
+    const canByModule = !it.modules || it.modules.some((m) => moduleSet.has(m))
+    return canByRole && canByModule
+  })
 
   return (
     <aside
-      className="hidden md:flex md:w-[276px] md:flex-col"
+      className="hidden md:flex md:w-[260px] md:flex-col md:gap-2 md:px-3 md:py-4"
       style={{
-        background: 'linear-gradient(180deg, rgb(var(--kx-accent) / 0.26) 0%, rgb(var(--kx-accent) / 0.14) 14%, #0b1220 44%, #081324 100%)',
-        boxShadow: 'var(--kx-shadow-sidebar)',
-        borderRight: '1px solid rgba(255,255,255,0.08)',
+        background:
+          'linear-gradient(180deg, rgba(19,22,32,1) 0%, rgba(14,18,27,1) 55%, rgba(11,14,22,1) 100%)',
       }}
     >
-      <div className="px-5 pb-3 pt-5 text-white/90">
-        <div className="flex items-center gap-2">
-          <Image
-            src="/kryvexis-logo.png"
-            alt="Kryvexis"
-            width={32}
-            height={32}
-            className="h-8 w-8 object-contain"
-            priority
-          />
-          <div>
-            <div className="text-sm font-semibold tracking-tight text-white">Kryvexis OS</div>
-            <div className="text-[11px] text-white/65">{workspaceName ?? 'Workspace'}</div>
+      <div className="px-2 pb-2">
+        <Link href="/dashboard" className="flex items-center gap-2 rounded-xl px-2 py-2 text-white/95 hover:bg-white/5">
+          <Image src="/icons/icon-192.png" width={22} height={22} alt="Kryvexis OS" className="rounded-md" />
+          <div className="leading-tight">
+            <div className="text-sm font-semibold tracking-tight">Kryvexis OS</div>
+            <div className="text-[11px] text-white/60">Business command center</div>
           </div>
-        </div>
+        </Link>
       </div>
 
-      {/* Main navigation */}
-      <nav className={'px-3 pb-2 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
-        {navMainItems
-          .filter(
-            (it) =>
-              (!it.roles || it.roles.includes(role) || role === 'owner' || role === 'manager') &&
-              (!it.modules || it.modules.some((m) => moduleSet.has(m))),
+      <nav className="flex-1 space-y-1 px-1">
+        {items.map((it) => {
+          const active = pathname === it.href || (it.href !== '/dashboard' && pathname.startsWith(it.href))
+          return (
+            <Link
+              key={it.href}
+              href={it.href}
+              className={[
+                'group flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium',
+                active ? 'bg-white/10 text-white' : 'text-white/80 hover:bg-white/5 hover:text-white',
+              ].join(' ')}
+            >
+              <span className={active ? 'text-white' : 'text-white/70 group-hover:text-white'}>{iconFor(it.icon)}</span>
+              <span className="flex-1 truncate">{it.label}</span>
+              {active ? <span className="h-2 w-2 rounded-full bg-white/90" /> : null}
+            </Link>
           )
-          .map((it) => {
-            const on = pathname === it.href || pathname.startsWith(it.href + '/')
-            return (
-              <Link
-                key={it.href}
-                href={it.href}
-                className={'group relative flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'bg-white/16' : 'hover:bg-white/8')}
-              >
-                {on && <span className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full bg-white" />}
-                <span className="ml-3 text-white/90">
-                  <NavIcon name={it.icon} />
-                </span>
-                <span className="ml-2 tracking-tight text-white">{it.label}</span>
-              </Link>
-            )
-          })}
+        })}
       </nav>
 
-      <div className="mt-auto" />
-
-      <nav className={'px-3 pt-2 pb-3 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
-        {navBottomItems
-          .filter((it) => !it.modules || it.modules.some((m) => moduleSet.has(m)))
-          .map((it) => {
-            const on = pathname === it.href || pathname.startsWith(it.href + '/')
-            return (
-              <Link
-                key={it.href}
-                href={it.href}
-                className={'group relative flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'bg-white/16' : 'hover:bg-white/8')}
-              >
-                {on && <span className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full bg-white" />}
-                <span className="ml-3 text-white/90">
-                  <NavIcon name={it.icon} />
-                </span>
-                <span className="ml-2 tracking-tight text-white">{it.label}</span>
-              </Link>
-            )
-          })}
-      </nav>
-
-      {userEmail && (
-        <div className="px-5 py-4 text-white/90">
-          <div className="text-[11px] uppercase tracking-wider text-white/55">Signed in as</div>
-          <div className="mt-1 break-all text-xs text-white/90">{userEmail}</div>
-          {canManageUsers(role) ? (
-            <span className="mt-2 inline-flex rounded-full border border-white/25 bg-white/10 px-2 py-0.5 text-xs text-white">
-              Admin
-            </span>
-          ) : null}
-        </div>
-      )}
+      <div className="px-3 pt-2 text-[11px] text-white/45">© {new Date().getFullYear()} Kryvexis</div>
     </aside>
   )
 }
