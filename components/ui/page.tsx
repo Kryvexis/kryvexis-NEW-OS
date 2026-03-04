@@ -5,6 +5,7 @@ export function Page({
   subtitle,
   action,
   right,
+  search,
   children,
   className,
 }: {
@@ -12,12 +13,13 @@ export function Page({
   subtitle?: React.ReactNode
   action?: React.ReactNode
   right?: React.ReactNode
+  search?: React.ReactNode
   children: React.ReactNode
   className?: string
 }) {
   return (
     <div className={clsx('grid gap-6', className)}>
-      <PageHeader title={title} subtitle={subtitle} action={action} right={right} />
+      <PageHeader title={title} subtitle={subtitle} action={action} right={right} search={search} />
       {children}
     </div>
   )
@@ -28,12 +30,13 @@ export function PageHeader({
   subtitle,
   action,
   right,
+  search,
 }: {
   title: React.ReactNode
   subtitle?: React.ReactNode
   action?: React.ReactNode
-  /** Optional: additional right-side content (eg: filters) */
   right?: React.ReactNode
+  search?: React.ReactNode
 }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
@@ -42,6 +45,7 @@ export function PageHeader({
         {subtitle ? <div className="kx-sub mt-1">{subtitle}</div> : null}
       </div>
       <div className="flex items-center gap-2">
+        {search}
         {right}
         {action}
       </div>

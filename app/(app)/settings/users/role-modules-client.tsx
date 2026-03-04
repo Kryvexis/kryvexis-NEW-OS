@@ -11,6 +11,7 @@ const MODULE_LABEL: Record<string, string> = {
   accounting: 'Accounting',
   operations: 'Operations',
   insights: 'Insights',
+  settings: 'Settings',
 }
 
 const ROLE_LABEL: Record<string, string> = {
