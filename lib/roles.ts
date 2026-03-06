@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { requireCompanyId } from '@/lib/kx'
+import { getCompanyIdOrNull } from '@/lib/kx'
 import { normalizeRole, type UserRole } from '@/lib/roles/shared'
 
 // Server-only role resolver for the current signed-in user.
@@ -8,7 +8,12 @@ export async function getCurrentUserRole(): Promise<UserRole> {
   const { data } = await supabase.auth.getUser()
   if (!data?.user) return 'staff'
 
-  const companyId = await requireCompanyId()
+  // IMPORTANT: Do NOT redirect from the role resolver.
+  // This function is called from the (app) layout (which also wraps /account-center).
+  // Redirecting here causes ERR_TOO_MANY_REDIRECTS for users who haven't selected/created a company yet.
+  const companyId = await getCompanyIdOrNull()
+  if (!companyId) return 'staff'
+
   const { data: row } = await supabase
     .from('company_users')
     .select('role')
