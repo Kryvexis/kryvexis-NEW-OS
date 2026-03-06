@@ -2,11 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 const MOBILE_UA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
-
 const COMPANY_COOKIE_KEYS = ['kx_active_company_id', 'kx_active_company', 'active_company_id', 'ACTIVE_COMPANY_ID']
 
-// Public assets that must NEVER be gated by auth/RBAC middleware (PWA + static).
-// If middleware touches these, browsers can get 401/redirects and break installability.
 const PUBLIC_ASSET_PREFIXES = ['/icons', '/images', '/assets', '/_next']
 const PUBLIC_ASSET_PATHS = new Set([
   '/manifest.webmanifest',
@@ -21,7 +18,6 @@ function isPublicAssetPath(pathname: string) {
   if (PUBLIC_ASSET_PATHS.has(pathname)) return true
   if (pathname.startsWith('/workbox')) return true
   if (PUBLIC_ASSET_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) return true
-  // static file extensions
   if (/\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|txt|xml|webmanifest)$/i.test(pathname)) return true
   return false
 }
@@ -48,9 +44,7 @@ function landingFor(role: string, isMobile: boolean) {
   if (role === 'buyer') return isMobile ? '/m/buyers' : '/buyers'
   if (role === 'accounts') return isMobile ? '/m/transactions' : '/accounting/dashboard'
   if (role === 'cashier') return isMobile ? '/m/home' : '/sales/pos'
-  // manager/owner
   if (role === 'owner' || role === 'manager') return isMobile ? '/m/home' : '/sales/overview'
-  // staff default → POS first
   return isMobile ? '/m/home' : '/sales/pos'
 }
 
@@ -72,18 +66,43 @@ function canAccess(role: string, pathname: string) {
   return p.startsWith('/sales') || p.startsWith('/clients')
 }
 
-/**
- * Fixes Vercel ERR_TOO_MANY_REDIRECTS by ensuring signed-out users
- * never bounce back to '/', and by refreshing Supabase auth cookies
- * in middleware so Server Components can read the session.
- */
+async function resolveRoleAndCompany(supabase: any, userId: string, companyId: string | null) {
+  if (companyId) {
+    const { data } = await supabase
+      .from('company_users')
+      .select('company_id, role, created_at')
+      .eq('company_id', companyId)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true })
+      .maybeSingle()
+
+    if (data?.company_id) {
+      return {
+        companyId: data.company_id as string,
+        role: normalizeRole(data.role),
+      }
+    }
+  }
+
+  const { data: memberships } = await supabase
+    .from('company_users')
+    .select('company_id, role, created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: true })
+    .limit(1)
+
+  const first = memberships?.[0]
+  return {
+    companyId: first?.company_id ?? null,
+    role: normalizeRole(first?.role),
+  }
+}
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  // If env is missing, do not block the app — just skip auth-aware redirects.
   if (!url || !anon) return response
 
   const supabase = createServerClient(url, anon, {
@@ -99,45 +118,45 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  // IMPORTANT: Use getUser() (not getSession()) in middleware.
   const { data } = await supabase.auth.getUser()
   const user = data?.user
 
-  // Role lookup (best-effort). If we can't resolve role, default to staff.
   let role = 'staff'
+  let activeCompanyId = readCompanyIdFromCookies(request)
+
   if (user) {
-    const companyId = readCompanyIdFromCookies(request)
-    if (companyId) {
-      try {
-        const { data: r } = await supabase
-          .from('company_users')
-          .select('role')
-          .eq('company_id', companyId)
-          .eq('user_id', user.id)
-          .maybeSingle()
-        role = normalizeRole(r?.role)
-      } catch {
-        role = 'staff'
+    try {
+      const resolved = await resolveRoleAndCompany(supabase, user.id, activeCompanyId)
+      role = resolved.role
+      activeCompanyId = resolved.companyId
+
+      if (resolved.companyId && resolved.companyId !== readCompanyIdFromCookies(request)) {
+        const cookieOptions = {
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax' as const,
+          secure: process.env.NODE_ENV === 'production',
+          maxAge: 60 * 60 * 24 * 30,
+        }
+        response.cookies.set('kx_active_company_id', resolved.companyId, cookieOptions)
+        response.cookies.set('kx_active_company', resolved.companyId, cookieOptions)
+        response.cookies.set('active_company_id', resolved.companyId, cookieOptions)
       }
+    } catch {
+      role = 'staff'
     }
   }
 
   const { pathname, searchParams } = request.nextUrl
-
-  // Never run auth/routing logic for public assets (manifest/service worker/icons/etc.)
   if (isPublicAssetPath(pathname)) return response
 
-  // Root entry points routing
   if (pathname === '/' || pathname === '/home') {
     const next = request.nextUrl.clone()
-
-    // Signed out → always go to /login (prevents redirect loop with /(app) layout).
     if (!user) {
       next.pathname = '/login'
       return NextResponse.redirect(next)
     }
 
-    // Signed in → choose UI
     const ui = searchParams.get('ui')
     if (ui === 'mobile') {
       next.pathname = '/m/home'
@@ -154,23 +173,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(next)
   }
 
-
-  // Mobile/desktop experience split:
-  // - Mobile devices should use /m/* (compact UI)
-  // - Desktop should avoid /m/* (full system UI)
   const ua = request.headers.get('user-agent') ?? ''
   const isMobile = MOBILE_UA.test(ua)
 
-  // If a desktop user hits a mobile route, bounce them to the desktop home.
   if (!isMobile && pathname.startsWith('/m')) {
     const next = request.nextUrl.clone()
     next.pathname = landingFor(role, false)
     return NextResponse.redirect(next)
   }
 
-  // If a mobile user hits desktop pages, gently route to the equivalent mobile page.
   if (isMobile && !pathname.startsWith('/m')) {
-    // Allow auth + public routes to pass through untouched
     const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo']
     if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
       const next = request.nextUrl.clone()
@@ -179,19 +191,14 @@ export async function middleware(request: NextRequest) {
       else if (pathname === '/buyers') next.pathname = '/m/buyers'
       else if (pathname === '/settings') next.pathname = '/m/settings'
       else if (pathname === '/invoices' || pathname === '/payments' || pathname === '/reports' || pathname === '/sales') next.pathname = '/m/transactions'
-      else {
-        // default: keep mobile users in the compact shell
-        next.pathname = '/m/home'
-      }
+      else next.pathname = '/m/home'
       return NextResponse.redirect(next)
     }
   }
 
-  // Role-based gating (desktop routes). If user tries to open a module they don't need, redirect them.
   if (user) {
     const publicPrefixes = ['/login', '/signup', '/forgot-password', '/boot', '/api', '/_next', '/share', '/demo']
     if (!publicPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
-      // Only gate non-mobile routes here; /m pages are compact and already simplified.
       if (!pathname.startsWith('/m') && !canAccess(role, pathname)) {
         const next = request.nextUrl.clone()
         next.pathname = landingFor(role, isMobile)
@@ -205,7 +212,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run on everything except Next internals and static assets (incl. PWA files)
     '/((?!_next/static|_next/image|favicon.ico|manifest\\.webmanifest|manifest\\.json|sw\\.js|workbox.*|icons/|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|txt|xml|webmanifest)$).*)',
   ],
 }
