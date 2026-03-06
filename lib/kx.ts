@@ -43,12 +43,26 @@ export async function getCompanyIdOrNull(): Promise<string | null> {
   const cookieCompanyId = await readActiveCompanyCookie()
 
   // Membership list (preferred)
+  // IMPORTANT: do NOT join companies here. In a fresh tenant setup, RLS on companies
+  // can block the join and cause an error, which would incorrectly make companyId null.
+  // We only need company_id to choose an active workspace.
   const { data: memberships, error: mErr } = await supabase
     .from('company_users')
-    .select('company_id, role, companies(name)')
+    .select('company_id, role')
     .eq('user_id', uid)
 
-  if (mErr) return null
+  if (mErr) {
+    // As a last resort, try a minimal query (some setups may restrict column-level access)
+    const { data: memberships2, error: mErr2 } = await supabase
+      .from('company_users')
+      .select('company_id')
+      .eq('user_id', uid)
+    if (mErr2) return null
+    const ids2 = (memberships2 || []).map((m: any) => m.company_id as string).filter(Boolean)
+    if (cookieCompanyId && ids2.includes(cookieCompanyId)) return cookieCompanyId
+    if (ids2.length > 0) return ids2[0]
+    return null
+  }
 
   const memberCompanyIds = (memberships || [])
     .map((m: any) => m.company_id as string)
