@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
 const COOKIE_KEYS = [
@@ -33,10 +34,10 @@ async function readActiveCompanyCookie(): Promise<string | null> {
  * IMPORTANT: We do not set cookies here (Server Components can't reliably set cookies).
  * Cookie is set via /api/company/active (client action).
  */
-export async function requireCompanyId() {
+export async function getCompanyIdOrNull(): Promise<string | null> {
   const supabase = await createClient()
   const { data: userData, error: userErr } = await supabase.auth.getUser()
-  if (userErr || !userData.user) throw new Error('Not authenticated')
+  if (userErr || !userData.user) return null
 
   const uid = userData.user.id
   const cookieCompanyId = await readActiveCompanyCookie()
@@ -47,7 +48,7 @@ export async function requireCompanyId() {
     .select('company_id, role, companies(name)')
     .eq('user_id', uid)
 
-  if (mErr) throw mErr
+  if (mErr) return null
 
   const memberCompanyIds = (memberships || [])
     .map((m: any) => m.company_id as string)
@@ -68,11 +69,16 @@ export async function requireCompanyId() {
     .eq('owner_user_id', uid)
     .limit(1)
 
-  if (oErr) throw oErr
+  if (oErr) return null
   if (owned && owned.length > 0) return owned[0].id as string
 
-  // Nothing found — user needs to create a company
-  throw new Error('No company found for user. Please create a company in Account Center.')
+  return null
+}
+
+export async function requireCompanyId() {
+  const companyId = await getCompanyIdOrNull()
+  if (!companyId) redirect('/account-center?setup=1')
+  return companyId
 }
 
 export async function requireCompany() {

@@ -50,11 +50,14 @@ alter table public.purchase_orders enable row level security;
 alter table public.purchase_order_items enable row level security;
 
 -- Policies (reuse helper function is_my_company)
-create policy if not exists "suppliers company write" on public.suppliers
+drop policy if exists "suppliers company write" on public.suppliers;
+create policy "suppliers company write" on public.suppliers
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 
-create policy if not exists "purchase_orders company write" on public.purchase_orders
+drop policy if exists "purchase_orders company write" on public.purchase_orders;
+create policy "purchase_orders company write" on public.purchase_orders
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 
-create policy if not exists "purchase_order_items company write" on public.purchase_order_items
+drop policy if exists "purchase_order_items company write" on public.purchase_order_items;
+create policy "purchase_order_items company write" on public.purchase_order_items
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));

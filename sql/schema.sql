@@ -159,8 +159,10 @@ alter table public.payments enable row level security;
 alter table public.activity_logs enable row level security;
 
 -- Policies: owner controls their company
+drop policy if exists "company owner read" on public.companies;
 create policy "company owner read" on public.companies
   for select using (owner_user_id = auth.uid());
+drop policy if exists "company owner write" on public.companies;
 create policy "company owner write" on public.companies
   for all using (owner_user_id = auth.uid()) with check (owner_user_id = auth.uid());
 
@@ -177,50 +179,68 @@ as $$
 $$;
 
 -- Policies for company-scoped tables
+drop policy if exists "clients company read" on public.clients;
 create policy "clients company read" on public.clients
   for select using (public.is_my_company(company_id));
+drop policy if exists "clients company write" on public.clients;
 create policy "clients company write" on public.clients
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 
+drop policy if exists "products company read" on public.products;
 create policy "products company read" on public.products
   for select using (public.is_my_company(company_id));
+drop policy if exists "products company write" on public.products;
 create policy "products company write" on public.products
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 
+drop policy if exists "tax company read" on public.tax_rates;
 create policy "tax company read" on public.tax_rates
   for select using (public.is_my_company(company_id));
+drop policy if exists "tax company write" on public.tax_rates;
 create policy "tax company write" on public.tax_rates
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 
+drop policy if exists "quotes company read" on public.quotes;
 create policy "quotes company read" on public.quotes
   for select using (public.is_my_company(company_id));
+drop policy if exists "quotes company write" on public.quotes;
 create policy "quotes company write" on public.quotes
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 
+drop policy if exists "quote_items read" on public.quote_items;
 create policy "quote_items read" on public.quote_items
   for select using (exists(select 1 from public.quotes q where q.id = quote_id and public.is_my_company(q.company_id)));
+drop policy if exists "quote_items write" on public.quote_items;
 create policy "quote_items write" on public.quote_items
   for all using (exists(select 1 from public.quotes q where q.id = quote_id and public.is_my_company(q.company_id)))
   with check (exists(select 1 from public.quotes q where q.id = quote_id and public.is_my_company(q.company_id)));
 
+drop policy if exists "invoices company read" on public.invoices;
 create policy "invoices company read" on public.invoices
   for select using (public.is_my_company(company_id));
+drop policy if exists "invoices company write" on public.invoices;
 create policy "invoices company write" on public.invoices
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 
+drop policy if exists "invoice_items read" on public.invoice_items;
 create policy "invoice_items read" on public.invoice_items
   for select using (exists(select 1 from public.invoices i where i.id = invoice_id and public.is_my_company(i.company_id)));
+drop policy if exists "invoice_items write" on public.invoice_items;
 create policy "invoice_items write" on public.invoice_items
   for all using (exists(select 1 from public.invoices i where i.id = invoice_id and public.is_my_company(i.company_id)))
   with check (exists(select 1 from public.invoices i where i.id = invoice_id and public.is_my_company(i.company_id)));
 
+drop policy if exists "payments company read" on public.payments;
 create policy "payments company read" on public.payments
   for select using (public.is_my_company(company_id));
+drop policy if exists "payments company write" on public.payments;
 create policy "payments company write" on public.payments
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 
+drop policy if exists "activity company read" on public.activity_logs;
 create policy "activity company read" on public.activity_logs
   for select using (public.is_my_company(company_id));
+drop policy if exists "activity company write" on public.activity_logs;
 create policy "activity company write" on public.activity_logs
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 

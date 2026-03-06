@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/card";
-import { requireCompanyId } from "@/lib/kx";
+import { getCompanyIdOrNull } from "@/lib/kx";
 
 export const dynamic = "force-dynamic";
 
@@ -10,11 +10,7 @@ export default async function AccountCenterPage() {
   const user = userData.user;
 
   let companyId: string | null = null;
-  try {
-    companyId = await requireCompanyId();
-  } catch {
-    companyId = null;
-  }
+  companyId = await getCompanyIdOrNull();
 
   const { data: company } = companyId
     ? await supabase.from("companies").select("id,name,email,phone,address,logo_url,created_at").eq("id", companyId).maybeSingle()
@@ -34,11 +30,7 @@ export default async function AccountCenterPage() {
     if (!uid) throw new Error("Not signed in");
 
     let cid: string | null = null;
-    try {
-      cid = await requireCompanyId();
-    } catch {
-      cid = null;
-    }
+    cid = await getCompanyIdOrNull();
 
     // Best-effort workspace wipe (safe even if some tables don't exist)
     if (cid) {

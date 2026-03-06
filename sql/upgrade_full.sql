@@ -34,15 +34,19 @@ alter table public.transactions enable row level security;
 
 drop policy if exists "suppliers company read" on public.suppliers;
 drop policy if exists "suppliers company write" on public.suppliers;
+drop policy if exists "suppliers company read" on public.suppliers;
 create policy "suppliers company read" on public.suppliers
   for select using (public.is_my_company(company_id));
+drop policy if exists "suppliers company write" on public.suppliers;
 create policy "suppliers company write" on public.suppliers
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 
 drop policy if exists "transactions company read" on public.transactions;
 drop policy if exists "transactions company write" on public.transactions;
+drop policy if exists "transactions company read" on public.transactions;
 create policy "transactions company read" on public.transactions
   for select using (public.is_my_company(company_id));
+drop policy if exists "transactions company write" on public.transactions;
 create policy "transactions company write" on public.transactions
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
 

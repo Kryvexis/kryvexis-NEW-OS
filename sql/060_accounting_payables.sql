@@ -31,9 +31,11 @@ create unique index if not exists ux_accounting_categories_company_type_name
 alter table public.accounting_categories enable row level security;
 
 drop policy if exists "accounting categories company read" on public.accounting_categories;
+drop policy if exists "accounting categories company read" on public.accounting_categories;
 create policy "accounting categories company read" on public.accounting_categories
   for select using (public.is_my_company(company_id));
 
+drop policy if exists "accounting categories company write" on public.accounting_categories;
 drop policy if exists "accounting categories company write" on public.accounting_categories;
 create policy "accounting categories company write" on public.accounting_categories
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
@@ -67,9 +69,11 @@ create index if not exists idx_supplier_bills_due on public.supplier_bills(due_d
 alter table public.supplier_bills enable row level security;
 
 drop policy if exists "supplier bills company read" on public.supplier_bills;
+drop policy if exists "supplier bills company read" on public.supplier_bills;
 create policy "supplier bills company read" on public.supplier_bills
   for select using (public.is_my_company(company_id));
 
+drop policy if exists "supplier bills company write" on public.supplier_bills;
 drop policy if exists "supplier bills company write" on public.supplier_bills;
 create policy "supplier bills company write" on public.supplier_bills
   for all using (public.is_my_company(company_id)) with check (public.is_my_company(company_id));
