@@ -3,98 +3,116 @@
 @tailwind utilities;
 
 /*
-  Kryvexis OS — token-based theming
-  - Minimal global CSS
-  - Tailwind handles layout; these are only design tokens + a few component primitives
+  Kryvexis OS — refreshed color system
+  - cleaner light-mode contrast
+  - less foggy/minty surfaces
+  - stronger semantic accents
+  - compatibility remaps for older emerald-heavy screens
 */
 
 @layer base {
   :root {
-    /* Accent (RGB triplet) — Indigo Enterprise */
-    --kx-accent: 99 102 241;   /* indigo-500 */
-    --kx-accent-2: 79 70 229;  /* indigo-600 */
+    /* Brand accent — cleaner cobalt/azure */
+    --kx-accent: 59 130 246;      /* blue-500 */
+    --kx-accent-2: 37 99 235;     /* blue-600 */
+    --kx-accent-soft: 191 219 254;/* blue-200 */
 
-    /* Light (Apple/Stripe clean) */
-    --kx-bg: 242 244 248;         /* soft cool gray */
-    --kx-shell: 248 250 252;      /* header/sidebar shell */
-    --kx-surface: 255 255 255;    /* cards */
-    --kx-surface-2: 250 251 253;  /* secondary surfaces */
-    --kx-fg: 17 24 39;
+    /* Semantic system */
+    --kx-success: 16 185 129;     /* emerald-500 */
+    --kx-warning: 245 158 11;     /* amber-500 */
+    --kx-danger: 239 68 68;       /* red-500 */
+    --kx-info: 59 130 246;        /* blue-500 */
+
+    /* Light surfaces */
+    --kx-bg: 244 247 251;
+    --kx-shell: 236 242 248;
+    --kx-surface: 255 255 255;
+    --kx-surface-2: 248 250 252;
+    --kx-surface-3: 241 245 249;
+    --kx-fg: 15 23 42;
     --kx-muted: 71 85 105;
-    --kx-border: 17 24 39;
+    --kx-border: 148 163 184;
 
-    /* Background accents (light) — subtle, not foggy */
-    --kx-bg-grad-1: rgb(var(--kx-accent) / 0.07);
+    /* Background accents */
+    --kx-bg-grad-1: rgb(var(--kx-accent) / 0.08);
     --kx-bg-grad-2: rgb(var(--kx-accent-2) / 0.05);
+    --kx-bg-grad-3: rgb(14 165 233 / 0.04);
 
-    /* Floating depth (light) — soft shadows, no borders */
-    --kx-shadow-card: 0 14px 34px rgb(17 24 39 / 0.10);
-    --kx-shadow-card-hover: 0 22px 54px rgb(17 24 39 / 0.14);
-    --kx-shadow-float: 0 10px 22px rgb(17 24 39 / 0.08);
-    --kx-shadow-sidebar: 14px 0 42px rgb(17 24 39 / 0.08);
-    --kx-shadow-header: 0 8px 22px rgb(17 24 39 / 0.06);
+    /* Depth */
+    --kx-shadow-card: 0 12px 32px rgb(15 23 42 / 0.08);
+    --kx-shadow-card-hover: 0 20px 48px rgb(15 23 42 / 0.12);
+    --kx-shadow-float: 0 8px 24px rgb(15 23 42 / 0.07);
+    --kx-shadow-sidebar: 12px 0 40px rgb(15 23 42 / 0.08);
+    --kx-shadow-header: 0 8px 20px rgb(15 23 42 / 0.06);
     color-scheme: light;
   }
 
   html.dark {
-    /* Dark */
-    /* Premium charcoal (not pure black) */
     --kx-bg: 10 12 16;
-    --kx-shell: 12 14 18;
-    --kx-surface: 16 18 24;
-    --kx-surface-2: 20 22 30;
-    --kx-fg: 245 245 247;
-    --kx-muted: 164 164 174;
-    --kx-border: 245 245 247;
+    --kx-shell: 12 15 20;
+    --kx-surface: 16 20 27;
+    --kx-surface-2: 22 27 36;
+    --kx-surface-3: 26 32 43;
+    --kx-fg: 241 245 249;
+    --kx-muted: 148 163 184;
+    --kx-border: 71 85 105;
 
-    /* Background accents (dark) — subtle premium depth */
-    --kx-bg-grad-1: rgb(var(--kx-accent) / 0.10);
+    --kx-bg-grad-1: rgb(var(--kx-accent) / 0.12);
     --kx-bg-grad-2: rgb(var(--kx-accent-2) / 0.08);
-    --kx-bg-grad-3: rgb(var(--kx-accent) / 0.06);
+    --kx-bg-grad-3: rgb(14 165 233 / 0.06);
 
-    --kx-shadow-card: 0 22px 60px rgb(0 0 0 / 0.45);
-    --kx-shadow-card-hover: 0 34px 92px rgb(0 0 0 / 0.60);
-    --kx-shadow-float: 0 16px 44px rgb(0 0 0 / 0.42);
-    --kx-shadow-sidebar: 14px 0 60px rgb(0 0 0 / 0.62);
-    --kx-shadow-header: 0 12px 34px rgb(0 0 0 / 0.45);
+    --kx-shadow-card: 0 20px 64px rgb(0 0 0 / 0.44);
+    --kx-shadow-card-hover: 0 30px 92px rgb(0 0 0 / 0.58);
+    --kx-shadow-float: 0 16px 40px rgb(0 0 0 / 0.40);
+    --kx-shadow-sidebar: 14px 0 56px rgb(0 0 0 / 0.56);
+    --kx-shadow-header: 0 10px 28px rgb(0 0 0 / 0.38);
     color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
-  html, 
-  /* No-lines mode: remove borders everywhere; use depth/shadows instead */
-  .kx-no-lines, .kx-no-lines * {
+
+  html,
+  body { height: 100%; }
+
+  .kx-no-lines,
+  .kx-no-lines * {
     border-color: transparent !important;
   }
   .kx-no-lines * {
     border-width: 0 !important;
   }
 
-body { height: 100%; }
-
   body {
     margin: 0;
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
       "Segoe UI Emoji";
     color: rgb(var(--kx-fg));
-    /* Default background: keep subtle depth. The enforced LIGHT desktop mode overrides this below for a cleaner look. */
     background:
-      radial-gradient(980px 760px at 18% -18%, var(--kx-bg-grad-1), transparent 64%),
-      radial-gradient(980px 760px at 86% -18%, var(--kx-bg-grad-2), transparent 66%),
-      radial-gradient(980px 760px at 52% 118%, var(--kx-bg-grad-3, rgb(var(--kx-accent) / 0.03)), transparent 66%),
+      radial-gradient(980px 760px at 16% -18%, var(--kx-bg-grad-1), transparent 62%),
+      radial-gradient(980px 760px at 88% -18%, var(--kx-bg-grad-2), transparent 64%),
+      radial-gradient(980px 760px at 50% 118%, var(--kx-bg-grad-3), transparent 62%),
       rgb(var(--kx-bg));
   }
 
-  /* Clean desktop look: light, flat background (matches the reference screenshots) */
   html.kx-light body {
-    background: rgb(var(--kx-bg));
+    background: linear-gradient(180deg, rgb(var(--kx-shell) / 0.55), transparent 220px), rgb(var(--kx-bg));
   }
 
-  /* ---------------------------------------------------------------------- */
-  /* Light-mode compatibility overrides                                      */
-  /* Some legacy screens used Tailwind "text-white/.." tokens assuming dark */
-  /* theme. We keep the code simple by remapping those tokens in light mode. */
-  /* ---------------------------------------------------------------------- */
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: rgb(var(--kx-accent) / 0.22); }
+
+  input, select, textarea { font-size: 16px; }
+
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb {
+    background: rgb(var(--kx-border) / 0.22);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 999px;
+  }
+  *::-webkit-scrollbar-thumb:hover { background: rgb(var(--kx-border) / 0.32); }
+
+  /* Light-mode compatibility overrides for older white-text UI */
   html.kx-light .text-white\/90 { color: rgb(var(--kx-fg) / 0.92) !important; }
   html.kx-light .text-white\/80 { color: rgb(var(--kx-fg) / 0.82) !important; }
   html.kx-light .text-white\/70 { color: rgb(var(--kx-fg) / 0.74) !important; }
@@ -104,145 +122,230 @@ body { height: 100%; }
   html.kx-light .text-white\/40 { color: rgb(var(--kx-muted) / 0.62) !important; }
   html.kx-light .text-white\/35 { color: rgb(var(--kx-muted) / 0.56) !important; }
   html.kx-light .text-white\/30 { color: rgb(var(--kx-muted) / 0.50) !important; }
-
-  /* Bracket opacity variants used in a few components */
   html.kx-light .text-white\/\[0\.55\] { color: rgb(var(--kx-muted) / 0.74) !important; }
   html.kx-light .text-white\/\[0\.60\] { color: rgb(var(--kx-muted) / 0.78) !important; }
 
-  a { color: inherit; text-decoration: none; }
-  ::selection { background: rgb(var(--kx-accent) / 0.22); }
-
-  /* Keep inputs readable on mobile */
-  input, select, textarea { font-size: 16px; }
-
-  /* Premium scrollbars */
-  *::-webkit-scrollbar { width: 10px; height: 10px; }
-  *::-webkit-scrollbar-thumb {
-    background: rgb(var(--kx-border) / 0.18);
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    border-radius: 999px;
+  /*
+    Emerald compatibility remap:
+    older POS/sidebar screens lean too green in light mode.
+    Keep semantic green for success text, but map loud emerald backgrounds to brand accent.
+  */
+  html.kx-light .bg-emerald-500,
+  html.kx-light .bg-emerald-600,
+  html.kx-light .hover\:bg-emerald-500:hover,
+  html.kx-light .hover\:bg-emerald-600:hover {
+    background-color: rgb(var(--kx-accent)) !important;
+    color: white !important;
   }
-  *::-webkit-scrollbar-thumb:hover { background: rgb(var(--kx-border) / 0.26); }
+
+  html.kx-light .border-emerald-200,
+  html.kx-light .border-emerald-300,
+  html.kx-light .ring-emerald-200,
+  html.kx-light .ring-emerald-300 {
+    border-color: rgb(var(--kx-accent) / 0.26) !important;
+    --tw-ring-color: rgb(var(--kx-accent) / 0.18) !important;
+  }
+
+  html.kx-light .text-emerald-600,
+  html.kx-light .text-emerald-700 {
+    color: rgb(var(--kx-accent-2)) !important;
+  }
+
+  html.kx-light .from-emerald-50,
+  html.kx-light .from-emerald-100,
+  html.kx-light .from-emerald-200 {
+    --tw-gradient-from: rgb(var(--kx-accent) / 0.12) var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgb(var(--kx-accent) / 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+  }
+
+  html.kx-light .to-emerald-50,
+  html.kx-light .to-emerald-100,
+  html.kx-light .to-cyan-50,
+  html.kx-light .to-cyan-100 {
+    --tw-gradient-to: rgb(14 165 233 / 0.10) var(--tw-gradient-to-position) !important;
+  }
 }
 
 @layer components {
-  /* App shell (used by auth screens too) */
   .kx-shell {
     @apply min-h-screen;
     color: rgb(var(--kx-fg));
     background:
-      radial-gradient(980px 760px at 18% -18%, var(--kx-bg-grad-1), transparent 64%),
-      radial-gradient(980px 760px at 86% -18%, var(--kx-bg-grad-2), transparent 66%),
-      radial-gradient(980px 760px at 52% 118%, var(--kx-bg-grad-3, rgb(var(--kx-accent) / 0.03)), transparent 66%),
+      radial-gradient(980px 760px at 16% -18%, var(--kx-bg-grad-1), transparent 62%),
+      radial-gradient(980px 760px at 88% -18%, var(--kx-bg-grad-2), transparent 64%),
+      radial-gradient(980px 760px at 50% 118%, var(--kx-bg-grad-3), transparent 62%),
       rgb(var(--kx-bg));
   }
 
   html.kx-light .kx-shell {
-    background: rgb(var(--kx-bg));
+    background: linear-gradient(180deg, rgb(var(--kx-shell) / 0.58), transparent 220px), rgb(var(--kx-bg));
   }
 
-  /* Text */
   .kx-h1 { @apply text-2xl font-semibold tracking-tight; }
   .kx-sub { @apply text-sm; color: rgb(var(--kx-muted) / 0.95); }
   .kx-muted { color: rgb(var(--kx-muted) / 0.92); }
   .kx-muted2 { color: rgb(var(--kx-muted) / 0.78); }
   .kx-muted3 { color: rgb(var(--kx-muted) / 0.62); }
 
-  /* Surfaces */
   .kx-card {
     @apply rounded-kx bg-kx-surface;
+    border: 1px solid rgb(var(--kx-border) / 0.10);
     box-shadow: var(--kx-shadow-card);
   }
   .kx-card:hover {
     box-shadow: var(--kx-shadow-card-hover);
     transform: translateY(-1px);
   }
+
   .kx-panel {
     @apply rounded-kx bg-kx-surface2;
+    border: 1px solid rgb(var(--kx-border) / 0.10);
     box-shadow: var(--kx-shadow-float);
   }
 
-  /* Inputs */
+  .kx-card-soft {
+    @apply rounded-kx;
+    background: linear-gradient(180deg, rgb(var(--kx-surface) / 0.96), rgb(var(--kx-surface-2) / 0.92));
+    border: 1px solid rgb(var(--kx-border) / 0.10);
+    box-shadow: var(--kx-shadow-float);
+  }
+
+  .kx-sidebar-surface {
+    background: linear-gradient(180deg, rgb(var(--kx-shell) / 0.98), rgb(var(--kx-surface-2) / 0.94));
+    border-right: 1px solid rgb(var(--kx-border) / 0.10);
+    box-shadow: var(--kx-shadow-sidebar);
+  }
+
+  .kx-topbar-surface {
+    background: rgb(var(--kx-surface) / 0.84);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgb(var(--kx-border) / 0.10);
+    box-shadow: var(--kx-shadow-header);
+  }
+
+  .kx-hero-surface {
+    background:
+      linear-gradient(135deg, rgb(var(--kx-accent) / 0.12), rgb(14 165 233 / 0.10) 52%, rgb(255 255 255 / 0.92));
+    border: 1px solid rgb(var(--kx-accent) / 0.12);
+    box-shadow: var(--kx-shadow-card);
+  }
+
   .kx-input {
     @apply h-11 w-full rounded-kx bg-kx-surface px-3 text-sm outline-none transition;
+    border: 1px solid rgb(var(--kx-border) / 0.12);
     box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, var(--kx-shadow-float);
   }
   .kx-input:focus {
-    box-shadow: 0 0 0 4px rgb(var(--kx-accent) / 0.25), var(--kx-shadow-card);
+    border-color: rgb(var(--kx-accent) / 0.36);
+    box-shadow: 0 0 0 4px rgb(var(--kx-accent) / 0.18), var(--kx-shadow-card);
   }
 
-  /* Buttons */
   .kx-btn {
     @apply inline-flex items-center justify-center gap-2 rounded-kx px-3.5 py-2 text-sm font-medium transition;
-    background: rgb(var(--kx-surface) / 0.92);
+    background: rgb(var(--kx-surface) / 0.98);
+    color: rgb(var(--kx-fg) / 0.92);
+    border: 1px solid rgb(var(--kx-border) / 0.12);
     box-shadow: var(--kx-shadow-float);
   }
-  .kx-btn:hover { background: rgb(var(--kx-surface) / 1); box-shadow: var(--kx-shadow-card); }
+  .kx-btn:hover {
+    background: rgb(var(--kx-surface) / 1);
+    border-color: rgb(var(--kx-accent) / 0.16);
+    box-shadow: var(--kx-shadow-card);
+  }
 
-  /* Button variants (keep pages consistent and reduce "too many loud buttons") */
   .kx-btn-ghost {
     background: transparent;
+    border-color: transparent;
     box-shadow: none;
   }
   .kx-btn-ghost:hover {
     background: rgb(var(--kx-surface) / 0.72);
+    border-color: rgb(var(--kx-border) / 0.10);
     box-shadow: var(--kx-shadow-float);
   }
 
   .kx-btn-secondary {
-    background: rgb(var(--kx-surface-2) / 0.92);
+    background: rgb(var(--kx-surface-2) / 0.98);
     box-shadow: var(--kx-shadow-float);
-  }
-  .kx-btn-secondary:hover {
-    background: rgb(var(--kx-surface) / 0.98);
-    box-shadow: var(--kx-shadow-card);
   }
 
   .kx-btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-kx px-3.5 py-2 text-sm font-semibold transition;
-    background: rgb(var(--kx-accent) / 0.95);
+    background: linear-gradient(180deg, rgb(var(--kx-accent) / 0.96), rgb(var(--kx-accent-2) / 0.96));
     color: white;
+    border: 1px solid rgb(var(--kx-accent-2) / 0.38);
+    box-shadow: 0 14px 30px rgb(var(--kx-accent) / 0.22);
   }
-  .kx-btn-primary:hover { background: rgb(var(--kx-accent) / 1); }
+  .kx-btn-primary:hover {
+    filter: saturate(1.04) brightness(1.02);
+    box-shadow: 0 18px 34px rgb(var(--kx-accent) / 0.28);
+  }
 
   .kx-button { @apply kx-btn; }
   .kx-button-primary { @apply kx-btn-primary; }
 
   .kx-icon-btn {
-    @apply inline-flex h-10 w-10 items-center justify-center rounded-kx border bg-kx-surface text-sm transition;
-    border-color: rgb(var(--kx-border) / 0.12);
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-kx bg-kx-surface text-sm transition;
+    border: 1px solid rgb(var(--kx-border) / 0.12);
+    box-shadow: var(--kx-shadow-float);
   }
-  .kx-icon-btn:hover { background: rgb(var(--kx-surface) / 1); }
+  .kx-icon-btn:hover {
+    border-color: rgb(var(--kx-accent) / 0.18);
+    background: rgb(var(--kx-surface) / 1);
+  }
 
-  /* Pills / badges */
   .kx-chip {
-    @apply inline-flex items-center rounded-full border px-2 py-0.5 text-xs;
-    border-color: rgb(var(--kx-border) / 0.14);
-    background: rgb(var(--kx-surface) / 0.8);
-    color: rgb(var(--kx-fg) / 0.86);
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs;
+    border: 1px solid rgb(var(--kx-border) / 0.12);
+    background: rgb(var(--kx-surface-2) / 0.90);
+    color: rgb(var(--kx-fg) / 0.84);
   }
+
+  .kx-chip-info {
+    background: rgb(var(--kx-accent) / 0.10);
+    color: rgb(var(--kx-accent-2));
+    border-color: rgb(var(--kx-accent) / 0.14);
+  }
+
+  .kx-chip-success {
+    background: rgb(var(--kx-success) / 0.10);
+    color: rgb(var(--kx-success));
+    border-color: rgb(var(--kx-success) / 0.14);
+  }
+
+  .kx-chip-warning {
+    background: rgb(var(--kx-warning) / 0.12);
+    color: rgb(180 83 9);
+    border-color: rgb(var(--kx-warning) / 0.16);
+  }
+
+  .kx-chip-danger {
+    background: rgb(var(--kx-danger) / 0.10);
+    color: rgb(185 28 28);
+    border-color: rgb(var(--kx-danger) / 0.14);
+  }
+
   .kx-badge {
     @apply inline-flex items-center rounded-md px-2 py-0.5 text-xs;
-    background: rgb(var(--kx-surface) / 0.78);
+    background: rgb(var(--kx-surface) / 0.94);
     color: rgb(var(--kx-fg) / 0.86);
-    box-shadow: 0 10px 26px rgb(0 0 0 / 0.18);
-  }
-
-  /* Optional (used by legacy sidebar) */
-  .kx-navlink { }
-  .kx-navlink.is-active {
-    background: rgb(var(--kx-surface) / 0.85);
+    border: 1px solid rgb(var(--kx-border) / 0.10);
     box-shadow: var(--kx-shadow-float);
   }
 
-  /* Module sub-navigation (inside Sales / Accounting / Operations / Insights) */
-  .kx-moduleTabs-wrap {
-    @apply mt-2 mb-5;
+  .kx-navlink {}
+  .kx-navlink.is-active {
+    background: linear-gradient(180deg, rgb(var(--kx-accent) / 0.14), rgb(var(--kx-accent) / 0.08));
+    border: 1px solid rgb(var(--kx-accent) / 0.16);
+    box-shadow: var(--kx-shadow-float);
   }
+
+  .kx-moduleTabs-wrap { @apply mt-2 mb-5; }
   .kx-moduleTabs {
     @apply inline-flex gap-1.5 rounded-full p-1.5;
-    background: rgb(var(--kx-surface) / 0.48);
+    background: rgb(var(--kx-surface) / 0.72);
+    border: 1px solid rgb(var(--kx-border) / 0.10);
     box-shadow: var(--kx-shadow-float);
     backdrop-filter: blur(12px);
   }
@@ -252,34 +355,34 @@ body { height: 100%; }
     color: rgb(var(--kx-fg) / 0.72);
   }
   .kx-moduleTab:hover {
-    background: rgb(var(--kx-surface) / 0.80);
+    background: rgb(var(--kx-surface) / 0.92);
     color: rgb(var(--kx-fg) / 0.92);
     transform: translateY(-1px);
   }
   .kx-moduleTab.is-active {
-    background: rgb(var(--kx-surface) / 0.92);
+    background: linear-gradient(180deg, rgb(var(--kx-accent) / 0.14), rgb(var(--kx-surface) / 0.98));
     color: rgb(var(--kx-fg) / 0.96);
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.05) inset, 0 18px 60px rgb(0 0 0 / 0.35), 0 0 44px rgb(var(--kx-accent) / 0.10);
+    border: 1px solid rgb(var(--kx-accent) / 0.16);
+    box-shadow: 0 10px 32px rgb(var(--kx-accent) / 0.12);
   }
-}
 
-
-@layer components {
-  /* Right-rail items: quiet list rows (works in light desktop). */
-  .kx-railItem { @apply rounded-xl px-3 py-2 bg-kx-surface2 hover:bg-kx-surface transition; }
+  .kx-railItem {
+    @apply rounded-xl px-3 py-2 transition;
+    background: rgb(var(--kx-surface-2) / 0.92);
+    border: 1px solid rgb(var(--kx-border) / 0.10);
+  }
+  .kx-railItem:hover {
+    background: rgb(var(--kx-surface) / 0.98);
+    border-color: rgb(var(--kx-accent) / 0.14);
+  }
   .kx-railItemTitle { @apply text-sm font-medium; color: rgb(var(--kx-fg) / 0.92); }
   .kx-railItemSub { @apply text-xs mt-0.5; color: rgb(var(--kx-muted) / 0.72); }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Sales module tabs (Overview / Clients / Quotes / Invoices / POS)
-   Fixes the "OverviewClientsQuotesInvoicesPOS" spacing issue.
-   Desktop only: mobile uses the hamburger drawer.                             */
-/* -------------------------------------------------------------------------- */
-
+/* Sales module tabs */
 .kx-tabsWrap {
   position: sticky;
-  top: 56px; /* below the top header */
+  top: 56px;
   z-index: 30;
   padding: 8px 0 12px;
 }
@@ -298,40 +401,32 @@ body { height: 100%; }
   height: 34px;
   padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid rgb(var(--kx-border) / 0.14);
-  background: rgb(var(--kx-surface) / 0.24);
+  border: 1px solid rgb(var(--kx-border) / 0.12);
+  background: rgb(var(--kx-surface) / 0.82);
   color: rgb(var(--kx-fg) / 0.78);
   font-size: 13px;
   letter-spacing: -0.01em;
-  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
 }
 
 .kx-tab:hover {
-  background: rgb(var(--kx-surface) / 0.32);
-  border-color: rgb(var(--kx-border) / 0.20);
+  background: rgb(var(--kx-surface) / 0.96);
+  border-color: rgb(var(--kx-accent) / 0.16);
   color: rgb(var(--kx-fg) / 0.90);
 }
 
 .kx-tabActive {
-  background: linear-gradient(
-    180deg,
-    rgb(var(--kx-surface) / 0.38),
-    rgb(var(--kx-surface) / 0.22)
-  );
-  border-color: rgb(var(--kx-accent) / 0.45);
+  background: linear-gradient(180deg, rgb(var(--kx-accent) / 0.14), rgb(var(--kx-surface) / 0.98));
+  border-color: rgb(var(--kx-accent) / 0.22);
   color: rgb(var(--kx-fg) / 0.94);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+  box-shadow: 0 12px 28px rgb(var(--kx-accent) / 0.14);
 }
 
 @media (max-width: 768px) {
   .kx-tabsWrap { display: none; }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Modal (mobile menu / dialogs)
-   Ensures the mobile nav doesn't render inline on small screens.              */
-/* -------------------------------------------------------------------------- */
-
+/* Modal */
 .kx-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -340,7 +435,7 @@ body { height: 100%; }
   align-items: flex-start;
   justify-content: center;
   padding: 16px;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(15, 23, 42, 0.30);
   backdrop-filter: blur(10px);
 }
 
@@ -348,13 +443,9 @@ body { height: 100%; }
   width: 100%;
   max-width: 520px;
   border-radius: 18px;
-  border: 1px solid rgb(var(--kx-border) / 0.14);
-  background: linear-gradient(
-    180deg,
-    rgb(var(--kx-surface) / 0.88),
-    rgb(var(--kx-surface) / 0.72)
-  );
-  box-shadow: 0 26px 80px rgba(0,0,0,0.55);
+  border: 1px solid rgb(var(--kx-border) / 0.12);
+  background: linear-gradient(180deg, rgb(var(--kx-surface) / 0.97), rgb(var(--kx-surface-2) / 0.94));
+  box-shadow: 0 26px 80px rgba(15,23,42,0.22);
   overflow: hidden;
 }
 
