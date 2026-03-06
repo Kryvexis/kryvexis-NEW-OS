@@ -4,56 +4,49 @@
 
 @layer base {
   :root {
-    --kx-accent: 79 70 229;
-    --kx-accent-2: 6 182 212;
-    --kx-accent-3: 14 165 233;
-
+    --kx-accent: 37 99 235;
+    --kx-accent-2: 79 70 229;
+    --kx-accent-soft: 191 219 254;
     --kx-success: 16 185 129;
     --kx-warning: 245 158 11;
     --kx-danger: 239 68 68;
-
-    --kx-bg: 245 247 251;
+    --kx-info: 59 130 246;
+    --kx-bg: 244 247 251;
     --kx-shell: 236 241 248;
     --kx-surface: 255 255 255;
     --kx-surface-2: 248 250 252;
     --kx-surface-3: 241 245 249;
     --kx-fg: 15 23 42;
-    --kx-muted: 100 116 139;
+    --kx-muted: 71 85 105;
     --kx-border: 148 163 184;
-
-    --kx-bg-grad-1: rgb(var(--kx-accent) / 0.10);
-    --kx-bg-grad-2: rgb(var(--kx-accent-2) / 0.08);
-    --kx-bg-grad-3: rgb(var(--kx-accent-3) / 0.06);
-
-    --kx-shadow-card: 0 16px 42px rgb(15 23 42 / 0.08);
-    --kx-shadow-card-hover: 0 26px 64px rgb(15 23 42 / 0.13);
-    --kx-shadow-float: 0 10px 26px rgb(15 23 42 / 0.08);
-    --kx-shadow-sidebar: 20px 0 60px rgb(2 6 23 / 0.30);
-    --kx-shadow-header: 0 10px 30px rgb(15 23 42 / 0.08);
-    --kx-shadow-glow: 0 18px 60px rgb(var(--kx-accent) / 0.18);
+    --kx-bg-grad-1: rgb(var(--kx-accent) / 0.08);
+    --kx-bg-grad-2: rgb(var(--kx-accent-2) / 0.06);
+    --kx-bg-grad-3: rgb(14 165 233 / 0.05);
+    --kx-shadow-card: 0 18px 40px rgb(15 23 42 / 0.08);
+    --kx-shadow-card-hover: 0 24px 56px rgb(15 23 42 / 0.12);
+    --kx-shadow-float: 0 10px 24px rgb(15 23 42 / 0.08);
+    --kx-shadow-sidebar: 16px 0 42px rgb(15 23 42 / 0.18);
+    --kx-shadow-header: 0 10px 30px rgb(15 23 42 / 0.07);
     color-scheme: light;
   }
 
   html.dark {
-    --kx-bg: 7 11 20;
-    --kx-shell: 9 14 24;
-    --kx-surface: 15 23 42;
-    --kx-surface-2: 20 30 52;
-    --kx-surface-3: 30 41 59;
+    --kx-bg: 10 12 16;
+    --kx-shell: 12 15 20;
+    --kx-surface: 16 20 27;
+    --kx-surface-2: 22 27 36;
+    --kx-surface-3: 26 32 43;
     --kx-fg: 241 245 249;
     --kx-muted: 148 163 184;
     --kx-border: 71 85 105;
-
-    --kx-bg-grad-1: rgb(var(--kx-accent) / 0.16);
-    --kx-bg-grad-2: rgb(var(--kx-accent-2) / 0.11);
-    --kx-bg-grad-3: rgb(var(--kx-accent-3) / 0.09);
-
-    --kx-shadow-card: 0 24px 80px rgb(0 0 0 / 0.42);
-    --kx-shadow-card-hover: 0 34px 100px rgb(0 0 0 / 0.55);
-    --kx-shadow-float: 0 18px 42px rgb(0 0 0 / 0.34);
-    --kx-shadow-sidebar: 20px 0 70px rgb(0 0 0 / 0.45);
-    --kx-shadow-header: 0 12px 28px rgb(0 0 0 / 0.30);
-    --kx-shadow-glow: 0 24px 90px rgb(var(--kx-accent) / 0.20);
+    --kx-bg-grad-1: rgb(var(--kx-accent) / 0.12);
+    --kx-bg-grad-2: rgb(var(--kx-accent-2) / 0.08);
+    --kx-bg-grad-3: rgb(14 165 233 / 0.06);
+    --kx-shadow-card: 0 24px 64px rgb(0 0 0 / 0.44);
+    --kx-shadow-card-hover: 0 30px 92px rgb(0 0 0 / 0.58);
+    --kx-shadow-float: 0 16px 40px rgb(0 0 0 / 0.40);
+    --kx-shadow-sidebar: 14px 0 56px rgb(0 0 0 / 0.56);
+    --kx-shadow-header: 0 10px 28px rgb(0 0 0 / 0.38);
     color-scheme: dark;
   }
 
@@ -62,28 +55,64 @@
 
   body {
     margin: 0;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
     color: rgb(var(--kx-fg));
     background:
-      radial-gradient(960px 640px at 10% -10%, var(--kx-bg-grad-1), transparent 60%),
-      radial-gradient(840px 560px at 100% 0%, var(--kx-bg-grad-2), transparent 56%),
-      radial-gradient(900px 600px at 50% 115%, var(--kx-bg-grad-3), transparent 62%),
-      linear-gradient(180deg, rgb(var(--kx-shell) / 0.62), transparent 220px),
+      radial-gradient(980px 760px at 16% -18%, var(--kx-bg-grad-1), transparent 62%),
+      radial-gradient(980px 760px at 88% -18%, var(--kx-bg-grad-2), transparent 64%),
+      radial-gradient(980px 760px at 50% 118%, var(--kx-bg-grad-3), transparent 62%),
       rgb(var(--kx-bg));
   }
 
+  html.kx-light body {
+    background: linear-gradient(180deg, rgb(var(--kx-shell) / 0.55), transparent 220px), rgb(var(--kx-bg));
+  }
+
   a { color: inherit; text-decoration: none; }
-  ::selection { background: rgb(var(--kx-accent) / 0.20); }
+  ::selection { background: rgb(var(--kx-accent) / 0.22); }
   input, select, textarea { font-size: 16px; }
 
   *::-webkit-scrollbar { width: 10px; height: 10px; }
   *::-webkit-scrollbar-thumb {
-    background: rgb(var(--kx-border) / 0.24);
+    background: rgb(var(--kx-border) / 0.22);
     border: 2px solid transparent;
     background-clip: padding-box;
     border-radius: 999px;
   }
-  *::-webkit-scrollbar-thumb:hover { background: rgb(var(--kx-border) / 0.34); }
+  *::-webkit-scrollbar-thumb:hover { background: rgb(var(--kx-border) / 0.32); }
+
+  html.kx-light .text-white\/90 { color: rgb(var(--kx-fg) / 0.92) !important; }
+  html.kx-light .text-white\/80 { color: rgb(var(--kx-fg) / 0.82) !important; }
+  html.kx-light .text-white\/70 { color: rgb(var(--kx-fg) / 0.74) !important; }
+  html.kx-light .text-white\/60 { color: rgb(var(--kx-muted) / 0.78) !important; }
+  html.kx-light .text-white\/55 { color: rgb(var(--kx-muted) / 0.74) !important; }
+  html.kx-light .text-white\/50 { color: rgb(var(--kx-muted) / 0.70) !important; }
+  html.kx-light .text-white\/40 { color: rgb(var(--kx-muted) / 0.62) !important; }
+  html.kx-light .text-white\/35 { color: rgb(var(--kx-muted) / 0.56) !important; }
+  html.kx-light .text-white\/30 { color: rgb(var(--kx-muted) / 0.50) !important; }
+  html.kx-light .text-white\/\[0\.55\] { color: rgb(var(--kx-muted) / 0.74) !important; }
+  html.kx-light .text-white\/\[0\.60\] { color: rgb(var(--kx-muted) / 0.78) !important; }
+
+  html.kx-light .bg-emerald-500,
+  html.kx-light .bg-emerald-600,
+  html.kx-light .hover\:bg-emerald-500:hover,
+  html.kx-light .hover\:bg-emerald-600:hover {
+    background-color: rgb(var(--kx-accent)) !important;
+    color: white !important;
+  }
+
+  html.kx-light .border-emerald-200,
+  html.kx-light .border-emerald-300,
+  html.kx-light .ring-emerald-200,
+  html.kx-light .ring-emerald-300 {
+    border-color: rgb(var(--kx-accent) / 0.26) !important;
+    --tw-ring-color: rgb(var(--kx-accent) / 0.18) !important;
+  }
+
+  html.kx-light .text-emerald-600,
+  html.kx-light .text-emerald-700 {
+    color: rgb(var(--kx-accent-2)) !important;
+  }
 }
 
 @layer components {
@@ -91,117 +120,137 @@
     @apply min-h-screen;
     color: rgb(var(--kx-fg));
     background:
-      radial-gradient(960px 640px at 10% -10%, var(--kx-bg-grad-1), transparent 60%),
-      radial-gradient(840px 560px at 100% 0%, var(--kx-bg-grad-2), transparent 56%),
-      radial-gradient(900px 600px at 50% 115%, var(--kx-bg-grad-3), transparent 62%),
-      linear-gradient(180deg, rgb(var(--kx-shell) / 0.62), transparent 220px),
+      radial-gradient(980px 760px at 16% -18%, var(--kx-bg-grad-1), transparent 62%),
+      radial-gradient(980px 760px at 88% -18%, var(--kx-bg-grad-2), transparent 64%),
+      radial-gradient(980px 760px at 50% 118%, var(--kx-bg-grad-3), transparent 62%),
       rgb(var(--kx-bg));
   }
 
-  .kx-h1 { @apply text-2xl md:text-[30px] font-semibold tracking-tight; }
-  .kx-sub { @apply text-sm md:text-[15px]; color: rgb(var(--kx-muted) / 0.96); }
-  .kx-muted { color: rgb(var(--kx-muted) / 0.94); }
+  html.kx-light .kx-shell {
+    background: linear-gradient(180deg, rgb(var(--kx-shell) / 0.58), transparent 220px), rgb(var(--kx-bg));
+  }
+
+  .kx-h1 { @apply text-2xl font-semibold tracking-tight; }
+  .kx-sub { @apply text-sm; color: rgb(var(--kx-muted) / 0.95); }
+  .kx-muted { color: rgb(var(--kx-muted) / 0.92); }
   .kx-muted2 { color: rgb(var(--kx-muted) / 0.78); }
   .kx-muted3 { color: rgb(var(--kx-muted) / 0.62); }
 
   .kx-card {
-    @apply rounded-[22px] bg-kx-surface;
+    @apply rounded-[28px] bg-kx-surface;
     border: 1px solid rgb(var(--kx-border) / 0.10);
     box-shadow: var(--kx-shadow-card);
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
   }
   .kx-card:hover {
-    transform: translateY(-2px);
-    border-color: rgb(var(--kx-accent) / 0.14);
     box-shadow: var(--kx-shadow-card-hover);
+    transform: translateY(-1px);
+    border-color: rgb(var(--kx-border) / 0.16);
   }
 
   .kx-panel {
-    @apply rounded-[18px] bg-kx-surface2;
+    @apply rounded-[24px] bg-kx-surface2;
     border: 1px solid rgb(var(--kx-border) / 0.10);
     box-shadow: var(--kx-shadow-float);
   }
 
   .kx-card-soft {
-    @apply rounded-[22px];
-    background: linear-gradient(180deg, rgb(var(--kx-surface) / 0.98), rgb(var(--kx-surface-2) / 0.96));
+    @apply rounded-[24px];
+    background: linear-gradient(180deg, rgb(var(--kx-surface) / 0.96), rgb(var(--kx-surface-2) / 0.92));
     border: 1px solid rgb(var(--kx-border) / 0.10);
     box-shadow: var(--kx-shadow-float);
   }
 
-  .kx-topbar-surface {
-    background: rgb(var(--kx-surface) / 0.72);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgb(var(--kx-border) / 0.08);
-    box-shadow: var(--kx-shadow-header);
-  }
-
-  .kx-input {
-    @apply h-11 w-full rounded-2xl bg-kx-surface px-4 text-sm outline-none transition;
-    border: 1px solid rgb(var(--kx-border) / 0.12);
-    box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, var(--kx-shadow-float);
-  }
-  .kx-input:focus {
-    border-color: rgb(var(--kx-accent) / 0.30);
-    box-shadow: 0 0 0 4px rgb(var(--kx-accent) / 0.16), var(--kx-shadow-card);
-  }
-
-  .kx-btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-3.5 py-2 text-sm font-medium transition;
-    background: rgb(var(--kx-surface) / 0.98);
-    color: rgb(var(--kx-fg) / 0.94);
-    border: 1px solid rgb(var(--kx-border) / 0.12);
-    box-shadow: var(--kx-shadow-float);
-  }
-  .kx-btn:hover {
-    border-color: rgb(var(--kx-accent) / 0.16);
+  .kx-stat-card {
+    @apply rounded-[24px] p-5 md:p-6;
+    background: linear-gradient(180deg, rgb(var(--kx-surface) / 0.98), rgb(var(--kx-surface-2) / 0.94));
+    border: 1px solid rgb(var(--kx-border) / 0.10);
     box-shadow: var(--kx-shadow-card);
   }
 
-  .kx-btn-primary {
-    color: white;
-    border-color: transparent;
-    background: linear-gradient(135deg, rgb(var(--kx-accent)), rgb(var(--kx-accent-2)));
-    box-shadow: var(--kx-shadow-glow);
-  }
-  .kx-btn-primary:hover {
-    filter: saturate(1.05) brightness(1.02);
-    box-shadow: 0 22px 70px rgb(var(--kx-accent) / 0.24);
-  }
-
-  .kx-badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium;
-    background: rgb(var(--kx-fg) / 0.06);
-    color: rgb(var(--kx-fg) / 0.70);
+  .kx-page-hero {
+    @apply rounded-[30px] p-6 md:p-7;
+    background: linear-gradient(135deg, rgb(var(--kx-accent) / 0.14), rgb(var(--kx-accent-2) / 0.08) 42%, rgb(var(--kx-surface) / 0.98) 86%);
     border: 1px solid rgb(var(--kx-border) / 0.12);
+    box-shadow: var(--kx-shadow-card);
   }
 
-  .kx-stat-value {
-    @apply text-3xl md:text-4xl font-semibold tracking-tight;
-    color: rgb(var(--kx-fg));
+  .kx-sidebar-surface {
+    background: linear-gradient(180deg, rgb(var(--kx-shell) / 0.98), rgb(var(--kx-surface-2) / 0.94));
+    border-right: 1px solid rgb(var(--kx-border) / 0.10);
+    box-shadow: var(--kx-shadow-sidebar);
   }
 
-  .kx-grid-hero {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+  .kx-topbar-surface {
+    background: rgb(var(--kx-surface) / 0.72);
+    border-bottom: 1px solid rgb(var(--kx-border) / 0.10);
+    box-shadow: var(--kx-shadow-header);
+    backdrop-filter: blur(14px);
   }
 
-  .kx-gradient-card {
-    background:
-      radial-gradient(circle at top left, rgb(var(--kx-accent) / 0.16), transparent 34%),
-      linear-gradient(135deg, rgb(var(--kx-surface) / 0.98), rgb(var(--kx-surface-2) / 0.95));
-  }
-}
-
-@layer utilities {
-  .bg-kx-bg { background-color: rgb(var(--kx-bg)); }
+  .rounded-kx { border-radius: 18px; }
   .bg-kx-shell { background-color: rgb(var(--kx-shell)); }
   .bg-kx-surface { background-color: rgb(var(--kx-surface)); }
   .bg-kx-surface2 { background-color: rgb(var(--kx-surface-2)); }
   .bg-kx-surface3 { background-color: rgb(var(--kx-surface-3)); }
   .text-kx-fg { color: rgb(var(--kx-fg)); }
   .text-kx-muted { color: rgb(var(--kx-muted)); }
-  .border-kx { border-color: rgb(var(--kx-border) / 0.14); }
-  .rounded-kx { border-radius: 22px; }
+  .border-kx { border-color: rgb(var(--kx-border) / 0.16); }
+
+  .kx-input {
+    @apply h-11 w-full rounded-kx bg-kx-surface px-3 text-sm outline-none transition;
+    border: 1px solid rgb(var(--kx-border) / 0.14);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
+  }
+  .kx-input:focus {
+    border-color: rgb(var(--kx-accent) / 0.34);
+    box-shadow: 0 0 0 4px rgb(var(--kx-accent) / 0.10);
+  }
+
+  .kx-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-kx px-3.5 py-2 text-sm font-medium transition;
+    border: 1px solid rgb(var(--kx-border) / 0.12);
+  }
+  .kx-btn-primary {
+    @apply kx-btn text-white;
+    background: linear-gradient(135deg, rgb(var(--kx-accent)), rgb(var(--kx-accent-2)));
+    border-color: transparent;
+    box-shadow: 0 16px 32px rgb(var(--kx-accent) / 0.22);
+  }
+  .kx-btn-primary:hover { filter: brightness(1.04); }
+  .kx-btn-ghost {
+    @apply kx-btn;
+    background: rgb(var(--kx-surface) / 0.76);
+    color: rgb(var(--kx-fg));
+  }
+  .kx-btn-soft {
+    @apply inline-flex items-center justify-center gap-2 rounded-kx px-3.5 py-2 text-sm font-semibold transition;
+    background: rgb(var(--kx-accent) / 0.10);
+    color: rgb(var(--kx-accent-2));
+    border: 1px solid rgb(var(--kx-accent) / 0.12);
+  }
+
+  .kx-button { @apply kx-btn; }
+  .kx-button-primary { @apply kx-btn-primary; }
+
+  .kx-badge {
+    @apply inline-flex items-center justify-center rounded-full px-2 py-1 text-[11px] font-semibold;
+    background: rgb(var(--kx-surface-3));
+    color: rgb(var(--kx-muted));
+    border: 1px solid rgb(var(--kx-border) / 0.12);
+  }
+
+  .kx-table-wrap {
+    @apply overflow-hidden rounded-[28px];
+    border: 1px solid rgb(var(--kx-border) / 0.10);
+    box-shadow: var(--kx-shadow-card);
+    background: rgb(var(--kx-surface));
+  }
+
+  .kx-table-head {
+    background: linear-gradient(180deg, rgb(var(--kx-surface-2)), rgb(var(--kx-surface)));
+    border-bottom: 1px solid rgb(var(--kx-border) / 0.10);
+  }
+
+  .kx-divider { border-color: rgb(var(--kx-border) / 0.10); }
 }

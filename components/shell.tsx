@@ -30,75 +30,61 @@ function pageTitleFromPath(pathname: string) {
   return 'Kryvexis OS'
 }
 
-function sectionEyebrow(pathname: string) {
-  if (pathname.startsWith('/sales')) return 'Revenue workspace'
-  if (pathname.startsWith('/accounting')) return 'Finance control'
-  if (pathname.startsWith('/operations')) return 'Ops management'
-  if (pathname.startsWith('/insights')) return 'Business intelligence'
-  return 'Business OS'
+function pageSubtitleFromPath(pathname: string) {
+  const p = (pathname || '/dashboard').split('?')[0]
+  if (p.startsWith('/sales')) return 'Revenue, customers, products, and selling activity in one place.'
+  if (p.startsWith('/buyers')) return 'Procurement, reorder signals, and stock pressure.'
+  if (p.startsWith('/accounting')) return 'Keep the books, balances, and cashflow in control.'
+  if (p.startsWith('/operations')) return 'Inventory, workflows, and fulfilment.'
+  if (p.startsWith('/insights')) return 'Performance signals and business trends.'
+  return 'Your business command center.'
 }
 
 export default function Shell({ userEmail, role, children }: { userEmail: string; role: UserRole; children: React.ReactNode }) {
   const pathname = usePathname() || '/dashboard'
   const title = pageTitleFromPath(pathname)
-  const eyebrow = sectionEyebrow(pathname)
+  const subtitle = pageSubtitleFromPath(pathname)
 
   return (
     <div className="kx-shell min-h-screen">
       <CommandPalette />
-
       <div className="flex min-h-screen">
         <Sidebar userEmail={userEmail} workspaceName="Kryvexis" role={role} />
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-40 kx-topbar-surface">
-            <div className="px-4 md:px-6">
-              <div className="mx-auto flex h-16 w-full max-w-[1380px] items-center gap-3 md:gap-4">
+          <header className="sticky top-0 z-40 px-4 py-3 md:px-5">
+            <div className="kx-topbar-surface mx-auto flex max-w-[1380px] items-center justify-between gap-3 rounded-[26px] px-4 py-3 md:px-5">
+              <div className="flex min-w-0 items-center gap-3">
                 <div className="md:hidden">
-                  <MobileNav userEmail={userEmail} role={role} />
+                  <MobileNav />
                 </div>
-
-                <div className="min-w-0 flex items-center gap-3 md:gap-4">
-                  <div className="flex items-center gap-2 md:hidden">
-                    <Image src="/kryvexis-logo.png" alt="Kryvexis" width={28} height={28} className="h-7 w-7" priority />
-                    <div className="text-sm font-semibold tracking-tight">Kryvexis</div>
-                  </div>
-
-                  <div className="hidden md:block min-w-0">
-                    <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-kx-muted">{eyebrow}</div>
-                    <div className="truncate text-[19px] font-semibold tracking-tight text-kx-fg">{title}</div>
-                  </div>
-
-                  <div className="md:hidden truncate text-sm font-semibold tracking-tight text-kx-fg">{title}</div>
+                <div className="hidden h-11 w-11 items-center justify-center rounded-2xl bg-[rgb(var(--kx-accent)/0.10)] text-[rgb(var(--kx-accent-2))] md:flex">
+                  <Image src="/kryvexis-logo.png" alt="Kryvexis" width={26} height={26} className="h-6 w-6 object-contain" />
                 </div>
+                <div className="min-w-0">
+                  <div className="truncate text-lg font-semibold tracking-tight text-kx-fg md:text-xl">{title}</div>
+                  <div className="hidden truncate text-sm kx-muted md:block">{subtitle}</div>
+                </div>
+              </div>
 
-                <div className="flex-1" />
-
-                <div className="hidden lg:flex items-center gap-2 rounded-full border border-kx bg-kx-surface/70 px-3 py-2 text-xs text-kx-muted shadow-sm">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="hidden items-center gap-2 rounded-full border border-[rgba(var(--kx-border),.14)] bg-[rgba(var(--kx-surface),.88)] px-3 py-2 text-sm md:flex">
                   <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  System ready
+                  <span className="kx-muted">{roleLabel(role)}</span>
                 </div>
-
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div
-                    className="hidden max-w-[240px] truncate rounded-full border border-kx bg-kx-surface/72 px-3 py-2 text-xs text-kx-fg/75 shadow-sm lg:block"
-                    title={userEmail}
-                  >
-                    {userEmail}
-                  </div>
-
-                  <span className="hidden md:inline-flex items-center rounded-full border border-kx bg-kx-surface/72 px-2.5 py-1 text-[11px] text-kx-muted shadow-sm">
-                    {roleLabel(role)}
-                  </span>
-
-                  <LogoutButton />
+                <div className="hidden text-right md:block">
+                  <div className="text-[11px] uppercase tracking-[0.18em] kx-muted2">Workspace</div>
+                  <div className="max-w-[220px] truncate text-sm font-medium text-kx-fg">{userEmail || 'Signed in'}</div>
                 </div>
+                <LogoutButton />
               </div>
             </div>
           </header>
 
-          <main className="w-full flex-1 px-4 py-5 md:px-6 md:py-7">
-            <div className="mx-auto w-full max-w-[1380px]">{children}</div>
+          <main className="flex-1 px-4 pb-8 pt-1 md:px-5">
+            <div className="mx-auto flex w-full max-w-[1380px] flex-col gap-6">
+              {children}
+            </div>
           </main>
         </div>
       </div>
