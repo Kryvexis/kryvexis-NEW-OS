@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function WorkspaceBootstrap() {
   const [loading, setLoading] = useState(false);
@@ -12,13 +13,25 @@ export default function WorkspaceBootstrap() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/company/bootstrap", {
+      const supabase = createClient();
+
+      // 1) Create (or reuse) a workspace via SECURITY DEFINER RPC (no service role key needed)
+      const { data: companyId, error: rpcErr } = await supabase.rpc("bootstrap_workspace", {
+        company_name: "Kryvexis Workspace",
+      });
+
+      if (rpcErr) throw new Error(rpcErr.message);
+      if (!companyId) throw new Error("Failed to create workspace");
+
+      // 2) Persist the active company cookie (server-side)
+      const res = await fetch("/api/company/active", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: "Kryvexis Workspace" }),
+        body: JSON.stringify({ companyId }),
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json?.error || "Failed to bootstrap workspace");
+      if (!res.ok) throw new Error(json?.error || "Failed to set active workspace");
+
       router.refresh();
       window.location.reload();
     } catch (e: any) {
