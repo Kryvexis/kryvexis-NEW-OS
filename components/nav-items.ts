@@ -3,7 +3,7 @@ import type { UserRole } from '@/lib/roles/shared'
 export type NavItem = {
   href: string
   label: string
-  icon: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload'
+  icon: 'sales' | 'accounting' | 'operations' | 'buyers' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload'
   roles?: UserRole[]
 }
 
@@ -14,6 +14,7 @@ export const navMainItems: NavItem[] = [
   { href: '/sales', label: 'Sales', icon: 'sales', roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] },
   { href: '/accounting', label: 'Accounting', icon: 'accounting', roles: ['owner', 'manager', 'accounts'] },
   { href: '/operations', label: 'Operations', icon: 'operations', roles: ['owner', 'manager', 'buyer'] },
+  { href: '/buyers', label: 'Buyers', icon: 'buyers', roles: ['owner', 'manager', 'buyer'] },
   { href: '/insights', label: 'Insights', icon: 'insights', roles: ['owner', 'manager'] },
 ]
 

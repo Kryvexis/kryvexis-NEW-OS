@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import type { UserRole } from '@/lib/roles/shared'
 import { canManageUsers } from '@/lib/roles/shared'
 
-export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
+export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' | 'buyers' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
   const common = 'h-4 w-4'
   switch (name) {
     case 'sales':
@@ -28,6 +28,14 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 7h10v10H7V7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
           <path d="M9 3h6v4H9V3Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+        </svg>
+      )
+    case 'buyers':
+      return (
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 7h2l2.2 8.2a1 1 0 0 0 1 .8h7.7a1 1 0 0 0 1-.8L20 9H8" stroke="currentColor" strokeWidth="1.5" opacity="0.9" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="10" cy="19" r="1.3" fill="currentColor" opacity="0.9" />
+          <circle cx="17" cy="19" r="1.3" fill="currentColor" opacity="0.9" />
         </svg>
       )
     case 'insights':
@@ -75,6 +83,7 @@ export const navMainItems = [
   { href: '/sales', label: 'Sales', icon: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[] },
   { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[] },
   { href: '/operations', label: 'Operations', icon: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
+  { href: '/buyers', label: 'Buyers', icon: 'buyers' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
   { href: '/insights', label: 'Insights', icon: 'insights' as const, roles: ['owner', 'manager'] as UserRole[] },
 ]
 
