@@ -46,7 +46,13 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
         </svg>
       )
     case 'upload':
-      return '⬆️'
+      return (
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 16V7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          <path d="m8.5 10.5 3.5-3.5 3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M5 19h14" stroke="currentColor" strokeWidth="1.5" opacity="0.45" strokeLinecap="round" />
+        </svg>
+      )
     case 'help':
       return (
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -72,7 +78,6 @@ export const navMainItems = [
   { href: '/insights', label: 'Insights', icon: 'insights' as const, roles: ['owner', 'manager'] as UserRole[] },
 ]
 
-// Bottom section: keep this near the footer. Import Center must be second-to-last.
 export const navBottomItems = [
   { href: '/settings', label: 'Settings', icon: 'settings' as const },
   { href: '/help', label: 'Help', icon: 'help' as const },
@@ -80,153 +85,88 @@ export const navBottomItems = [
   { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
 ]
 
+function NavLink({ href, label, icon, active }: { href: string; label: string; icon: any; active: boolean }) {
+  return (
+    <Link
+      href={href}
+      title={label}
+      className={
+        'group relative flex items-center gap-3 rounded-2xl px-3 py-3 text-sm transition-all duration-150 ' +
+        (active ? 'bg-white/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]' : 'hover:bg-white/6')
+      }
+    >
+      {active && (
+        <span aria-hidden="true" className="absolute left-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full bg-white/90" />
+      )}
+      <span className={active ? 'text-white' : 'text-white/70'}>
+        <NavIcon name={icon} />
+      </span>
+      <span className={active ? 'font-medium tracking-tight text-white' : 'tracking-tight text-white/86'}>{label}</span>
+      {active ? <span className="ml-auto h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.85)]" /> : null}
+    </Link>
+  )
+}
+
 export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string; workspaceName?: string; role: UserRole }) {
   const pathname = usePathname() || ''
 
-  // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
-  // We intentionally remove the collapsed mode to keep the layout clean and predictable.
-  // Slightly wider so the brand area + nav labels breathe.
-  const widthCls = 'md:w-[276px]'
-
   return (
     <aside
-      className={'hidden md:flex md:flex-col ' + widthCls}
+      className="hidden md:flex md:w-[290px] md:flex-col"
       style={{
-        // Accent-toned dark sidebar (your preference).
-        // Uses the global accent CSS variable so the sidebar hue matches the chosen accent
-        // while keeping contrast strong and readable.
         background:
-          'linear-gradient(180deg, rgb(var(--kx-accent) / 0.24) 0%, rgb(var(--kx-accent) / 0.10) 18%, #0b1220 40%, #0a1628 70%, #081324 100%)',
+          'radial-gradient(circle at top left, rgba(99,102,241,0.30), transparent 30%), linear-gradient(180deg, #111827 0%, #0f172a 38%, #08111f 100%)',
         boxShadow: 'var(--kx-shadow-sidebar)',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
+        borderRight: '1px solid rgba(255,255,255,0.07)',
       }}
     >
-      <div className={'px-5 pt-5 pb-3'} style={{ color: 'rgba(255,255,255,0.92)' }}>
-        <div className={'flex items-start justify-between gap-3'}>
-          <div className={'flex flex-col'}>
-            {/* Compact brand (icon + name) */}
-            <div className="flex items-center gap-2">
-              <Image
-                src="/kryvexis-logo.png"
-                alt="Kryvexis"
-                width={32}
-                height={32}
-                className="h-8 w-8 object-contain"
-                style={{ filter: 'drop-shadow(0 10px 22px rgba(0,0,0,.35))' }}
-                priority
-              />
-              <div>
-                <div className="text-sm font-semibold tracking-tight">Kryvexis OS</div>
-                <div className="text-[11px] leading-tight" style={{ color: 'rgba(255,255,255,0.62)' }}>
-                  {workspaceName ?? 'Workspace'}
-                </div>
-              </div>
+      <div className="px-5 pb-4 pt-5 text-white">
+        <div className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <Image src="/kryvexis-logo.png" alt="Kryvexis" width={40} height={40} className="h-10 w-10 rounded-xl object-contain" priority />
+            <div className="min-w-0">
+              <div className="truncate text-sm font-semibold tracking-tight">Kryvexis OS</div>
+              <div className="truncate text-[11px] text-white/60">{workspaceName ?? 'Workspace'}</div>
             </div>
+          </div>
+          <div className="mt-4 rounded-2xl border border-white/8 bg-black/20 px-3 py-2">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-white/40">Workspace pulse</div>
+            <div className="mt-1 text-sm text-white/88">Ready for sales, invoicing, and ops</div>
           </div>
         </div>
       </div>
 
-      {/* Main navigation */}
-      <nav className={'px-3 pb-2 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
+      <nav className="space-y-1 px-3 pb-3 text-white">
         {navMainItems
           .filter((it) => it.roles.includes(role) || role === 'owner' || role === 'manager')
-          .map((it) => {
-          const on = pathname === it.href || pathname.startsWith(it.href + '/')
-          return (
-            <Link
-              key={it.href}
-              href={it.href}
-              data-tour={`nav-${it.icon}`}
-              title={it.label}
-              className={
-                'group relative flex items-center rounded-xl py-2 text-sm transition ' +
-                (on ? 'bg-white/10' : 'hover:bg-white/5')
-              }
-            >
-              {on && (
-                <span
-                  aria-hidden="true"
-                  className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
-                  style={{ background: 'rgb(var(--kx-accent))' }}
-                />
-              )}
-
-              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
-                <NavIcon name={it.icon} />
-              </span>
-              <span
-                className="ml-2 tracking-tight"
-                style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
-              >
-                {it.label}
-              </span>
-              {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
-            </Link>
-          )
-        })}
+          .map((it) => (
+            <NavLink key={it.href} href={it.href} label={it.label} icon={it.icon} active={pathname === it.href || pathname.startsWith(it.href + '/')} />
+          ))}
       </nav>
 
-      {/* Bottom navigation */}
-      <div className="mt-auto" />
-      <nav className={'px-3 pt-2 pb-3 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
-        {navBottomItems.map((it) => {
-          const on = pathname === it.href || pathname.startsWith(it.href + '/')
-          return (
-            <Link
-              key={it.href}
-              href={it.href}
-              title={it.label}
-              className={
-                'group relative flex items-center rounded-xl py-2 text-sm transition ' +
-                (on ? 'bg-white/10' : 'hover:bg-white/5')
-              }
-            >
-              {on && (
-                <span
-                  aria-hidden="true"
-                  className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
-                  style={{ background: 'rgb(var(--kx-accent))' }}
-                />
-              )}
+      <div className="mx-5 my-3 h-px bg-white/8" />
 
-              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
-                <NavIcon name={it.icon} />
-              </span>
-              <span
-                className="ml-2 tracking-tight"
-                style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
-              >
-                {it.label}
-              </span>
-              {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
-            </Link>
-          )
-        })}
+      <nav className="space-y-1 px-3 pb-4 text-white">
+        {navBottomItems.map((it) => (
+          <NavLink key={it.href} href={it.href} label={it.label} icon={it.icon} active={pathname === it.href || pathname.startsWith(it.href + '/')} />
+        ))}
       </nav>
 
-      {userEmail && (
-        <div className="mt-auto px-5 py-4" style={{ color: 'rgba(255,255,255,0.90)' }}>
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <div className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.52)' }}>
-                Signed in as
-              </div>
-              <div className="mt-1 text-xs break-all" style={{ color: 'rgba(255,255,255,0.90)' }}>
-                {userEmail}
-              </div>
+      <div className="mt-auto px-5 pb-5 pt-2 text-white">
+        <div className="rounded-[22px] border border-white/10 bg-white/6 px-4 py-4 backdrop-blur-sm">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Signed in</div>
+              <div className="mt-1 break-all text-xs text-white/88">{userEmail}</div>
             </div>
             {canManageUsers(role) && (
-              <span
-                className="inline-flex items-center rounded-full px-2 py-0.5 text-xs"
-                style={{ background: 'rgb(var(--kx-accent) / 0.16)', color: 'rgba(255,255,255,0.92)', border: '1px solid rgb(var(--kx-accent) / 0.28)' }}
-                title="Manager access"
-              >
+              <span className="inline-flex items-center rounded-full border border-cyan-300/25 bg-cyan-400/10 px-2 py-0.5 text-[11px] text-cyan-100">
                 Admin
               </span>
             )}
           </div>
         </div>
-      )}
+      </div>
     </aside>
   )
 }

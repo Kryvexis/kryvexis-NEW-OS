@@ -9,7 +9,6 @@ import MobileNav from './nav/MobileNav'
 import { Sidebar } from './nav'
 import type { UserRole } from '@/lib/roles/shared'
 import { roleLabel } from '@/lib/roles/shared'
-// Desktop UI is enforced LIGHT (clean reference UI). We remove the dark-mode toggle to avoid mismatched screens.
 
 function pageTitleFromPath(pathname: string) {
   const p = (pathname || '/dashboard').split('?')[0]
@@ -31,77 +30,75 @@ function pageTitleFromPath(pathname: string) {
   return 'Kryvexis OS'
 }
 
+function sectionEyebrow(pathname: string) {
+  if (pathname.startsWith('/sales')) return 'Revenue workspace'
+  if (pathname.startsWith('/accounting')) return 'Finance control'
+  if (pathname.startsWith('/operations')) return 'Ops management'
+  if (pathname.startsWith('/insights')) return 'Business intelligence'
+  return 'Business OS'
+}
+
 export default function Shell({ userEmail, role, children }: { userEmail: string; role: UserRole; children: React.ReactNode }) {
   const pathname = usePathname() || '/dashboard'
   const title = pageTitleFromPath(pathname)
+  const eyebrow = sectionEyebrow(pathname)
 
   return (
-    <div className="min-h-screen">
+    <div className="kx-shell min-h-screen">
       <CommandPalette />
 
       <div className="flex min-h-screen">
-        {/* Desktop sidebar (A) + hidden on small screens (C) */}
         <Sidebar userEmail={userEmail} workspaceName="Kryvexis" role={role} />
 
-        {/* Main area */}
         <div className="flex min-w-0 flex-1 flex-col">
-          {/* Slim topbar (desktop + mobile) */}
-          <header
-            className="sticky top-0 z-40 bg-kx-shell/65 backdrop-blur-md"
-            style={{ boxShadow: 'var(--kx-shadow-header)' }}
-          >
-            {/* Align header content with page content (left-aligned, not centered). */}
-            <div className="px-5">
-              <div className="flex h-14 w-full max-w-[1280px] items-center gap-3">
-              {/* Mobile menu */}
-              <div className="md:hidden">
-                <MobileNav userEmail={userEmail} role={role} />
-              </div>
-
-              {/* Title */}
-              <div className="flex items-center gap-3 min-w-0">
-                {/* On mobile, show small brand mark */}
-                <div className="flex items-center gap-2 md:hidden">
-                  <Image src="/kryvexis-logo.png" alt="Kryvexis" width={26} height={26} className="h-6 w-6" priority />
-                  <div className="text-sm font-semibold tracking-tight">Kryvexis</div>
+          <header className="sticky top-0 z-40 kx-topbar-surface">
+            <div className="px-4 md:px-6">
+              <div className="mx-auto flex h-16 w-full max-w-[1380px] items-center gap-3 md:gap-4">
+                <div className="md:hidden">
+                  <MobileNav userEmail={userEmail} role={role} />
                 </div>
-                <div className="hidden md:block">
-                  <div className="text-sm font-semibold tracking-tight text-kx-fg">{title}</div>
-                  <div className="text-[11px] kx-muted">Kryvexis OS</div>
-                </div>
-                <div className="md:hidden text-sm font-semibold tracking-tight text-kx-fg truncate">{title}</div>
-              </div>
 
-              <div className="flex-1" />
+                <div className="min-w-0 flex items-center gap-3 md:gap-4">
+                  <div className="flex items-center gap-2 md:hidden">
+                    <Image src="/kryvexis-logo.png" alt="Kryvexis" width={28} height={28} className="h-7 w-7" priority />
+                    <div className="text-sm font-semibold tracking-tight">Kryvexis</div>
+                  </div>
 
-              {/* Right controls */}
-              <div className="flex items-center gap-2">
-                <div
-                  className="hidden max-w-[260px] truncate rounded-full border bg-kx-surface/30 px-3 py-2 text-xs text-kx-fg/75 lg:block"
-                  style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
-                  title={userEmail}
-                >
-                  {userEmail}
+                  <div className="hidden md:block min-w-0">
+                    <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-kx-muted">{eyebrow}</div>
+                    <div className="truncate text-[19px] font-semibold tracking-tight text-kx-fg">{title}</div>
+                  </div>
+
+                  <div className="md:hidden truncate text-sm font-semibold tracking-tight text-kx-fg">{title}</div>
                 </div>
-                <div className="hidden md:flex items-center gap-2">
-                  <span
-                    className="rounded-full border px-2 py-1 text-[11px] kx-muted"
-                    style={{ borderColor: 'rgb(var(--kx-border) / 0.12)' }}
-                    title="Role"
+
+                <div className="flex-1" />
+
+                <div className="hidden lg:flex items-center gap-2 rounded-full border border-kx bg-kx-surface/70 px-3 py-2 text-xs text-kx-muted shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                  System ready
+                </div>
+
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div
+                    className="hidden max-w-[240px] truncate rounded-full border border-kx bg-kx-surface/72 px-3 py-2 text-xs text-kx-fg/75 shadow-sm lg:block"
+                    title={userEmail}
                   >
+                    {userEmail}
+                  </div>
+
+                  <span className="hidden md:inline-flex items-center rounded-full border border-kx bg-kx-surface/72 px-2.5 py-1 text-[11px] text-kx-muted shadow-sm">
                     {roleLabel(role)}
                   </span>
+
+                  <LogoutButton />
                 </div>
-                <LogoutButton />
-              </div>
               </div>
             </div>
           </header>
 
-          {/* Page content */}
-          {/* Left-aligned content to match the premium dashboard reference style */}
-          <main className="w-full flex-1 px-5 py-6">
-            <div className="w-full max-w-[1280px]">{children}</div>
+          <main className="w-full flex-1 px-4 py-5 md:px-6 md:py-7">
+            <div className="mx-auto w-full max-w-[1380px]">{children}</div>
           </main>
         </div>
       </div>
