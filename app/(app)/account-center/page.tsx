@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/card";
 import { getCompanyIdOrNull } from "@/lib/kx";
+import WorkspaceBootstrap from "./workspace-bootstrap";
 
 export const dynamic = "force-dynamic";
 
@@ -113,6 +114,8 @@ export default async function AccountCenterPage() {
             <div className="kx-muted">Address</div>
             <div>{company?.address || "—"}</div>
           </div>
+
+          {!companyId ? <WorkspaceBootstrap /> : null}
         </Card>
       </div>
 
