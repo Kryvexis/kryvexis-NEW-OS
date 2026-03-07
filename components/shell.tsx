@@ -47,7 +47,7 @@ export default function Shell({ userEmail, role, children }: { userEmail: string
         <div className="flex min-w-0 flex-1 flex-col">
           {/* Slim topbar (desktop + mobile) */}
           <header
-            className="sticky top-0 z-40 bg-kx-shell/65 backdrop-blur-md"
+            className="sticky top-0 z-40 bg-white/88 backdrop-blur-xl border-b border-black/5"
             style={{ boxShadow: 'var(--kx-shadow-header)' }}
           >
             {/* Align header content with page content (left-aligned, not centered). */}
@@ -100,7 +100,7 @@ export default function Shell({ userEmail, role, children }: { userEmail: string
 
           {/* Page content */}
           {/* Left-aligned content to match the premium dashboard reference style */}
-          <main className="w-full flex-1 px-5 py-6">
+          <main className="w-full flex-1 px-5 py-6 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.06),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.55),rgba(248,250,252,0.96))]">
             <div className="w-full max-w-[1280px]">{children}</div>
           </main>
         </div>
