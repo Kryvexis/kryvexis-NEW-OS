@@ -10,8 +10,11 @@ export function EmailDocModal(props: {
   defaultMessage: string
   attachmentUrl?: string | null
   attachmentName?: string | null
+  companyId?: string | null
+  entityType?: string | null
+  entityId?: string | null
 }) {
-  const { open, onClose, defaultTo, defaultSubject, defaultMessage, attachmentUrl, attachmentName } = props
+  const { open, onClose, defaultTo, defaultSubject, defaultMessage, attachmentUrl, attachmentName, companyId, entityType, entityId } = props
 
   const [to, setTo] = useState(defaultTo || '')
   const [subject, setSubject] = useState(defaultSubject)
@@ -47,6 +50,9 @@ export function EmailDocModal(props: {
           html: `<div style="font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial; white-space: pre-wrap">${escapeHtml(message)}</div>`,
           attachmentUrl: attachmentUrl || null,
           attachmentName: attachmentName || null,
+          companyId: companyId || null,
+          entityType: entityType || null,
+          entityId: entityId || null,
         }),
       })
       const j = await res.json().catch(() => ({}))

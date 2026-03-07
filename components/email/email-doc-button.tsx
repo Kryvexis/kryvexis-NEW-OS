@@ -9,8 +9,11 @@ export function EmailDocButton(props: {
   kindLabel: 'Invoice' | 'Quote'
   number: string
   pdfUrl?: string | null
+  companyId?: string | null
+  entityType?: string | null
+  entityId?: string | null
 }) {
-  const { label, defaultTo, kindLabel, number, pdfUrl } = props
+  const { label, defaultTo, kindLabel, number, pdfUrl, companyId, entityType, entityId } = props
   const [open, setOpen] = useState(false)
 
   const subject = useMemo(() => `${kindLabel} ${number} — Kryvexis`, [kindLabel, number])
@@ -32,6 +35,9 @@ export function EmailDocButton(props: {
         defaultMessage={msg}
         attachmentUrl={pdfUrl || null}
         attachmentName={`${kindLabel}-${number}.pdf`}
+        companyId={companyId || null}
+        entityType={entityType || kindLabel.toLowerCase()}
+        entityId={entityId || null}
       />
     </>
   )

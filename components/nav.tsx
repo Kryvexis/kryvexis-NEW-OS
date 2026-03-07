@@ -1,3 +1,6 @@
 'use client'
-export { Sidebar, NavIcon } from './navx'
-export { navMainItems, navBottomItems } from './nav-items'
+
+// Backwards-compatible re-export.
+// Some older files may import from './nav.tsx' or '@/components/nav.tsx'.
+// Keep this file as a thin wrapper.
+export { Sidebar, NavIcon, navMainItems, navBottomItems } from './navx'

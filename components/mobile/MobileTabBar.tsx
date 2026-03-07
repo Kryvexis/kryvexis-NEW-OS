@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Home, Users, ShoppingCart, Receipt, Settings, Plus } from "lucide-react";
+import { Home, Users, Receipt, Settings, Plus } from "lucide-react";
 import { useHideOnScroll } from "./hooks/useHideOnScroll";
 
 type Tab = {
@@ -15,7 +15,6 @@ type Tab = {
 const tabs: Tab[] = [
   { href: "/m/home", label: "Home", icon: <Home className="h-5 w-5" /> },
   { href: "/m/clients", label: "Clients", icon: <Users className="h-5 w-5" /> },
-  { href: "/m/buyers", label: "Buyers", icon: <ShoppingCart className="h-5 w-5" /> },
   { href: "/m/transactions", label: "Transactions", icon: <Receipt className="h-5 w-5" /> },
   { href: "/m/settings", label: "Settings", icon: <Settings className="h-5 w-5" /> },
 ];
@@ -43,7 +42,7 @@ export default function MobileTabBar() {
             <Plus className="h-6 w-6 text-white" />
           </Link>
 
-          <nav className="grid grid-cols-5 gap-1 px-2 pt-4">
+          <nav className="grid grid-cols-4 gap-1 px-2 pt-4">
             {tabs.map((t) => {
               const active = pathname === t.href || pathname.startsWith(t.href + "/");
               return (
