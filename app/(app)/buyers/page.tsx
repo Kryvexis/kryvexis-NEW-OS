@@ -111,7 +111,7 @@ export default async function BuyersWebPage({
       action={
         <div className="flex flex-wrap gap-2">
           <Link href="/operations/stock" className="kx-button kx-button-primary">Open stock</Link>
-          <Link href="/m/buyers/purchase-list" className="kx-button kx-btn-ghost">Review &amp; order</Link>
+          <Link href="/buyers/purchase-list" className="kx-button kx-btn-ghost">Review &amp; order</Link>
         </div>
       }
     >
@@ -168,7 +168,7 @@ export default async function BuyersWebPage({
             <Link href="/operations/products" className="rounded-2xl border border-[rgba(var(--kx-border),.14)] px-4 py-3 text-sm font-medium hover:bg-kx-surface2">Open products</Link>
             <Link href="/operations/suppliers" className="rounded-2xl border border-[rgba(var(--kx-border),.14)] px-4 py-3 text-sm font-medium hover:bg-kx-surface2">Open suppliers</Link>
             <Link href="/operations/stock" className="rounded-2xl border border-[rgba(var(--kx-border),.14)] px-4 py-3 text-sm font-medium hover:bg-kx-surface2">Stock movements</Link>
-            <Link href="/m/buyers/purchase-list" className="rounded-2xl border border-[rgba(var(--kx-border),.14)] px-4 py-3 text-sm font-medium hover:bg-kx-surface2">Review &amp; order</Link>
+            <Link href="/buyers/purchase-list" className="rounded-2xl border border-[rgba(var(--kx-border),.14)] px-4 py-3 text-sm font-medium hover:bg-kx-surface2">Review &amp; order</Link>
           </div>
           <div className="mt-4 rounded-2xl border border-[rgba(var(--kx-border),.14)] bg-[rgba(var(--kx-surface),.58)] p-4 text-sm kx-muted">
             Suggested quantity is derived from the last 14 days of sales velocity with 4 lead-time days and 2 safety days.

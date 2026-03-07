@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Home, Users, Receipt, Settings, Plus, ShoppingCart } from "lucide-react";
+import { Home, Users, ShoppingCart, Receipt, Settings, Plus } from "lucide-react";
 import { useHideOnScroll } from "./hooks/useHideOnScroll";
 
 type Tab = {

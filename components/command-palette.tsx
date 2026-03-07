@@ -50,10 +50,10 @@ export default function CommandPalette() {
   const actions = useMemo(() => {
     const quickNav = [
       { label: 'Open POS', href: '/sales/pos', group: 'Quick actions' },
-      { label: 'New Quote', href: '/sales/quotes/new', group: 'Quick actions' },
-      { label: 'New Invoice', href: '/sales/invoices/new', group: 'Quick actions' },
-      { label: 'Record Payment', href: '/accounting/payments', group: 'Quick actions' },
-      { label: 'Import Products', href: '/operations/import', group: 'Quick actions' },
+      { label: 'New Quote', href: '/quotes/new', group: 'Quick actions' },
+      { label: 'New Invoice', href: '/invoices/new', group: 'Quick actions' },
+      { label: 'Record Payment', href: '/payments', group: 'Quick actions' },
+      { label: 'Import Products', href: '/import-station', group: 'Quick actions' },
     ]
 
     const allNav = [...navMainItems, ...navBottomItems]
@@ -82,10 +82,10 @@ export default function CommandPalette() {
         go: () => window.dispatchEvent(new CustomEvent('kx:pos:resume')),
       },
       // Quick-create commands (Kryvexis uses inline create forms on list pages)
-      { type: 'nav' as const, label: 'New Invoice', hint: '/invoices', go: () => router.push('/invoices') },
+      { type: 'nav' as const, label: 'New Invoice', hint: '/invoices/new', go: () => router.push('/invoices/new') },
       { type: 'nav' as const, label: 'New Client', hint: '/clients', go: () => router.push('/clients') },
-      { type: 'nav' as const, label: 'New Quote', hint: '/quotes', go: () => router.push('/quotes') },
-      { type: 'nav' as const, label: 'New Product', hint: '/products', go: () => router.push('/products') },
+      { type: 'nav' as const, label: 'New Quote', hint: '/quotes/new', go: () => router.push('/quotes/new') },
+      { type: 'nav' as const, label: 'Open Buyers', hint: '/buyers', go: () => router.push('/buyers') },
     ]
 
     return [...quickActions, ...core]
