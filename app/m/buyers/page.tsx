@@ -56,7 +56,21 @@ export default async function BuyersPage({
   const low = prod.filter((p) => Number(p.stock_on_hand || 0) <= Number(p.low_stock_threshold || 0));
   const out = prod.filter((p) => Number(p.stock_on_hand || 0) <= 0);
 
-  const shown = tab === "out" ? out : low;
+  const lastSold = new Map<string, number>();
+  for (const row of it as any[]) {
+    const pid = row.product_id;
+    if (!pid) continue;
+    const t = Date.parse(row.created_at || "");
+    if (!Number.isFinite(t)) continue;
+    lastSold.set(pid, Math.max(lastSold.get(pid) || 0, t));
+  }
+
+  const recent = [...prod]
+    .filter((p) => lastSold.has(p.id))
+    .sort((a, b) => (lastSold.get(b.id) || 0) - (lastSold.get(a.id) || 0))
+    .slice(0, 40);
+
+  const shown = tab === "out" ? out : tab === "recent" ? recent : low;
 
   return (
     <div className="space-y-3">
@@ -68,9 +82,9 @@ export default async function BuyersPage({
       </div>
 
       <div className="grid grid-cols-3 gap-2 rounded-2xl border border-black/5 bg-white p-2 text-sm dark:border-white/10 dark:bg-zinc-900">
-        <Link href="/m/buyers?tab=low" className={"rounded-xl px-2 py-2 text-center " + (tab !== "out" ? "bg-blue-600 text-white" : "text-zinc-500")}>Low Stock</Link>
+        <Link href="/m/buyers?tab=low" className={"rounded-xl px-2 py-2 text-center " + (tab === "low" ? "bg-blue-600 text-white" : "text-zinc-500")}>Low Stock</Link>
         <Link href="/m/buyers?tab=out" className={"rounded-xl px-2 py-2 text-center " + (tab === "out" ? "bg-blue-600 text-white" : "text-zinc-500")}>Out</Link>
-        <Link href="/m/buyers?tab=recent" className="rounded-xl px-2 py-2 text-center text-zinc-400">Recent</Link>
+        <Link href="/m/buyers?tab=recent" className={"rounded-xl px-2 py-2 text-center " + (tab === "recent" ? "bg-blue-600 text-white" : "text-zinc-500")}>Recent</Link>
       </div>
 
       <div className="space-y-2">
@@ -81,6 +95,7 @@ export default async function BuyersPage({
             leadTimeDays: 4,
             safetyDays: 2,
           });
+          const recentStamp = lastSold.get(p.id);
           return (
             <Link
               key={p.id}
@@ -90,8 +105,10 @@ export default async function BuyersPage({
               <div className="min-w-0">
                 <div className="truncate font-medium">{p.name}</div>
                 <div className="mt-0.5 text-xs text-zinc-500">
-                  {Number(p.stock_on_hand || 0)} left • Suggest{" "}
-                  <span className="font-semibold text-blue-600">{rec.suggestedQty}</span>
+                  {tab === "recent"
+                    ? `Last sold ${recentStamp ? new Date(recentStamp).toLocaleDateString() : "recently"}`
+                    : `${Number(p.stock_on_hand || 0)} left • Suggest `}
+                  {tab === "recent" ? null : <span className="font-semibold text-blue-600">{rec.suggestedQty}</span>}
                 </div>
               </div>
               <span className="text-zinc-400">›</span>

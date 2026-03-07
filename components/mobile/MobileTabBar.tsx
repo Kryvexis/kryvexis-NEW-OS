@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Home, Users, ShoppingBag, Receipt, Settings, Plus } from "lucide-react";
+import { Home, Users, Receipt, Settings, Plus } from "lucide-react";
 import { useHideOnScroll } from "./hooks/useHideOnScroll";
 
 type Tab = {
@@ -15,8 +15,7 @@ type Tab = {
 const tabs: Tab[] = [
   { href: "/m/home", label: "Home", icon: <Home className="h-5 w-5" /> },
   { href: "/m/clients", label: "Clients", icon: <Users className="h-5 w-5" /> },
-  { href: "/m/buyers", label: "Buyers", icon: <ShoppingBag className="h-5 w-5" /> },
-  { href: "/m/transactions", label: "Sales", icon: <Receipt className="h-5 w-5" /> },
+  { href: "/m/transactions", label: "Transactions", icon: <Receipt className="h-5 w-5" /> },
   { href: "/m/settings", label: "Settings", icon: <Settings className="h-5 w-5" /> },
 ];
 
@@ -33,16 +32,17 @@ export default function MobileTabBar() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="mx-auto max-w-md px-3 pb-3">
-        <div className="relative rounded-3xl border border-black/5 bg-white/88 shadow-[0_18px_48px_rgba(15,23,42,0.16)] backdrop-blur dark:border-white/10 dark:bg-zinc-900/80">
+        <div className="relative rounded-2xl border border-black/5 bg-white/85 shadow-lg backdrop-blur dark:border-white/10 dark:bg-zinc-900/80">
+          {/* Floating action */}
           <Link
             href="/m/new"
-            className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full p-3 shadow-lg ring-4 ring-white/70 dark:ring-zinc-900/60" style={{ background: "rgb(var(--kx-accent))" }}
+            className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-600 p-3 shadow-lg ring-4 ring-white/70 dark:ring-zinc-900/60"
             aria-label="New"
           >
             <Plus className="h-6 w-6 text-white" />
           </Link>
 
-          <nav className="grid grid-cols-5 gap-1 px-2 pt-4">
+          <nav className="grid grid-cols-4 gap-1 px-2 pt-4">
             {tabs.map((t) => {
               const active = pathname === t.href || pathname.startsWith(t.href + "/");
               return (
@@ -52,11 +52,18 @@ export default function MobileTabBar() {
                   className={clsx(
                     "flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-medium",
                     active
-                      ? "text-[rgb(var(--kx-accent-2))] dark:text-emerald-300"
+                      ? "text-emerald-700 dark:text-emerald-300"
                       : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
                   )}
                 >
-                  <span className="rounded-xl p-2" style={active ? { background: "rgb(var(--kx-accent) / 0.12)" } : undefined}>
+                  <span
+                    className={clsx(
+                      "rounded-xl p-2",
+                      active
+                        ? "bg-emerald-600/10"
+                        : "bg-transparent"
+                    )}
+                  >
                     {t.icon}
                   </span>
                   {t.label}
