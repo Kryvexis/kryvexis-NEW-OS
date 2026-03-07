@@ -52,7 +52,7 @@ export default async function BuyersItemWeb({ params }: { params: Promise<{ id: 
               {product.sku ? `SKU: ${product.sku}` : "—"} • Price: {fmtZar(Number(product.unit_price || 0))}
             </div>
           </div>
-          <Link href="/buyers/purchase-list" className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white">
+          <Link href="/m/buyers/purchase-list" className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white">
             Review & Order
           </Link>
         </div>
