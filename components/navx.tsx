@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import type { UserRole } from '@/lib/roles/shared'
 import { canManageUsers } from '@/lib/roles/shared'
+
 import { navMainItems, navBottomItems } from './nav-items'
 
 export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
@@ -20,10 +21,10 @@ export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'o
     case 'buyers':
       return (
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M7 7h10l-1.2 6.2a2 2 0 0 1-2 1.6H10a2 2 0 0 1-2-1.6L7 7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" strokeLinejoin="round"/>
-          <path d="M9 7a3 3 0 1 1 6 0" stroke="currentColor" strokeWidth="1.5" opacity="0.35" strokeLinecap="round"/>
-          <circle cx="10" cy="18" r="1.25" fill="currentColor" opacity="0.9"/>
-          <circle cx="14" cy="18" r="1.25" fill="currentColor" opacity="0.9"/>
+          <path d="M7 7h10l-1.2 6.5a2 2 0 0 1-2 1.6H10a2 2 0 0 1-2-1.6L7 7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" strokeLinejoin="round" />
+          <path d="M9 7V6a3 3 0 0 1 6 0v1" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
+          <circle cx="10" cy="18" r="1.25" fill="currentColor" opacity="0.85" />
+          <circle cx="14" cy="18" r="1.25" fill="currentColor" opacity="0.85" />
         </svg>
       )
     case 'accounting':
@@ -56,7 +57,7 @@ export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'o
         </svg>
       )
     case 'upload':
-      return <span className={common} aria-hidden="true">⬆️</span>
+      return '⬆️'
     case 'help':
       return (
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -125,7 +126,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
       {/* Main navigation */}
       <nav className={'px-3 pb-2 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
         {navMainItems
-          .filter((it) => it.roles.includes(role) || role === 'owner' || role === 'manager')
+          .filter((it) => !it.roles || it.roles.includes(role) || role === 'owner' || role === 'manager')
           .map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
@@ -165,7 +166,9 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
       {/* Bottom navigation */}
       <div className="mt-auto" />
       <nav className={'px-3 pt-2 pb-3 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
-        {navBottomItems.map((it) => {
+        {navBottomItems
+        .filter((it) => !it.roles || it.roles.includes(role) || role === 'owner' || role === 'manager')
+        .map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
             <Link

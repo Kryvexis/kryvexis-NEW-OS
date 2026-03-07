@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Home, ShoppingCart, Users, Receipt, Settings, Plus } from "lucide-react";
+import { Home, Users, Receipt, Settings, Plus, ShoppingCart } from "lucide-react";
 import { useHideOnScroll } from "./hooks/useHideOnScroll";
 
 type Tab = {
@@ -14,8 +14,8 @@ type Tab = {
 
 const tabs: Tab[] = [
   { href: "/m/home", label: "Home", icon: <Home className="h-5 w-5" /> },
-  { href: "/m/buyers", label: "Buyers", icon: <ShoppingCart className="h-5 w-5" /> },
   { href: "/m/clients", label: "Clients", icon: <Users className="h-5 w-5" /> },
+  { href: "/m/buyers", label: "Buyers", icon: <ShoppingCart className="h-5 w-5" /> },
   { href: "/m/transactions", label: "Transactions", icon: <Receipt className="h-5 w-5" /> },
   { href: "/m/settings", label: "Settings", icon: <Settings className="h-5 w-5" /> },
 ];

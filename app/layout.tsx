@@ -5,10 +5,11 @@ import InstallPrompt from "@/components/pwa/InstallPrompt";
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" className="dark" suppressHydrationWarning>
+    // Default to the dark command-center theme. Sidebar and content stay visually aligned.
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
-        <meta name="theme-color" content="#0b1220" />
+        <meta name="theme-color" content="#10b981" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -16,11 +17,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
+    // Default to the dark command-center theme.
     const root = document.documentElement;
     root.dataset.theme = 'dark';
     root.classList.add('dark');
     root.classList.remove('kx-light');
 
+    // Accent pair (default green). Keep customizable via localStorage.
     const accent = localStorage.getItem('kx_accent') || 'green';
     const map = {
       indigo: { a: '99 102 241', b: '56 189 248' },
