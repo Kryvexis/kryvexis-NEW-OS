@@ -5,8 +5,9 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import type { UserRole } from '@/lib/roles/shared'
 import { canManageUsers } from '@/lib/roles/shared'
+import { navMainItems, navBottomItems } from './nav-items'
 
-export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
+export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
   const common = 'h-4 w-4'
   switch (name) {
     case 'sales':
@@ -14,6 +15,14 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 19V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
           <path d="M7 15l3-3 3 2 4-5" stroke="currentColor" strokeWidth="1.6" opacity="0.9" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'buyers':
+      return (
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7 7.5h10a2 2 0 0 1 2 2V16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9.5a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+          <path d="M9 7a3 3 0 0 1 6 0v.5" stroke="currentColor" strokeWidth="1.5" opacity="0.45" strokeLinecap="round" />
+          <path d="M9 12h6" stroke="currentColor" strokeWidth="1.6" opacity="0.9" strokeLinecap="round" />
         </svg>
       )
     case 'accounting':
@@ -64,21 +73,6 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
       )
   }
 }
-
-export const navMainItems = [
-  { href: '/sales', label: 'Sales', icon: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[] },
-  { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[] },
-  { href: '/operations', label: 'Operations', icon: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
-  { href: '/insights', label: 'Insights', icon: 'insights' as const, roles: ['owner', 'manager'] as UserRole[] },
-]
-
-// Bottom section: keep this near the footer. Import Center must be second-to-last.
-export const navBottomItems = [
-  { href: '/settings', label: 'Settings', icon: 'settings' as const },
-  { href: '/help', label: 'Help', icon: 'help' as const },
-  { href: '/import-station', label: 'Import Center', icon: 'upload' as const },
-  { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
-]
 
 export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string; workspaceName?: string; role: UserRole }) {
   const pathname = usePathname() || ''
