@@ -9,7 +9,7 @@ import MobileNav from './nav/MobileNav'
 import { Sidebar } from './nav'
 import type { UserRole } from '@/lib/roles/shared'
 import { roleLabel } from '@/lib/roles/shared'
-// Desktop UI is enforced LIGHT (clean reference UI). We remove the dark-mode toggle to avoid mismatched screens.
+// Theme is controlled from root layout/localStorage (dark by default, light optional).
 
 function pageTitleFromPath(pathname: string) {
   const p = (pathname || '/dashboard').split('?')[0]
