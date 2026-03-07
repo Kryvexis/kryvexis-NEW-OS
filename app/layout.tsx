@@ -5,8 +5,9 @@ import InstallPrompt from "@/components/pwa/InstallPrompt";
 // Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    // Root theme defaults to dark to preserve the command-center look.
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    // Desktop should always be LIGHT (clean content area) like the reference UI.
+    // The sidebar stays dark via explicit styling in Sidebar.
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#10b981" />
@@ -17,11 +18,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    // Default to DARK so the shell matches the intended command-center UI.
+    // Enforce LIGHT for desktop (clean UI reference). Avoid heavy dark dashboards.
     const root = document.documentElement;
-    root.dataset.theme = 'dark';
-    root.classList.add('dark');
-    root.classList.remove('kx-light');
+    root.dataset.theme = 'light';
+    root.classList.remove('dark');
+    root.classList.add('kx-light');
 
     // Accent pair (default green). Keep customizable via localStorage.
     const accent = localStorage.getItem('kx_accent') || 'green';
