@@ -5,10 +5,9 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import type { UserRole } from '@/lib/roles/shared'
 import { canManageUsers } from '@/lib/roles/shared'
+import { navBottomItems, navMainItems, type NavIconName } from './nav-items'
 
-import { navMainItems, navBottomItems } from './nav-items'
-
-export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
+export function NavIcon({ name }: { name: NavIconName }) {
   const common = 'h-4 w-4'
   switch (name) {
     case 'sales':
@@ -21,10 +20,9 @@ export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'o
     case 'buyers':
       return (
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M7 7h10l-1.2 6.5a2 2 0 0 1-2 1.6H10a2 2 0 0 1-2-1.6L7 7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" strokeLinejoin="round" />
-          <path d="M9 7V6a3 3 0 0 1 6 0v1" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
-          <circle cx="10" cy="18" r="1.25" fill="currentColor" opacity="0.85" />
-          <circle cx="14" cy="18" r="1.25" fill="currentColor" opacity="0.85" />
+          <path d="M6 7h12l-1.2 7.2a2 2 0 0 1-2 1.7H9.2a2 2 0 0 1-2-1.7L6 7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+          <path d="M8 7V6a4 4 0 0 1 8 0v1" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
+          <path d="M9.5 19.5a1 1 0 1 0 0 .01M14.5 19.5a1 1 0 1 0 0 .01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       )
     case 'accounting':
@@ -57,7 +55,13 @@ export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'o
         </svg>
       )
     case 'upload':
-      return '⬆️'
+      return (
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 16V5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          <path d="m8 9 4-4 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M5 19h14" stroke="currentColor" strokeWidth="1.5" opacity="0.45" strokeLinecap="round" />
+        </svg>
+      )
     case 'help':
       return (
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -76,24 +80,16 @@ export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'o
   }
 }
 
-
 export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string; workspaceName?: string; role: UserRole }) {
   const pathname = usePathname() || ''
-
-  // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
-  // We intentionally remove the collapsed mode to keep the layout clean and predictable.
-  // Slightly wider so the brand area + nav labels breathe.
   const widthCls = 'md:w-[276px]'
 
   return (
     <aside
       className={'hidden md:flex md:flex-col ' + widthCls}
       style={{
-        // Accent-toned dark sidebar (your preference).
-        // Uses the global accent CSS variable so the sidebar hue matches the chosen accent
-        // while keeping contrast strong and readable.
         background:
-          'linear-gradient(180deg, rgb(var(--kx-accent) / 0.24) 0%, rgb(var(--kx-accent) / 0.10) 18%, #0b1220 40%, #0a1628 70%, #081324 100%)',
+          'linear-gradient(180deg, rgb(var(--kx-accent) / 0.22) 0%, rgb(var(--kx-accent-2) / 0.10) 18%, #08111d 40%, #091423 68%, #07111d 100%)',
         boxShadow: 'var(--kx-shadow-sidebar)',
         borderRight: '1px solid rgba(255,255,255,0.06)',
       }}
@@ -101,7 +97,6 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
       <div className={'px-5 pt-5 pb-3'} style={{ color: 'rgba(255,255,255,0.92)' }}>
         <div className={'flex items-start justify-between gap-3'}>
           <div className={'flex flex-col'}>
-            {/* Compact brand (icon + name) */}
             <div className="flex items-center gap-2">
               <Image
                 src="/kryvexis-logo.png"
@@ -123,84 +118,82 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
         </div>
       </div>
 
-      {/* Main navigation */}
       <nav className={'px-3 pb-2 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
         {navMainItems
           .filter((it) => !it.roles || it.roles.includes(role) || role === 'owner' || role === 'manager')
           .map((it) => {
-          const on = pathname === it.href || pathname.startsWith(it.href + '/')
-          return (
-            <Link
-              key={it.href}
-              href={it.href}
-              data-tour={`nav-${it.icon}`}
-              title={it.label}
-              className={
-                'group relative flex items-center rounded-xl py-2 text-sm transition ' +
-                (on ? 'bg-white/10' : 'hover:bg-white/5')
-              }
-            >
-              {on && (
-                <span
-                  aria-hidden="true"
-                  className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
-                  style={{ background: 'rgb(var(--kx-accent))' }}
-                />
-              )}
-
-              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
-                <NavIcon name={it.icon} />
-              </span>
-              <span
-                className="ml-2 tracking-tight"
-                style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
+            const on = pathname === it.href || pathname.startsWith(it.href + '/')
+            return (
+              <Link
+                key={it.href}
+                href={it.href}
+                data-tour={`nav-${it.icon}`}
+                title={it.label}
+                className={
+                  'group relative flex items-center rounded-xl py-2 text-sm transition ' +
+                  (on ? 'bg-white/10' : 'hover:bg-white/5')
+                }
               >
-                {it.label}
-              </span>
-              {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
-            </Link>
-          )
-        })}
+                {on && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
+                    style={{ background: 'rgb(var(--kx-accent))' }}
+                  />
+                )}
+
+                <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
+                  <NavIcon name={it.icon} />
+                </span>
+                <span
+                  className="ml-2 tracking-tight"
+                  style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
+                >
+                  {it.label}
+                </span>
+                {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
+              </Link>
+            )
+          })}
       </nav>
 
-      {/* Bottom navigation */}
       <div className="mt-auto" />
       <nav className={'px-3 pt-2 pb-3 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
         {navBottomItems
-        .filter((it) => !it.roles || it.roles.includes(role) || role === 'owner' || role === 'manager')
-        .map((it) => {
-          const on = pathname === it.href || pathname.startsWith(it.href + '/')
-          return (
-            <Link
-              key={it.href}
-              href={it.href}
-              title={it.label}
-              className={
-                'group relative flex items-center rounded-xl py-2 text-sm transition ' +
-                (on ? 'bg-white/10' : 'hover:bg-white/5')
-              }
-            >
-              {on && (
-                <span
-                  aria-hidden="true"
-                  className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
-                  style={{ background: 'rgb(var(--kx-accent))' }}
-                />
-              )}
-
-              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
-                <NavIcon name={it.icon} />
-              </span>
-              <span
-                className="ml-2 tracking-tight"
-                style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
+          .filter((it) => !it.roles || it.roles.includes(role) || role === 'owner' || role === 'manager')
+          .map((it) => {
+            const on = pathname === it.href || pathname.startsWith(it.href + '/')
+            return (
+              <Link
+                key={it.href}
+                href={it.href}
+                title={it.label}
+                className={
+                  'group relative flex items-center rounded-xl py-2 text-sm transition ' +
+                  (on ? 'bg-white/10' : 'hover:bg-white/5')
+                }
               >
-                {it.label}
-              </span>
-              {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
-            </Link>
-          )
-        })}
+                {on && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
+                    style={{ background: 'rgb(var(--kx-accent))' }}
+                  />
+                )}
+
+                <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
+                  <NavIcon name={it.icon} />
+                </span>
+                <span
+                  className="ml-2 tracking-tight"
+                  style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
+                >
+                  {it.label}
+                </span>
+                {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
+              </Link>
+            )
+          })}
       </nav>
 
       {userEmail && (

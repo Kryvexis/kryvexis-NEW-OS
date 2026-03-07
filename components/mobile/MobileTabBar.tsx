@@ -6,10 +6,12 @@ import clsx from "clsx";
 import { Home, Users, Receipt, Settings, Plus, ShoppingCart } from "lucide-react";
 import { useHideOnScroll } from "./hooks/useHideOnScroll";
 
+import type { ReactNode } from "react";
+
 type Tab = {
   href: string;
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
 };
 
 const tabs: Tab[] = [
@@ -34,7 +36,6 @@ export default function MobileTabBar() {
     >
       <div className="mx-auto max-w-md px-3 pb-3">
         <div className="relative rounded-2xl border border-black/5 bg-white/85 shadow-lg backdrop-blur dark:border-white/10 dark:bg-zinc-900/80">
-          {/* Floating action */}
           <Link
             href="/m/new"
             className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-600 p-3 shadow-lg ring-4 ring-white/70 dark:ring-zinc-900/60"
@@ -60,9 +61,7 @@ export default function MobileTabBar() {
                   <span
                     className={clsx(
                       "rounded-xl p-2",
-                      active
-                        ? "bg-emerald-600/10"
-                        : "bg-transparent"
+                      active ? "bg-emerald-600/10" : "bg-transparent"
                     )}
                   >
                     {t.icon}

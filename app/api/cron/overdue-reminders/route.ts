@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server'
-import { serviceSupabase, logEmailEvent } from '@/lib/automation/log'
-import { sendAppEmail } from '@/lib/automation/mailer'
-import { shareInvoiceUrl } from '@/lib/share'
+import { createClient } from '@supabase/supabase-js'
 
 export const runtime = 'nodejs'
 
-function todayISO(timeZone = 'Africa/Johannesburg') {
-  const parts = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date())
-  const y = parts.find((p) => p.type === 'year')?.value ?? '1970'
-  const m = parts.find((p) => p.type === 'month')?.value ?? '01'
-  const d = parts.find((p) => p.type === 'day')?.value ?? '01'
-  return `${y}-${m}-${d}`
+function required(name: string) {
+  const v = process.env[name]
+  if (!v) throw new Error(`Missing env var: ${name}`)
+  return v
+}
+
+function todayISO() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: process.env.KX_TIMEZONE || 'Africa/Johannesburg', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
 }
 
 export async function GET(req: Request) {
@@ -21,51 +21,39 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
     }
 
-    const supabase = serviceSupabase()
-    const today = todayISO(process.env.KX_TIMEZONE || 'Africa/Johannesburg')
+    const supabase = createClient(required('NEXT_PUBLIC_SUPABASE_URL'), required('SUPABASE_SERVICE_ROLE_KEY'))
+    const today = todayISO()
     const { data: invoices, error } = await supabase
       .from('invoices')
-      .select('id,company_id,number,due_date,balance_due,total,public_token,clients(name,email),companies(name)')
+      .select('id,number,company_id,clients(email,name),due_date,balance_due,status')
       .lt('due_date', today)
       .in('status', ['Sent', 'Partially Paid', 'Overdue'])
-      .not('clients.email', 'is', null)
-      .limit(200)
+      .limit(100)
 
     if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 })
 
-    let sent = 0
-    let failed = 0
-    const failures: Array<{ invoiceId: string; error: string }> = []
-
+    const sent: string[] = []
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || ''
     for (const inv of invoices || []) {
-      try {
-        const client = (inv as any).clients || {}
-        const company = (inv as any).companies || {}
-        const viewPath = inv.public_token ? shareInvoiceUrl(inv.public_token) : `/invoices/${inv.id}`
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || ''
-        const fullUrl = baseUrl ? `${baseUrl}${viewPath}` : viewPath
-        const subject = `Reminder: Invoice ${inv.number} is overdue`
-        const html = `
-          <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6">
-            <h2 style="margin:0 0 12px">Invoice ${inv.number} is overdue</h2>
-            <p>Hi ${(client.name || 'there')},</p>
-            <p>This is a friendly reminder that invoice <strong>${inv.number}</strong> is overdue.</p>
-            <p><strong>Balance due:</strong> R ${Number(inv.balance_due ?? inv.total ?? 0).toFixed(2)}</p>
-            <p><a href="${fullUrl}">Open invoice</a></p>
-            <p>Kind regards,<br/>${company.name || 'Kryvexis'}</p>
-          </div>`
-        const text = `Hi ${(client.name || 'there')},\n\nInvoice ${inv.number} is overdue. Balance due: R ${Number(inv.balance_due ?? inv.total ?? 0).toFixed(2)}\nOpen invoice: ${fullUrl}\n\nKind regards,\n${company.name || 'Kryvexis'}`
-        await sendAppEmail({ to: String(client.email), subject, html, text })
-        await logEmailEvent({ companyId: inv.company_id, eventType: 'overdue_reminder', recipient: String(client.email), entityType: 'invoice', entityId: inv.id, meta: { number: inv.number, due_date: inv.due_date } })
-        sent++
-      } catch (e: any) {
-        failed++
-        failures.push({ invoiceId: String(inv.id), error: e?.message || 'send failed' })
-      }
+      const email = (inv as any)?.clients?.email
+      if (!email || !baseUrl) continue
+      const res = await fetch(`${baseUrl}/api/email/send`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          companyId: (inv as any).company_id,
+          to: email,
+          subject: `Invoice ${(inv as any).number || ''} is overdue`,
+          text: `Hello ${(inv as any)?.clients?.name || ''},\n\nThis is a reminder that invoice ${(inv as any).number || ''} is overdue. Outstanding balance: ${(inv as any).balance_due || 0}.\n\nRegards,\nKryvexis`,
+          html: `<div style="font-family:Arial,sans-serif">Hello ${(inv as any)?.clients?.name || ''},<br/><br/>This is a reminder that invoice <strong>${(inv as any).number || ''}</strong> is overdue.<br/>Outstanding balance: <strong>${(inv as any).balance_due || 0}</strong>.<br/><br/>Regards,<br/>Kryvexis</div>`
+        }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (res.ok && json.ok) sent.push((inv as any).id)
     }
 
-    return NextResponse.json({ ok: true, sent, failed, failures })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || 'Unknown error' }, { status: 500 })
+    return NextResponse.json({ ok: true, sent: sent.length })
+  } catch (error: any) {
+    return NextResponse.json({ ok: false, error: error?.message || 'Failed' }, { status: 500 })
   }
 }

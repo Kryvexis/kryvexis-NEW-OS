@@ -4,7 +4,7 @@ import { Command } from 'cmdk'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { navBottomItems, navMainItems } from './nav-items'
-// Lightweight fuzzy scorer (no deps): returns 0..1. Higher is better.
+
 function fuzzyScore(text: string, query: string) {
   const t = text.toLowerCase()
   const q = query.toLowerCase().trim()
@@ -25,7 +25,6 @@ function fuzzyScore(text: string, query: string) {
     }
     ti = found + 1
   }
-  // Prefer shorter labels when equal.
   return score / (t.length + 10)
 }
 
@@ -50,14 +49,15 @@ export default function CommandPalette() {
   const actions = useMemo(() => {
     const quickNav = [
       { label: 'Open POS', href: '/sales/pos', group: 'Quick actions' },
-      { label: 'New Quote', href: '/sales/quotes/new', group: 'Quick actions' },
-      { label: 'New Invoice', href: '/sales/invoices/new', group: 'Quick actions' },
-      { label: 'Record Payment', href: '/accounting/payments', group: 'Quick actions' },
-      { label: 'Import Products', href: '/operations/import', group: 'Quick actions' },
+      { label: 'New Quote', href: '/quotes/new', group: 'Quick actions' },
+      { label: 'New Invoice', href: '/invoices/new', group: 'Quick actions' },
+      { label: 'Record Payment', href: '/payments', group: 'Quick actions' },
+      { label: 'Import Products', href: '/import-station', group: 'Quick actions' },
+      { label: 'Open Buyers', href: '/buyers', group: 'Quick actions' },
     ]
 
     const allNav = [...navMainItems, ...navBottomItems]
-      .filter((n) => n.href !== '/help') // help is hidden in v28+ UI
+      .filter((n) => n.href !== '/help')
       .map((n) => ({ label: n.label, href: n.href }))
 
     const core = [...quickNav, ...allNav].map((n) => ({
@@ -81,11 +81,11 @@ export default function CommandPalette() {
         hint: 'Restore ticket',
         go: () => window.dispatchEvent(new CustomEvent('kx:pos:resume')),
       },
-      // Quick-create commands (Kryvexis uses inline create forms on list pages)
-      { type: 'nav' as const, label: 'New Invoice', hint: '/invoices', go: () => router.push('/invoices') },
+      { type: 'nav' as const, label: 'New Invoice', hint: '/invoices/new', go: () => router.push('/invoices/new') },
       { type: 'nav' as const, label: 'New Client', hint: '/clients', go: () => router.push('/clients') },
-      { type: 'nav' as const, label: 'New Quote', hint: '/quotes', go: () => router.push('/quotes') },
+      { type: 'nav' as const, label: 'New Quote', hint: '/quotes/new', go: () => router.push('/quotes/new') },
       { type: 'nav' as const, label: 'New Product', hint: '/products', go: () => router.push('/products') },
+      { type: 'nav' as const, label: 'Open Buyers', hint: '/buyers', go: () => router.push('/buyers') },
     ]
 
     return [...quickActions, ...core]
@@ -93,45 +93,44 @@ export default function CommandPalette() {
 
   if (!open) return null
 
-  return (
-    <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-      <div className="absolute left-1/2 top-20 w-[92vw] max-w-2xl -translate-x-1/2 rounded-3xl border border-[rgba(var(--kx-border),.12)] bg-black/70 backdrop-blur-xl shadow-2xl overflow-hidden">
-        <Command
-          className="p-2"
-          value={search}
-          onValueChange={setSearch}
-          // Fuzzy search ranking (cmdk uses numeric filter scores)
-          filter={(value, query) => {
-            const s = fuzzyScore(value, query)
-            // cmdk expects an integer score.
-            return Math.floor(s * 1000)
-          }}
-        >
-          <div className="px-3 pt-3 pb-2">
-            <Command.Input
-              autoFocus
-              placeholder="Search or type a command…"
-              className="w-full rounded-2xl border border-[rgba(var(--kx-border),.12)] bg-[rgba(var(--kx-border),.06)] px-3 py-2 text-sm outline-none"
-            />
-            <div className="mt-2 text-[11px] text-[rgba(var(--kx-fg),.92)]/50">Tip: Ctrl/⌘ K to open · Enter to run</div>
-          </div>
+  const results = actions
+    .map((a) => ({ a, score: fuzzyScore(`${a.label} ${a.hint}`, search) }))
+    .filter((x) => x.score > 0)
+    .sort((x, y) => y.score - x.score)
+    .slice(0, 14)
+    .map((x) => x.a)
 
-          <Command.List className="max-h-[60vh] overflow-auto px-2 pb-2">
-            <Command.Empty className="px-3 py-4 text-sm kx-muted">No results.</Command.Empty>
-            <Command.Group heading="Quick actions" className="kx-muted text-xs px-2">
-              {actions.map((a) => (
+  return (
+    <div className="fixed inset-0 z-[70] flex items-start justify-center bg-black/40 px-4 pt-[12vh]" onClick={() => setOpen(false)}>
+      <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-[rgba(var(--kx-border),.18)] bg-[rgba(var(--kx-shell),.95)] shadow-2xl backdrop-blur-xl" onClick={(e) => e.stopPropagation()}>
+        <Command shouldFilter={false}>
+          <div className="border-b border-[rgba(var(--kx-border),.12)] px-4 py-3">
+            <Command.Input
+              value={search}
+              onValueChange={setSearch}
+              placeholder="Jump to clients, buyers, invoices…"
+              className="w-full bg-transparent text-sm outline-none placeholder:text-[rgba(var(--kx-fg),.42)]"
+            />
+          </div>
+          <Command.List className="max-h-[60vh] overflow-auto p-2">
+            {results.length === 0 ? (
+              <div className="px-3 py-6 text-sm kx-muted">No matches.</div>
+            ) : (
+              results.map((item) => (
                 <Command.Item
-                  key={`${a.label}-${a.hint}`}
-                  value={`${a.label} ${a.hint}`}
-                  className="flex items-center justify-between rounded-2xl px-3 py-2 text-sm text-[rgba(var(--kx-fg),.92)]/85 aria-selected:bg-[rgba(var(--kx-border),.10)]"
-                  onSelect={() => { a.go(); setOpen(false); setSearch('') }}
+                  key={`${item.label}-${item.hint}`}
+                  value={`${item.label} ${item.hint}`}
+                  onSelect={() => {
+                    item.go()
+                    setOpen(false)
+                  }}
+                  className="flex cursor-pointer items-center justify-between rounded-2xl px-3 py-3 text-sm text-[rgba(var(--kx-fg),.92)] outline-none data-[selected=true]:bg-[rgba(var(--kx-fg),.07)]"
                 >
-                  <span>{a.label}</span>
-                  <span className="text-xs text-[rgba(var(--kx-fg),.92)]/50">{a.hint}</span>
+                  <span>{item.label}</span>
+                  <span className="text-xs kx-muted">{item.hint}</span>
                 </Command.Item>
-              ))}
-            </Command.Group>
+              ))
+            )}
           </Command.List>
         </Command>
       </div>

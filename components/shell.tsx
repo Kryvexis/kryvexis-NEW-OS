@@ -9,7 +9,6 @@ import MobileNav from './nav/MobileNav'
 import { Sidebar } from './nav'
 import type { UserRole } from '@/lib/roles/shared'
 import { roleLabel } from '@/lib/roles/shared'
-// Desktop uses the shared dark command-center theme by default.
 
 function pageTitleFromPath(pathname: string) {
   const p = (pathname || '/dashboard').split('?')[0]

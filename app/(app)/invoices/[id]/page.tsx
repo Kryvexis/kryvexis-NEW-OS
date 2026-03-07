@@ -7,6 +7,8 @@ import InvoiceStatus from './ui-status'
 import { PaymentDrawer } from '@/components/payments/payment-drawer'
 import { PosHeroShell } from '@/components/pos/hero-shell'
 import { Card } from '@/components/card'
+import { SaveDocButton } from '@/components/pdf/save-doc-button'
+import { EmailDocButton } from '@/components/email/email-doc-button'
 import { EnterpriseTimeline, type EnterpriseTimelineEvent } from '@/components/enterprise/enterprise-timeline'
 import InvoiceWhatsAppLauncher from './ui-whatsapp-launcher'
 import MarkViewedButton from './ui-mark-viewed'
@@ -59,7 +61,7 @@ export default async function InvoicePage({ params }: PageProps) {
     supabase
       .from('invoices')
       .select(
-        'id,company_id,public_token,number,issue_date,due_date,status,notes,terms,subtotal,discount_total,tax_total,total,balance_due, clients(name,email,phone,billing_address)'
+        'id,company_id,public_token,pdf_path,pdf_generated_at,number,issue_date,due_date,status,notes,terms,subtotal,discount_total,tax_total,total,balance_due, clients(name,email,phone,billing_address)'
       )
       .eq('id', id)
       .maybeSingle(),
@@ -116,6 +118,29 @@ export default async function InvoicePage({ params }: PageProps) {
           <Link className="kx-button" href={`/invoices/${invoice.id}/print`} target="_blank">
             Print / PDF
           </Link>
+          <SaveDocButton
+            kind="invoice"
+            docId={invoice.id}
+            number={invoice.number || ''}
+            companyName="Kryvexis"
+            clientName={invoice.clients?.name || null}
+            companyEmail="kryvexissolutions@gmail.com"
+            issueDate={invoice.issue_date || null}
+            dueOrExpiryDate={invoice.due_date || null}
+            subtotal={Number(invoice.subtotal || 0)}
+            taxTotal={Number(invoice.tax_total || 0)}
+            discountTotal={Number(invoice.discount_total || 0)}
+            total={Number(invoice.total || 0)}
+            existingPath={invoice.pdf_path || null}
+            items={(items || []).map((it: any) => ({ description: it.description, qty: Number(it.qty || 0), unit_price: Number(it.unit_price || 0), line_total: Number(it.line_total || 0) }))}
+            autoIfMissing
+          />
+          <EmailDocButton
+            kindLabel="Invoice"
+            number={invoice.number || ''}
+            defaultTo={invoice.clients?.email || null}
+            pdfUrl={null}
+          />
           <PaymentDrawer invoiceId={invoice.id} />
         </>
       }
