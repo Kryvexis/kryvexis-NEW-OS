@@ -1,18 +1,20 @@
 import type { UserRole } from '@/lib/roles/shared'
 
+export type NavIconName =
+  | 'sales'
+  | 'buyers'
+  | 'accounting'
+  | 'operations'
+  | 'insights'
+  | 'settings'
+  | 'help'
+  | 'accountCenter'
+  | 'upload'
+
 export type NavItem = {
   href: string
   label: string
-  icon:
-    | 'sales'
-    | 'buyers'
-    | 'accounting'
-    | 'operations'
-    | 'insights'
-    | 'settings'
-    | 'help'
-    | 'accountCenter'
-    | 'upload'
+  icon: NavIconName
   roles?: UserRole[]
 }
 
