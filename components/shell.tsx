@@ -9,6 +9,7 @@ import MobileNav from './nav/MobileNav'
 import { Sidebar } from './nav'
 import type { UserRole } from '@/lib/roles/shared'
 import { roleLabel } from '@/lib/roles/shared'
+// Desktop UI is enforced LIGHT (clean reference UI). We remove the dark-mode toggle to avoid mismatched screens.
 
 function pageTitleFromPath(pathname: string) {
   const p = (pathname || '/dashboard').split('?')[0]
@@ -30,61 +31,77 @@ function pageTitleFromPath(pathname: string) {
   return 'Kryvexis OS'
 }
 
-function pageSubtitleFromPath(pathname: string) {
-  const p = (pathname || '/dashboard').split('?')[0]
-  if (p.startsWith('/sales')) return 'Revenue, customers, products, and selling activity in one place.'
-  if (p.startsWith('/buyers')) return 'Procurement, reorder signals, and stock pressure.'
-  if (p.startsWith('/accounting')) return 'Keep the books, balances, and cashflow in control.'
-  if (p.startsWith('/operations')) return 'Inventory, workflows, and fulfilment.'
-  if (p.startsWith('/insights')) return 'Performance signals and business trends.'
-  return 'Your business command center.'
-}
-
 export default function Shell({ userEmail, role, children }: { userEmail: string; role: UserRole; children: React.ReactNode }) {
   const pathname = usePathname() || '/dashboard'
   const title = pageTitleFromPath(pathname)
-  const subtitle = pageSubtitleFromPath(pathname)
 
   return (
-    <div className="kx-shell min-h-screen">
+    <div className="min-h-screen">
       <CommandPalette />
+
       <div className="flex min-h-screen">
+        {/* Desktop sidebar (A) + hidden on small screens (C) */}
         <Sidebar userEmail={userEmail} workspaceName="Kryvexis" role={role} />
 
+        {/* Main area */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-40 px-4 py-3 md:px-5">
-            <div className="kx-topbar-surface mx-auto flex max-w-[1380px] items-center justify-between gap-3 rounded-[26px] px-4 py-3 md:px-5">
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="md:hidden">
-                  <MobileNav />
-                </div>
-                <div className="hidden h-11 w-11 items-center justify-center rounded-2xl bg-[rgb(var(--kx-accent)/0.10)] text-[rgb(var(--kx-accent-2))] md:flex">
-                  <Image src="/kryvexis-logo.png" alt="Kryvexis" width={26} height={26} className="h-6 w-6 object-contain" />
-                </div>
-                <div className="min-w-0">
-                  <div className="truncate text-lg font-semibold tracking-tight text-kx-fg md:text-xl">{title}</div>
-                  <div className="hidden truncate text-sm kx-muted md:block">{subtitle}</div>
-                </div>
+          {/* Slim topbar (desktop + mobile) */}
+          <header
+            className="sticky top-0 z-40 bg-kx-shell/65 backdrop-blur-md"
+            style={{ boxShadow: 'var(--kx-shadow-header)' }}
+          >
+            {/* Align header content with page content (left-aligned, not centered). */}
+            <div className="px-5">
+              <div className="flex h-14 w-full max-w-[1280px] items-center gap-3">
+              {/* Mobile menu */}
+              <div className="md:hidden">
+                <MobileNav userEmail={userEmail} role={role} />
               </div>
 
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="hidden items-center gap-2 rounded-full border border-[rgba(var(--kx-border),.14)] bg-[rgba(var(--kx-surface),.88)] px-3 py-2 text-sm md:flex">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <span className="kx-muted">{roleLabel(role)}</span>
+              {/* Title */}
+              <div className="flex items-center gap-3 min-w-0">
+                {/* On mobile, show small brand mark */}
+                <div className="flex items-center gap-2 md:hidden">
+                  <Image src="/kryvexis-logo.png" alt="Kryvexis" width={26} height={26} className="h-6 w-6" priority />
+                  <div className="text-sm font-semibold tracking-tight">Kryvexis</div>
                 </div>
-                <div className="hidden text-right md:block">
-                  <div className="text-[11px] uppercase tracking-[0.18em] kx-muted2">Workspace</div>
-                  <div className="max-w-[220px] truncate text-sm font-medium text-kx-fg">{userEmail || 'Signed in'}</div>
+                <div className="hidden md:block">
+                  <div className="text-sm font-semibold tracking-tight text-kx-fg">{title}</div>
+                  <div className="text-[11px] kx-muted">Kryvexis OS</div>
+                </div>
+                <div className="md:hidden text-sm font-semibold tracking-tight text-kx-fg truncate">{title}</div>
+              </div>
+
+              <div className="flex-1" />
+
+              {/* Right controls */}
+              <div className="flex items-center gap-2">
+                <div
+                  className="hidden max-w-[260px] truncate rounded-full border bg-kx-surface/30 px-3 py-2 text-xs text-kx-fg/75 lg:block"
+                  style={{ borderColor: 'rgb(var(--kx-border) / 0.10)' }}
+                  title={userEmail}
+                >
+                  {userEmail}
+                </div>
+                <div className="hidden md:flex items-center gap-2">
+                  <span
+                    className="rounded-full border px-2 py-1 text-[11px] kx-muted"
+                    style={{ borderColor: 'rgb(var(--kx-border) / 0.12)' }}
+                    title="Role"
+                  >
+                    {roleLabel(role)}
+                  </span>
                 </div>
                 <LogoutButton />
+              </div>
               </div>
             </div>
           </header>
 
-          <main className="flex-1 px-4 pb-8 pt-1 md:px-5">
-            <div className="mx-auto flex w-full max-w-[1380px] flex-col gap-6">
-              {children}
-            </div>
+          {/* Page content */}
+          {/* Left-aligned content to match the premium dashboard reference style */}
+          <main className="w-full flex-1 px-5 py-6">
+            <div className="w-full max-w-[1280px]">{children}</div>
           </main>
         </div>
       </div>

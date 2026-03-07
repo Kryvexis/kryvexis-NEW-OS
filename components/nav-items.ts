@@ -3,7 +3,7 @@ import type { UserRole } from '@/lib/roles/shared'
 export type NavItem = {
   href: string
   label: string
-  icon: 'sales' | 'accounting' | 'operations' | 'insights' | 'buyers' | 'settings' | 'help' | 'accountCenter' | 'upload'
+  icon: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' | 'buyers'
   roles?: UserRole[]
 }
 
