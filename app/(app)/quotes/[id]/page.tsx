@@ -7,8 +7,6 @@ import QuoteStatus from './ui-status'
 import ConvertButton from './ui-convert'
 import { PosHeroShell } from '@/components/pos/hero-shell'
 import { Card } from '@/components/card'
-import { SaveDocButton } from '@/components/pdf/save-doc-button'
-import { EmailDocButton } from '@/components/email/email-doc-button'
 import { EnterpriseTimeline, type EnterpriseTimelineEvent } from '@/components/enterprise/enterprise-timeline'
 import QuoteWhatsAppLauncher from './ui-whatsapp-launcher'
 import MarkViewedButton from './ui-mark-viewed'
@@ -48,7 +46,7 @@ export default async function QuotePage({ params }: PageProps) {
     supabase
       .from('quotes')
       .select(
-        'id,company_id,public_token,pdf_path,pdf_generated_at,number,issue_date,expiry_date,status,notes,terms,subtotal,discount_total,tax_total,total, clients(name,email,phone,billing_address)'
+        'id,company_id,public_token,number,issue_date,expiry_date,status,notes,terms,subtotal,discount_total,tax_total,total, clients(name,email,phone,billing_address)'
       )
       .eq('id', id)
       .maybeSingle(),
@@ -97,29 +95,6 @@ export default async function QuotePage({ params }: PageProps) {
           <Link className="kx-button" href={`/quotes/${quote.id}/print`} target="_blank">
             Print / PDF
           </Link>
-          <SaveDocButton
-            kind="quote"
-            docId={quote.id}
-            number={quote.number || ''}
-            companyName="Kryvexis"
-            clientName={quote.clients?.name || null}
-            companyEmail="kryvexissolutions@gmail.com"
-            issueDate={quote.issue_date || null}
-            dueOrExpiryDate={quote.expiry_date || null}
-            subtotal={Number(quote.subtotal || 0)}
-            taxTotal={Number(quote.tax_total || 0)}
-            discountTotal={Number(quote.discount_total || 0)}
-            total={Number(quote.total || 0)}
-            existingPath={quote.pdf_path || null}
-            items={(items || []).map((it: any) => ({ description: it.description, qty: Number(it.qty || 0), unit_price: Number(it.unit_price || 0), line_total: (Number(it.qty || 0) * Number(it.unit_price || 0)) - Number(it.discount || 0) + (((Number(it.qty || 0) * Number(it.unit_price || 0)) - Number(it.discount || 0)) * Number(it.tax_rate || 0)) }))}
-            autoIfMissing
-          />
-          <EmailDocButton
-            kindLabel="Quote"
-            number={quote.number || ''}
-            defaultTo={quote.clients?.email || null}
-            pdfUrl={null}
-          />
           <ConvertButton quoteId={quote.id} />
         </>
       }

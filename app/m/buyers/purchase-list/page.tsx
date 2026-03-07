@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { clearPurchaseListAction } from "./actions";
+import CopyListButton from "@/components/mobile/buyers/CopyListButton";
 
 type Item = { product_id: string; name: string; qty: number };
 
@@ -69,14 +70,9 @@ export default async function PurchaseListPage() {
         >
           Send Email
         </a>
-        <button
-          className="rounded-2xl bg-zinc-900 px-4 py-3 font-semibold text-white dark:bg-zinc-800"
-          onClick={() => {
-            // client only; noop in server render
-          }}
-        >
-          Copy
-        </button>
+        <CopyListButton text={`Subject: Stock Order Request - Kryvexis
+
+${body}`} />
       </div>
 
       <div className="text-xs text-zinc-500">
