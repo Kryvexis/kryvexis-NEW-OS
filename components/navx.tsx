@@ -5,8 +5,9 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import type { UserRole } from '@/lib/roles/shared'
 import { canManageUsers } from '@/lib/roles/shared'
+import { navMainItems, navBottomItems } from './nav-items'
 
-export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
+export function NavIcon({ name }: { name: 'sales' | 'buyers' | 'accounting' | 'operations' | 'insights' | 'settings' | 'help' | 'accountCenter' | 'upload' }) {
   const common = 'h-4 w-4'
   switch (name) {
     case 'sales':
@@ -14,6 +15,14 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
         <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 19V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
           <path d="M7 15l3-3 3 2 4-5" stroke="currentColor" strokeWidth="1.6" opacity="0.9" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'buyers':
+      return (
+        <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 7h14l-1.5 8.5a2 2 0 0 1-2 1.6H9a2 2 0 0 1-2-1.6L5.5 5H3" stroke="currentColor" strokeWidth="1.5" opacity="0.9" strokeLinecap="round" strokeLinejoin="round"/>
+          <circle cx="10" cy="20" r="1.4" fill="currentColor" opacity="0.9"/>
+          <circle cx="17" cy="20" r="1.4" fill="currentColor" opacity="0.9"/>
         </svg>
       )
     case 'accounting':
@@ -65,38 +74,16 @@ export function NavIcon({ name }: { name: 'sales' | 'accounting' | 'operations' 
   }
 }
 
-export const navMainItems = [
-  { href: '/sales', label: 'Sales', icon: 'sales' as const, roles: ['owner', 'manager', 'cashier', 'staff', 'accounts'] as UserRole[] },
-  { href: '/accounting', label: 'Accounting', icon: 'accounting' as const, roles: ['owner', 'manager', 'accounts'] as UserRole[] },
-  { href: '/operations', label: 'Operations', icon: 'operations' as const, roles: ['owner', 'manager', 'buyer'] as UserRole[] },
-  { href: '/insights', label: 'Insights', icon: 'insights' as const, roles: ['owner', 'manager'] as UserRole[] },
-]
-
-// Bottom section: keep this near the footer. Import Center must be second-to-last.
-export const navBottomItems = [
-  { href: '/settings', label: 'Settings', icon: 'settings' as const },
-  { href: '/help', label: 'Help', icon: 'help' as const },
-  { href: '/import-station', label: 'Import Center', icon: 'upload' as const },
-  { href: '/account-center', label: 'Account Center', icon: 'accountCenter' as const },
-]
-
 export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string; workspaceName?: string; role: UserRole }) {
   const pathname = usePathname() || ''
-
-  // Sidebar mode: fixed width on desktop (A), hidden on small screens (C).
-  // We intentionally remove the collapsed mode to keep the layout clean and predictable.
-  // Slightly wider so the brand area + nav labels breathe.
-  const widthCls = 'md:w-[276px]'
+  const canSee = (roles?: UserRole[]) => !roles || roles.includes(role) || role === 'owner' || role === 'manager'
 
   return (
     <aside
-      className={'hidden md:flex md:flex-col ' + widthCls}
+      className={'hidden md:flex md:w-[276px] md:flex-col'}
       style={{
-        // Accent-toned dark sidebar (your preference).
-        // Uses the global accent CSS variable so the sidebar hue matches the chosen accent
-        // while keeping contrast strong and readable.
         background:
-          'linear-gradient(180deg, rgb(var(--kx-accent) / 0.24) 0%, rgb(var(--kx-accent) / 0.10) 18%, #0b1220 40%, #0a1628 70%, #081324 100%)',
+          'linear-gradient(180deg, rgb(var(--kx-accent) / 0.14) 0%, rgb(var(--kx-accent) / 0.06) 16%, #08111f 40%, #08111f 70%, #060d18 100%)',
         boxShadow: 'var(--kx-shadow-sidebar)',
         borderRight: '1px solid rgba(255,255,255,0.06)',
       }}
@@ -104,100 +91,40 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
       <div className={'px-5 pt-5 pb-3'} style={{ color: 'rgba(255,255,255,0.92)' }}>
         <div className={'flex items-start justify-between gap-3'}>
           <div className={'flex flex-col'}>
-            {/* Compact brand (icon + name) */}
             <div className="flex items-center gap-2">
-              <Image
-                src="/kryvexis-logo.png"
-                alt="Kryvexis"
-                width={32}
-                height={32}
-                className="h-8 w-8 object-contain"
-                style={{ filter: 'drop-shadow(0 10px 22px rgba(0,0,0,.35))' }}
-                priority
-              />
+              <Image src="/kryvexis-logo.png" alt="Kryvexis" width={32} height={32} className="h-8 w-8 object-contain" priority />
               <div>
                 <div className="text-sm font-semibold tracking-tight">Kryvexis OS</div>
-                <div className="text-[11px] leading-tight" style={{ color: 'rgba(255,255,255,0.62)' }}>
-                  {workspaceName ?? 'Workspace'}
-                </div>
+                <div className="text-[11px] leading-tight" style={{ color: 'rgba(255,255,255,0.62)' }}>{workspaceName ?? 'Workspace'}</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main navigation */}
-      <nav className={'px-3 pb-2 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
-        {navMainItems
-          .filter((it) => it.roles.includes(role) || role === 'owner' || role === 'manager')
-          .map((it) => {
+      <nav className={'space-y-1 px-3 pb-2'} style={{ color: 'rgba(255,255,255,0.92)' }}>
+        {navMainItems.filter((it) => canSee(it.roles)).map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
-            <Link
-              key={it.href}
-              href={it.href}
-              data-tour={`nav-${it.icon}`}
-              title={it.label}
-              className={
-                'group relative flex items-center rounded-xl py-2 text-sm transition ' +
-                (on ? 'bg-white/10' : 'hover:bg-white/5')
-              }
-            >
-              {on && (
-                <span
-                  aria-hidden="true"
-                  className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
-                  style={{ background: 'rgb(var(--kx-accent))' }}
-                />
-              )}
-
-              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
-                <NavIcon name={it.icon} />
-              </span>
-              <span
-                className="ml-2 tracking-tight"
-                style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
-              >
-                {it.label}
-              </span>
+            <Link key={it.href} href={it.href} data-tour={`nav-${it.icon}`} title={it.label} className={'group relative flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'bg-white/10' : 'hover:bg-white/5')}>
+              {on && <span aria-hidden="true" className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
+              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}><NavIcon name={it.icon} /></span>
+              <span className="ml-2 tracking-tight" style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}>{it.label}</span>
               {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
             </Link>
           )
         })}
       </nav>
 
-      {/* Bottom navigation */}
       <div className="mt-auto" />
-      <nav className={'px-3 pt-2 pb-3 space-y-1'} style={{ color: 'rgba(255,255,255,0.92)' }}>
-        {navBottomItems.map((it) => {
+      <nav className={'space-y-1 px-3 pt-2 pb-3'} style={{ color: 'rgba(255,255,255,0.92)' }}>
+        {navBottomItems.filter((it) => canSee(it.roles)).map((it) => {
           const on = pathname === it.href || pathname.startsWith(it.href + '/')
           return (
-            <Link
-              key={it.href}
-              href={it.href}
-              title={it.label}
-              className={
-                'group relative flex items-center rounded-xl py-2 text-sm transition ' +
-                (on ? 'bg-white/10' : 'hover:bg-white/5')
-              }
-            >
-              {on && (
-                <span
-                  aria-hidden="true"
-                  className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full"
-                  style={{ background: 'rgb(var(--kx-accent))' }}
-                />
-              )}
-
-              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}>
-                <NavIcon name={it.icon} />
-              </span>
-              <span
-                className="ml-2 tracking-tight"
-                style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}
-              >
-                {it.label}
-              </span>
+            <Link key={it.href} href={it.href} title={it.label} className={'group relative flex items-center rounded-xl py-2 text-sm transition ' + (on ? 'bg-white/10' : 'hover:bg-white/5')}>
+              {on && <span aria-hidden="true" className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
+              <span className={'ml-3'} style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.74)' }}><NavIcon name={it.icon} /></span>
+              <span className="ml-2 tracking-tight" style={{ color: on ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.88)' }}>{it.label}</span>
               {on && <span className="ml-auto mr-2 h-1.5 w-1.5 rounded-full" style={{ background: 'rgb(var(--kx-accent))' }} />}
             </Link>
           )
@@ -205,25 +132,13 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
       </nav>
 
       {userEmail && (
-        <div className="mt-auto px-5 py-4" style={{ color: 'rgba(255,255,255,0.90)' }}>
+        <div className="px-5 py-4" style={{ color: 'rgba(255,255,255,0.90)' }}>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <div className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.52)' }}>
-                Signed in as
-              </div>
-              <div className="mt-1 text-xs break-all" style={{ color: 'rgba(255,255,255,0.90)' }}>
-                {userEmail}
-              </div>
+              <div className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.52)' }}>Signed in as</div>
+              <div className="mt-1 text-xs break-all" style={{ color: 'rgba(255,255,255,0.90)' }}>{userEmail}</div>
             </div>
-            {canManageUsers(role) && (
-              <span
-                className="inline-flex items-center rounded-full px-2 py-0.5 text-xs"
-                style={{ background: 'rgb(var(--kx-accent) / 0.16)', color: 'rgba(255,255,255,0.92)', border: '1px solid rgb(var(--kx-accent) / 0.28)' }}
-                title="Manager access"
-              >
-                Admin
-              </span>
-            )}
+            {canManageUsers(role) && <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs" style={{ background: 'rgb(var(--kx-accent) / 0.16)', color: 'rgba(255,255,255,0.92)', border: '1px solid rgb(var(--kx-accent) / 0.28)' }}>Admin</span>}
           </div>
         </div>
       )}

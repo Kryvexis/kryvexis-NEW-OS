@@ -1,13 +1,9 @@
 import "./globals.css";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
 
-// Root layout must NOT enforce auth redirects.
-// Auth gating is handled in app/(app)/layout.tsx so routes like /login can render.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    // Desktop should always be LIGHT (clean content area) like the reference UI.
-    // The sidebar stays dark via explicit styling in Sidebar.
-    <html lang="en" data-theme="light" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#10b981" />
@@ -18,13 +14,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    // Enforce LIGHT for desktop (clean UI reference). Avoid heavy dark dashboards.
     const root = document.documentElement;
-    root.dataset.theme = 'light';
-    root.classList.remove('dark');
-    root.classList.add('kx-light');
+    root.dataset.theme = 'dark';
+    root.classList.add('dark');
+    root.classList.remove('kx-light');
 
-    // Accent pair (default green). Keep customizable via localStorage.
     const accent = localStorage.getItem('kx_accent') || 'green';
     const map = {
       indigo: { a: '99 102 241', b: '56 189 248' },
