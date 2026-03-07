@@ -13,7 +13,7 @@ export function NavIcon({ name }: { name: NavIconName }) {
     case 'sales':
       return <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12" stroke="currentColor" strokeWidth="1.5" opacity="0.35" /><path d="M7 15l3-3 3 2 4-5" stroke="currentColor" strokeWidth="1.6" opacity="0.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
     case 'buyers':
-      return <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 7h13l-1.4 6.2a2 2 0 0 1-2 1.6H9a2 2 0 0 1-2-1.6L5.5 5H3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" /><circle cx="9" cy="19" r="1.5" fill="currentColor" opacity="0.9"/><circle cx="17" cy="19" r="1.5" fill="currentColor" opacity="0.9"/></svg>
+      return <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 7h15l-1.5 8.5H8L6 4H3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.9"/><circle cx="10" cy="19" r="1.5" fill="currentColor" opacity="0.75"/><circle cx="18" cy="19" r="1.5" fill="currentColor" opacity="0.75"/></svg>
     case 'accounting':
       return <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 4h12v16H6V4Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" /><path d="M8.5 8h7M8.5 12h7M8.5 16h4" stroke="currentColor" strokeWidth="1.5" opacity="0.9" /></svg>
     case 'operations':
@@ -23,7 +23,7 @@ export function NavIcon({ name }: { name: NavIconName }) {
     case 'accountCenter':
       return <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" strokeWidth="1.5" opacity="0.9" /><path d="M4 22a8 8 0 0 1 16 0" stroke="currentColor" strokeWidth="1.5" opacity="0.35" /></svg>
     case 'upload':
-      return <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16V5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><path d="M8 9l4-4 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 19h14" stroke="currentColor" strokeWidth="1.5" opacity="0.6" strokeLinecap="round"/></svg>
+      return <span aria-hidden="true">⬆️</span>
     case 'help':
       return <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 18h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><path d="M9.2 9a3 3 0 1 1 5.1 2c-.8.7-1.3 1.1-1.3 2.5" stroke="currentColor" strokeWidth="1.5" opacity="0.9" strokeLinecap="round"/><path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10Z" stroke="currentColor" strokeWidth="1.5" opacity="0.35"/></svg>
     case 'settings':
@@ -37,14 +37,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
   const canSee = (roles?: UserRole[]) => !roles || roles.includes(role) || role === 'owner' || role === 'manager'
 
   return (
-    <aside
-      className={'hidden md:flex md:flex-col ' + widthCls}
-      style={{
-        background: 'linear-gradient(180deg, rgb(var(--kx-accent) / 0.20) 0%, rgb(var(--kx-accent) / 0.08) 16%, #0b1220 40%, #0a1628 70%, #081324 100%)',
-        boxShadow: 'var(--kx-shadow-sidebar)',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
-      }}
-    >
+    <aside className={'hidden md:flex md:flex-col ' + widthCls} style={{ background: 'linear-gradient(180deg, rgb(var(--kx-accent) / 0.24) 0%, rgb(var(--kx-accent) / 0.10) 18%, #0b1220 40%, #0a1628 70%, #081324 100%)', boxShadow: 'var(--kx-shadow-sidebar)', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
       <div className={'px-5 pt-5 pb-3'} style={{ color: 'rgba(255,255,255,0.92)' }}>
         <div className={'flex items-start justify-between gap-3'}>
           <div className={'flex flex-col'}>
@@ -95,7 +88,7 @@ export function Sidebar({ userEmail, workspaceName, role }: { userEmail?: string
               <div className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.52)' }}>Signed in as</div>
               <div className="mt-1 text-xs break-all" style={{ color: 'rgba(255,255,255,0.90)' }}>{userEmail}</div>
             </div>
-            {canManageUsers(role) && <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs" style={{ background: 'rgb(var(--kx-accent) / 0.16)', color: 'rgba(255,255,255,0.92)', border: '1px solid rgb(var(--kx-accent) / 0.28)' }} title="Manager access">Admin</span>}
+            {canManageUsers(role) && <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs" style={{ background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.88)' }}>{role}</span>}
           </div>
         </div>
       )}

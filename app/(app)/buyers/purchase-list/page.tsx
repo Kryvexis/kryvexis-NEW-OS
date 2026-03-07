@@ -17,5 +17,5 @@ async function readList(): Promise<Item[]> {
 
 export default async function BuyersPurchaseListPage() {
   const items = await readList();
-  return <DesktopPurchaseList items={items} />;
+  return <DesktopPurchaseList initialItems={items} />;
 }

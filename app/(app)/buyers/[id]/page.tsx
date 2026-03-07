@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireCompanyId } from "@/lib/kx";
 import { recommendOrderQty } from "@/lib/buyers/recommend";
 import { fmtZar } from "@/lib/format";
+import { addToPurchaseListAction } from "@/app/m/buyers/purchase-list/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -52,19 +53,12 @@ export default async function BuyersItemWeb({ params }: { params: Promise<{ id: 
               {product.sku ? `SKU: ${product.sku}` : "—"} • Price: {fmtZar(Number(product.unit_price || 0))}
             </div>
           </div>
-          <div className="flex gap-2">
-            <form action="/m/buyers/purchase-list" method="get">
-              <input type="hidden" name="added" value="1" />
-            </form>
-            <form action={async (fd: FormData) => {
-              'use server'
-              const { addToPurchaseListAction } = await import('@/app/m/buyers/purchase-list/actions')
-              await addToPurchaseListAction(fd)
-            }}>
+          <div className="flex items-center gap-2">
+            <form action={addToPurchaseListAction}>
               <input type="hidden" name="product_id" value={product.id} />
               <input type="hidden" name="name" value={product.name} />
-              <input type="hidden" name="suggested_qty" value={String(rec.suggestedQty || 1)} />
-              <button className="rounded-xl border border-blue-600/20 bg-blue-600/10 px-3 py-2 text-sm font-semibold text-blue-700 dark:text-blue-300">Add to Purchase List</button>
+              <input type="hidden" name="suggested_qty" value={rec.suggestedQty} />
+              <button className="rounded-xl border border-[rgba(var(--kx-border),.16)] px-3 py-2 text-sm font-semibold">Add to purchase list</button>
             </form>
             <Link href="/buyers/purchase-list" className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white">
               Review & Order

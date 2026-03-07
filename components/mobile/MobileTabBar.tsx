@@ -6,16 +6,12 @@ import clsx from "clsx";
 import { Home, Users, Receipt, Settings, Plus, ShoppingCart } from "lucide-react";
 import { useHideOnScroll } from "./hooks/useHideOnScroll";
 
-type Tab = {
-  href: string;
-  label: string;
-  icon: React.ReactNode;
-};
+type Tab = { href: string; label: string; icon: React.ReactNode };
 
 const tabs: Tab[] = [
   { href: "/m/home", label: "Home", icon: <Home className="h-5 w-5" /> },
-  { href: "/m/clients", label: "Clients", icon: <Users className="h-5 w-5" /> },
   { href: "/m/buyers", label: "Buyers", icon: <ShoppingCart className="h-5 w-5" /> },
+  { href: "/m/clients", label: "Clients", icon: <Users className="h-5 w-5" /> },
   { href: "/m/transactions", label: "Transactions", icon: <Receipt className="h-5 w-5" /> },
   { href: "/m/settings", label: "Settings", icon: <Settings className="h-5 w-5" /> },
 ];
@@ -31,6 +27,7 @@ export default function MobileTabBar() {
           <Link href="/m/new" className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-600 p-3 shadow-lg ring-4 ring-white/70 dark:ring-zinc-900/60" aria-label="New">
             <Plus className="h-6 w-6 text-white" />
           </Link>
+
           <nav className="grid grid-cols-5 gap-1 px-2 pt-4">
             {tabs.map((t) => {
               const active = pathname === t.href || pathname.startsWith(t.href + "/");
@@ -42,6 +39,7 @@ export default function MobileTabBar() {
               );
             })}
           </nav>
+
           <div className="h-3" />
         </div>
       </div>

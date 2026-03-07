@@ -12,7 +12,7 @@ type ProductRow = {
   type?: string | null;
   unit_price?: number | null;
   cost_price?: number | null;
-  suppliers?: { name?: string | null } | null;
+  supplier_name?: string | null;
 };
 
 export default function ProductList({ products }: { products: ProductRow[] }) {
@@ -44,7 +44,7 @@ export default function ProductList({ products }: { products: ProductRow[] }) {
                   <div className="md:col-span-2 text-xs kx-muted md:text-right">Sell: {fmtZar(sell)}</div>
                   <div className="md:col-span-2 text-xs kx-muted md:text-right">Cost: {fmtZar(cost)}</div>
                   <div className="md:col-span-2 text-xs font-semibold text-[rgba(var(--kx-fg),.92)]/85 md:text-right">Margin: {fmtZar(margin)}</div>
-                  <div className="md:col-span-2 text-xs kx-muted md:text-right">{p.suppliers?.name ?? "—"}</div>
+                  <div className="md:col-span-2 text-xs kx-muted md:text-right">{p.supplier_name ?? "—"}</div>
                 </div>
                 <div className="px-3 pb-3 flex items-center justify-end gap-2">
                   <Link
