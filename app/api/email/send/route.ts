@@ -26,7 +26,6 @@ function nl2br(input: string) {
   return esc(input).replace(/\n/g, "<br />");
 }
 
-// 1x1 transparent gif
 const GIF = Buffer.from(
   "R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
   "base64"
@@ -53,11 +52,12 @@ async function buildInvoiceEmail(payload: {
   if (error) throw new Error(error.message);
   if (!invoice) throw new Error("Invoice not found");
 
-  const recipient = String(payload.to || invoice.clients?.email || "").trim();
+  const client = (invoice as any)?.clients ?? null;
+  const recipient = String(payload.to || client?.email || "").trim();
   if (!recipient) throw new Error("Client email is missing for this invoice.");
 
   const subject = String(payload.subject || `Invoice ${invoice.number || ""} from Kryvexis`).trim();
-  const clientName = String(invoice.clients?.name || "Client");
+  const clientName = String(client?.name || "Client");
   const invoiceNumber = String(invoice.number || "");
   const total = Number(invoice.total || 0).toFixed(2);
   const balance = Number(invoice.balance_due || 0).toFixed(2);
