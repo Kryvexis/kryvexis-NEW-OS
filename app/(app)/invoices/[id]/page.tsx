@@ -9,6 +9,7 @@ import { PosHeroShell } from '@/components/pos/hero-shell'
 import { Card } from '@/components/card'
 import { EnterpriseTimeline, type EnterpriseTimelineEvent } from '@/components/enterprise/enterprise-timeline'
 import InvoiceWhatsAppLauncher from './ui-whatsapp-launcher'
+import InvoiceEmailLauncher from './ui-email-launcher'
 import MarkViewedButton from './ui-mark-viewed'
 
 type PageProps = {
@@ -30,9 +31,9 @@ function toEnterpriseEvents(logs: any[], invoice: any): EnterpriseTimelineEvent[
     const at = a?.created_at ? new Date(String(a.created_at)).toLocaleString('en-ZA') : ''
     if (action === 'created' || action === 'created_from_quote') push('created', 'Created', action === 'created_from_quote' ? 'Converted from quote' : 'Draft', at)
     if (action === 'sent_whatsapp') push('sent', 'Sent via WhatsApp', 'Customer message', at)
+    if (action === 'sent_email') push('sent', 'Sent via email', 'Customer email', at)
     if (action === 'viewed') push('viewed', 'Viewed', 'Customer opened / confirmed', at)
     if (a?.entity_type === 'payment' && action === 'recorded') {
-      // we'll derive partial/paid from invoice status below, but keep an informative meta if needed
       const bal = Number(invoice?.balance_due ?? 0)
       if (bal > 0.00001) push('partial', 'Partial Payment', 'Payment recorded', at)
       else push('paid', 'Paid', 'Payment recorded', at)
@@ -43,7 +44,7 @@ function toEnterpriseEvents(logs: any[], invoice: any): EnterpriseTimelineEvent[
   const bal = Number(invoice?.balance_due ?? 0)
   if (!seen.has('created')) push('created', 'Created', 'Draft')
   if ((invStatus === 'Sent' || invStatus === 'Paid' || invStatus === 'Partially Paid') && !seen.has('sent')) {
-    push('sent', 'Sent via WhatsApp', 'Sent')
+    push('sent', 'Sent', 'Customer delivery')
   }
   if (invStatus === 'Partially Paid' && !seen.has('partial')) push('partial', 'Partial Payment', 'Balance remaining')
   if ((invStatus === 'Paid' || bal <= 0.00001) && !seen.has('paid')) push('paid', 'Paid', 'Balance cleared')
@@ -105,6 +106,12 @@ export default async function InvoicePage({ params }: PageProps) {
       }
       actions={
         <>
+          <InvoiceEmailLauncher
+            invoiceId={invoice.id}
+            invoiceNumber={invoice.number}
+            clientName={clientName}
+            clientEmail={invoice.clients?.email}
+          />
           <InvoiceWhatsAppLauncher
             invoiceId={invoice.id}
             invoiceNumber={invoice.number}

@@ -1,0 +1,2 @@
+name,sku,type,unit_price,stock_on_hand,low_stock_threshold,is_active
+Spring Water 500ml,WTR-500,product,8.99,24,6,true
